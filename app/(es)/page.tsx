@@ -1,12 +1,16 @@
-import ButtonChangeTheme from '@/components/theme/ButtonChangeTheme';
+import Menu from '@/components/menu/Menu';
+import HomeHero from '@/components/listings/HomeHero';
+import { RevealProvider } from '@/components/home/RevealContext';
 
 export default function Home() {
   return (
-    <div className=''>
+    <RevealProvider delayMs={300}>
+      <header className='sticky top-0 z-50'>
+        <Menu />
+      </header>
       <main>
-        <h1>INICIO ESPAÑOL</h1>
-        <ButtonChangeTheme />
+        <HomeHero />
       </main>
-    </div>
+    </RevealProvider>
   );
 }
