@@ -20,8 +20,8 @@ const companyLinks = [
 
 const quickLinks = [
   { label: 'Lugares Turísticos', href: '/destinos' },
-  { label: 'Vincula tu propiedad', href: '#' },
-  { label: 'Reserva', href: '/propiedades' },
+  { label: 'Vincule su propiedad', href: '#' },
+  { label: 'Reserva', href: '/alojamiento' },
 ];
 
 const Footer = () => {

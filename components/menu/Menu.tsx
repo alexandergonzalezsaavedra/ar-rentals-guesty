@@ -34,27 +34,29 @@ const Menu = () => {
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const isPropiedadesActive = isActivePath(pathname, '/propiedades');
+  const isAlojamientoActive = isActivePath(pathname, '/alojamiento');
   const isDestinosActive = isActivePath(pathname, '/destinos');
 
-  const menuItems = [
-    'Profile',
-    'Dashboard',
-    'Activity',
-    'Analytics',
-    'System',
-    'Deployments',
-    'My Settings',
-    'Team Settings',
-    'Help & Feedback',
-    'Log Out',
+  const mobileMenuItems = [
+    {
+      label: 'Alojamiento',
+      href: '/alojamiento',
+      icon: ConciergeBell,
+      isActive: isAlojamientoActive,
+    },
+    {
+      label: 'Destinos',
+      href: '/destinos',
+      icon: IconMap2,
+      isActive: isDestinosActive,
+    },
   ];
 
   const navbar = (
     <Navbar
       maxWidth='2xl'
       position='sticky'
-      classNames={{ base: 'z-50' }}
+      classNames={{ base: 'z-50', menu: 'z-50 bg-background' }}
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent>
@@ -84,19 +86,19 @@ const Menu = () => {
           <div className='flex items-center gap-1 rounded-full border border-default-200/60 bg-content2/60 px-2 py-1 backdrop-blur-md'>
             <Button
               as='a'
-              href='/propiedades'
+              href='/alojamiento'
               radius='full'
               size='sm'
-              variant={isPropiedadesActive ? 'solid' : 'light'}
+              variant={isAlojamientoActive ? 'solid' : 'light'}
               className={
-                isPropiedadesActive
+                isAlojamientoActive
                   ? 'group bg-content1 text-foreground font-semibold shadow-sm'
                   : 'group bg-transparent text-default-500 font-medium'
               }
             >
               <span className='flex flex-row items-center gap-1'>
                 <ConciergeBell
-                  className={`${isPropiedadesActive ? 'text-primary' : 'text-default'} transition-transform duration-300 ease-out group-hover:-rotate-12 group-hover:scale-110`}
+                  className={`${isAlojamientoActive ? 'text-primary' : 'text-default'} transition-transform duration-300 ease-out group-hover:-rotate-12 group-hover:scale-110`}
                   size={18}
                 />
                 Alojamiento
@@ -165,23 +167,35 @@ const Menu = () => {
       </NavbarContent>
       {/* Menú móviles */}
       <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              className='w-full'
-              color={
-                index === 2
-                  ? 'primary'
-                  : index === menuItems.length - 1
-                    ? 'danger'
-                    : 'foreground'
-              }
-              href='#'
-            >
-              {item}
-            </Link>
-          </NavbarMenuItem>
-        ))}
+        <div className='grid grid-cols-2 gap-4 pt-6'>
+          {mobileMenuItems.map(({ label, href, icon: Icon, isActive }) => (
+            <NavbarMenuItem key={label}>
+              <Link
+                href={href}
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex flex-col items-center gap-3 rounded-2xl p-5 text-center shadow-lg transition-transform active:scale-95 ${
+                  isActive
+                    ? 'bg-primary/10 shadow-primary/20 ring-2 ring-primary'
+                    : 'bg-content1 shadow-default-200/70 dark:shadow-black/40'
+                }`}
+              >
+                <span
+                  className={`flex size-14 items-center justify-center rounded-full ${
+                    isActive ? 'bg-primary/20' : 'bg-primary/10'
+                  }`}
+                >
+                  <Icon
+                    size={28}
+                    className='text-primary'
+                  />
+                </span>
+                <span className='text-sm font-semibold text-foreground'>
+                  {label}
+                </span>
+              </Link>
+            </NavbarMenuItem>
+          ))}
+        </div>
       </NavbarMenu>
     </Navbar>
   );

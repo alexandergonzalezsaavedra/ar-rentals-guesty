@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { Button } from '@heroui/react';
-import { IconMoon, IconSun } from '@tabler/icons-react';
+import { IconContrastFilled } from '@tabler/icons-react';
 import { useSetTheme } from '@/hooks/theme/useSetTheme';
 
 const ButtonChangeTheme = () => {
@@ -21,14 +21,17 @@ const ButtonChangeTheme = () => {
     <>
       <Button
         ref={buttonRef}
-        className={`bg-white shadow-lg rounded-full ${
-          theme === 'dark' ? 'text-primary bg-black' : 'text-primary bg-white'
+        aria-label={
+          theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'
+        }
+        className={`shadow-lg rounded-full ${
+          theme === 'dark' ? 'bg-black text-primary' : 'bg-white text-primary'
         }`}
         onPress={handlePress}
         isIconOnly
         size='sm'
       >
-        {theme === 'dark' ? <IconSun size={16} /> : <IconMoon size={16} />}
+        <IconContrastFilled size={18} />
       </Button>
     </>
   );

@@ -8,7 +8,15 @@ import {
   today,
   type DateValue,
 } from '@internationalized/date';
-import { IconFilter, IconX } from '@tabler/icons-react';
+import {
+  IconBabyCarriage,
+  IconBath,
+  IconBed,
+  IconBuildingSkyscraper,
+  IconFilter,
+  IconUser,
+  IconX,
+} from '@tabler/icons-react';
 import Stepper from './Stepper';
 
 export interface PropertyFiltersValues {
@@ -50,6 +58,7 @@ const PropertyFilters = ({
   variant = 'solid',
 }: PropertyFiltersProps) => {
   const isGlass = variant === 'glass';
+  const dividerColor = isGlass ? 'border-default-200/60' : 'border-default-200';
   const [dateError, setDateError] = useState<string | null>(null);
   const [checkInDate, setCheckInDate] = useState<DateValue | null>(() =>
     initialValues?.checkIn ? parseDate(initialValues.checkIn) : null,
@@ -64,13 +73,16 @@ const PropertyFilters = ({
     Number(initialValues?.numberOfBathrooms ?? 0),
   );
   const [adultsCount, setAdultsCount] = useState(() =>
-    Number(initialValues?.adults ?? 0),
+    Math.max(1, Number(initialValues?.adults ?? 1)),
   );
   const [childrenCount, setChildrenCount] = useState(() =>
     Number(initialValues?.children ?? 0),
   );
 
-  const minDate = today(getLocalTimeZone());
+  // Guesty enforces a minimum advance notice on every listing we've checked,
+  // so same-day check-in always gets rejected as LISTING_IS_NOT_AVAILABLE —
+  // block it here instead of letting the user hit that error at quote time.
+  const minCheckIn = today(getLocalTimeZone()).add({ days: 1 });
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -89,7 +101,7 @@ const PropertyFilters = ({
     };
 
     if (Boolean(values.checkIn) !== Boolean(values.checkOut)) {
-      setDateError('Completá check-in y check-out, o dejá ambos vacíos.');
+      setDateError('Complete check-in y check-out, o deje ambos vacíos.');
       return;
     }
 
@@ -109,7 +121,7 @@ const PropertyFilters = ({
       className={
         isGlass
           ? '@container bg-content1/9 backdrop-blur-xl border border-white/10 shadow-2xl p-4 sm:p-6 rounded-2xl scroll-mt-4'
-          : '@container mb-6 bg-default-50 p-4 rounded-xl scroll-mt-4'
+          : '@container mb-6 bg-content1 p-4 sm:p-6 rounded-2xl shadow-2xl scroll-mt-4'
       }
     >
       <div className='grid grid-cols-1 @sm:grid-cols-3 gap-3'>
@@ -118,7 +130,7 @@ const PropertyFilters = ({
           size='sm'
           value={checkInDate}
           onChange={setCheckInDate}
-          minValue={minDate}
+          minValue={minCheckIn}
         />
 
         <DatePicker
@@ -126,7 +138,7 @@ const PropertyFilters = ({
           size='sm'
           value={checkOutDate}
           onChange={setCheckOutDate}
-          minValue={checkInDate ?? minDate}
+          minValue={checkInDate ?? minCheckIn}
         />
 
         <Select
@@ -134,6 +146,12 @@ const PropertyFilters = ({
           name='city'
           placeholder='Cualquiera'
           size='sm'
+          startContent={
+            <IconBuildingSkyscraper
+              size={16}
+              className='text-default-400'
+            />
+          }
           defaultSelectedKeys={
             initialValues?.city ? [initialValues.city] : undefined
           }
@@ -147,40 +165,47 @@ const PropertyFilters = ({
       <div
         className={
           isGlass
-            ? 'mt-4 grid grid-cols-1 @lg:grid-cols-4 divide-y divide-default-200/60 @lg:divide-y-0 @lg:divide-x bg-content1/50 rounded-lg px-4'
-            : 'mt-4 grid grid-cols-1 @lg:grid-cols-4 divide-y divide-default-200 @lg:divide-y-0 @lg:divide-x bg-content1 rounded-lg px-4'
+            ? 'mt-4 grid grid-cols-2 @lg:grid-cols-4 @lg:divide-x divide-default-200/60 bg-content1/50 rounded-lg px-4'
+            : 'mt-4 grid grid-cols-2 @lg:grid-cols-4 @lg:divide-x divide-default-200 bg-default-50 rounded-xl px-4'
         }
       >
         <Stepper
           label='Adultos'
           tooltip='> 12 años'
+          icon={<IconUser size={16} />}
           value={adultsCount}
-          min={0}
+          min={1}
           max={MAX_ADULTS}
           onChange={setAdultsCount}
+          className={`border-b border-r @lg:border-r-0 @lg:border-b-0 ${dividerColor}`}
         />
 
         <Stepper
           label='Niños'
           tooltip='< 12 años'
+          icon={<IconBabyCarriage size={16} />}
           value={childrenCount}
           min={0}
           max={MAX_CHILDREN}
           onChange={setChildrenCount}
+          className={`border-b @lg:border-b-0 ${dividerColor}`}
         />
 
         <Stepper
           label='Habitaciones'
           tooltip='Cantidad mínima de habitaciones'
+          icon={<IconBed size={16} />}
           value={bedrooms}
           min={0}
           max={MAX_BEDROOMS}
           onChange={setBedrooms}
+          className={`border-r @lg:border-r-0 ${dividerColor}`}
         />
 
         <Stepper
           label='Baños'
           tooltip='Cantidad mínima de baños'
+          icon={<IconBath size={16} />}
           value={bathrooms}
           min={0}
           max={MAX_BATHROOMS}

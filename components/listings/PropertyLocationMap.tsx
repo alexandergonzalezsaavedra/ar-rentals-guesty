@@ -1,0 +1,81 @@
+'use client';
+
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+import { Button } from '@heroui/react';
+import { IconBrandWaze, IconMapPin } from '@tabler/icons-react';
+import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+
+interface PropertyLocationMapProps {
+  lat: number;
+  lng: number;
+  address: string;
+}
+
+// Guesty's default marker relies on image URLs that don't resolve under a
+// bundler, so we draw our own pin instead of fighting Leaflet's default icon.
+const PIN_SVG = `
+  <svg width="34" height="34" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));">
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#7c9c87" stroke="#ffffff" stroke-width="1.5"/>
+    <circle cx="12" cy="9" r="3" fill="#ffffff"/>
+  </svg>
+`;
+
+const markerIcon = L.divIcon({
+  className: '',
+  html: PIN_SVG,
+  iconSize: [34, 34],
+  // Anchor at the pin's tip, which is where the actual location sits.
+  iconAnchor: [17, 34],
+});
+
+const PropertyLocationMap = ({ lat, lng, address }: PropertyLocationMapProps) => {
+  const wazeUrl = `https://waze.com/ul?ll=${lat}%2C${lng}&navigate=yes`;
+
+  return (
+    <section
+      id='property-location'
+      className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm dark:border-slate-800'
+    >
+      <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
+        <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+          <IconMapPin size={18} />
+        </span>
+        Ubicación
+      </h2>
+
+      <p className='mb-4 text-sm text-default-600'>{address}</p>
+
+      <MapContainer
+        center={[lat, lng]}
+        zoom={15}
+        scrollWheelZoom={false}
+        className='isolate h-80 w-full rounded-xl sm:h-96'
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        />
+        <Marker
+          position={[lat, lng]}
+          icon={markerIcon}
+        />
+      </MapContainer>
+
+      <Button
+        as='a'
+        href={wazeUrl}
+        target='_blank'
+        rel='noopener noreferrer'
+        color='primary'
+        radius='full'
+        className='mt-4 w-full font-bold text-white sm:w-auto'
+        startContent={<IconBrandWaze size={20} />}
+      >
+        Cómo llegar con Waze
+      </Button>
+    </section>
+  );
+};
+
+export default PropertyLocationMap;

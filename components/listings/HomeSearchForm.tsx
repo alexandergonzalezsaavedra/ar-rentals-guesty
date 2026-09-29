@@ -22,7 +22,7 @@ const HomeSearchForm = ({ cities }: HomeSearchFormProps) => {
     }
 
     const query = params.toString();
-    router.push(`/propiedades${query ? `?${query}` : ''}`);
+    router.push(`/alojamiento${query ? `?${query}` : ''}`);
   };
 
   const handleClear = () => setResetKey((key) => key + 1);

@@ -1,4 +1,5 @@
-import { guestyFetch } from './client';
+import { guestyFetch, GuestyApiError } from './client';
+import { findListingBySlug } from './slug';
 
 // Guesty caps a single page at 100 results (enforced server-side by their API).
 const MAX_PAGE_SIZE = 100;
@@ -145,4 +146,32 @@ export async function listAllListings(
   }
 
   return { results, pagination: { total } };
+}
+
+/**
+ * Resolves a listing from its URL slugs (used by property detail/checkout
+ * routes, which don't carry the Guesty id in the URL). Returns null both when
+ * no listing matches the slugs and when Guesty reports the matched id as
+ * gone (4xx) — both cases mean "can't show this listing" to the caller.
+ */
+export async function getListingBySlug(
+  citySlug: string,
+  titleSlug: string
+): Promise<GuestyListingDetail | null> {
+  try {
+    const { results } = await listAllListings({});
+    const match = findListingBySlug(results, citySlug, titleSlug);
+
+    if (!match) {
+      return null;
+    }
+
+    return await getListing(match._id);
+  } catch (error) {
+    if (error instanceof GuestyApiError && error.status >= 400 && error.status < 500) {
+      return null;
+    }
+
+    throw error;
+  }
 }

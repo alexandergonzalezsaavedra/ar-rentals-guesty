@@ -1,12 +1,33 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Card, DatePicker, Spinner } from '@heroui/react';
+import { useRouter, usePathname } from 'next/navigation';
+import { Button, Card, DatePicker, Spinner } from '@heroui/react';
 import Stepper from './Stepper';
-import { getLocalTimeZone, parseDate, today, type DateValue } from '@internationalized/date';
-import { IconAlertCircle, IconClock } from '@tabler/icons-react';
+import {
+  getLocalTimeZone,
+  parseDate,
+  today,
+  type DateValue,
+} from '@internationalized/date';
+import {
+  IconAlertCircle,
+  IconCalendarEvent,
+  IconClock,
+  IconDiscount,
+  IconHome2,
+  IconReceipt2,
+  IconSparkles,
+  IconWallet,
+} from '@tabler/icons-react';
 import type { GuestyListingDetail } from '@/lib/guesty/listings';
 import type { ReservationQuoteMoney } from '@/lib/guesty/quotes';
+import {
+  formatPrice,
+  formatMonthShort,
+  formatWeekdayLong,
+} from '@/lib/format';
+import { buildPricingBreakdown, type PricingBreakdown } from '@/lib/pricing';
 
 interface BookingWidgetProps {
   listing: GuestyListingDetail;
@@ -33,86 +54,49 @@ interface QuoteError {
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
-  LISTING_IS_NOT_AVAILABLE: 'El inmueble no está disponible para esas fechas (puede no cumplir la estadía mínima, o ya está reservado).',
+  LISTING_IS_NOT_AVAILABLE:
+    'El inmueble no está disponible para esas fechas (puede no cumplir la estadía mínima, o ya está reservado).',
 };
-
-function formatPrice(amount: number, currency: string): string {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
 
-// Business rules: Guesty's own fare already covers an occupancy of 1 to 4 guests
-// at a flat rate. Beyond that, we add our own per-person, per-night surcharge,
-// and replace Guesty's cleaning fee with our own fixed schedule by bedroom count.
-const BASE_OCCUPANCY = 4;
-const EXTRA_GUEST_SURCHARGE = 60000;
-// 1 hab: $80.000, 2 hab: $100.000, 3 hab: $120.000 (+$20.000 per bedroom).
-// Extrapolated the same way for studios (treated as 1 hab) and 4+ bedrooms,
-// since those aren't in the documented schedule.
-function getCleaningFee(bedrooms: number): number {
-  return 60000 + 20000 * Math.max(1, bedrooms);
-}
-
-interface PricingBreakdown {
-  nights: number;
-  totalGuests: number;
-  extraGuests: number;
-  baseAccommodation: number;
-  extraGuestUnitPrice: number;
-  extraGuestTotal: number;
-  cleaningFee: number;
-  taxes: number;
-  currency: string;
-  total: number;
-}
-
-function buildPricingBreakdown(
-  money: ReservationQuoteMoney,
-  nights: number,
-  totalGuests: number,
-  bedrooms: number
-): PricingBreakdown {
-  const extraGuests = Math.max(0, totalGuests - BASE_OCCUPANCY);
-  const extraGuestUnitPrice = EXTRA_GUEST_SURCHARGE * nights;
-  const extraGuestTotal = extraGuestUnitPrice * extraGuests;
-  const cleaningFee = getCleaningFee(bedrooms);
-  const taxes = money.totalTaxes ?? 0;
-
-  return {
-    nights,
-    totalGuests,
-    extraGuests,
-    baseAccommodation: money.fareAccommodation,
-    extraGuestUnitPrice,
-    extraGuestTotal,
-    cleaningFee,
-    taxes,
-    currency: money.currency,
-    total: money.fareAccommodation + extraGuestTotal + cleaningFee + taxes,
-  };
-}
-
-const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults, initialChildren }: BookingWidgetProps) => {
+const BookingWidget = ({
+  listing,
+  initialCheckIn,
+  initialCheckOut,
+  initialAdults,
+  initialChildren,
+}: BookingWidgetProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const defaultNights = Math.max(1, listing.terms?.minNights ?? 1);
   const maxGuests = Math.max(1, listing.accommodates);
-  const minDate = today(getLocalTimeZone());
+  // Guesty enforces a minimum advance notice on every listing we've checked,
+  // so same-day check-in always gets rejected as LISTING_IS_NOT_AVAILABLE —
+  // block it here instead of letting the user hit that error at quote time.
+  const minCheckIn = today(getLocalTimeZone()).add({ days: 1 });
 
-  const [checkInDate, setCheckInDate] = useState<DateValue>(() =>
-    initialCheckIn ? parseDate(initialCheckIn) : minDate.add({ days: 1 })
-  );
+  const [checkInDate, setCheckInDate] = useState<DateValue>(() => {
+    if (!initialCheckIn) {
+      return minCheckIn;
+    }
+    const parsed = parseDate(initialCheckIn);
+    return parsed.compare(minCheckIn) >= 0 ? parsed : minCheckIn;
+  });
   const [checkOutDate, setCheckOutDate] = useState<DateValue>(() =>
-    initialCheckOut ? parseDate(initialCheckOut) : minDate.add({ days: 1 + defaultNights })
+    initialCheckOut
+      ? parseDate(initialCheckOut)
+      : minCheckIn.add({ days: defaultNights }),
   );
-  const [adults, setAdults] = useState(() => String(clamp(initialAdults ? Number(initialAdults) : 2, 1, maxGuests)));
+  const [adults, setAdults] = useState(() =>
+    String(clamp(initialAdults ? Number(initialAdults) : 2, 1, maxGuests)),
+  );
   const [children, setChildren] = useState(() =>
-    String(clamp(initialChildren ? Number(initialChildren) : 0, 0, maxGuests - 1))
+    String(
+      clamp(initialChildren ? Number(initialChildren) : 0, 0, maxGuests - 1),
+    ),
   );
   const [isLoading, setIsLoading] = useState(false);
   const [pricing, setPricing] = useState<PricingBreakdown | null>(null);
@@ -161,12 +145,20 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
         }
 
         if (!response.ok || 'error' in data) {
-          const code = 'details' in data ? data.details?.error?.code : undefined;
+          const code =
+            'details' in data ? data.details?.error?.code : undefined;
 
           if (code === 'VALIDATION_ERROR') {
-            setError(`La cantidad de huéspedes supera la capacidad del inmueble (máximo ${maxGuests} huéspedes).`);
+            setError(
+              `La cantidad de huéspedes supera la capacidad del inmueble (máximo ${maxGuests} huéspedes).`,
+            );
           } else {
-            setError((code && ERROR_MESSAGES[code]) || ('error' in data ? data.error : 'No pudimos consultar disponibilidad.'));
+            setError(
+              (code && ERROR_MESSAGES[code]) ||
+                ('error' in data
+                  ? data.error
+                  : 'No pudimos consultar disponibilidad.'),
+            );
           }
 
           setPricing(null);
@@ -181,11 +173,15 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
         }
 
         setPricing(
-          buildPricingBreakdown(ratePlan.ratePlan.money, ratePlan.days.length, Number(adults) + Number(children), listing.bedrooms)
+          buildPricingBreakdown(
+            ratePlan.ratePlan.money,
+            ratePlan.days.length,
+            Number(adults) + Number(children),
+          ),
         );
       } catch {
         if (requestId === requestIdRef.current) {
-          setError('No pudimos consultar disponibilidad. Intentá de nuevo.');
+          setError('No pudimos consultar disponibilidad. Intente de nuevo.');
           setPricing(null);
         }
       } finally {
@@ -197,19 +193,43 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkInStr, checkOutStr, adults, children]);
 
+  const hasValidRange = checkOutDate.compare(checkInDate) > 0;
+  const selectedNights = hasValidRange
+    ? Math.round(
+        (checkOutDate.toDate(getLocalTimeZone()).getTime() -
+          checkInDate.toDate(getLocalTimeZone()).getTime()) /
+          86400000,
+      )
+    : 0;
+
+  const handleReserve = () => {
+    const params = new URLSearchParams({
+      checkIn: checkInStr,
+      checkOut: checkOutStr,
+      adults,
+      children,
+    });
+    router.push(`${pathname}/reservar?${params.toString()}`);
+  };
+
   return (
     <Card
       shadow='sm'
-      className='p-4 lg:sticky lg:top-[calc(var(--navbar-height)+1rem)]'
+      className='p-4 sm:sticky sm:top-24'
     >
-      <div className='flex flex-col gap-3'>
+      <p className='text-3xl font-bold text-primary'>
+        {formatPrice(listing.prices.basePrice, listing.prices.currency)}{' '}
+        <span className='text-sm font-normal text-default-500'>/ noche</span>
+      </p>
+
+      <div className='mt-4 flex flex-col gap-3'>
         <div className='grid grid-cols-2 gap-2'>
           <DatePicker
             label='Llegada'
             size='sm'
             value={checkInDate}
             onChange={(value) => value && setCheckInDate(value)}
-            minValue={minDate}
+            minValue={minCheckIn}
           />
           <DatePicker
             label='Salida'
@@ -220,7 +240,60 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
           />
         </div>
 
-        <div className='divide-y divide-default-200'>
+        {hasValidRange && (
+          <div>
+            <p className='mb-1.5 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-default-400 uppercase'>
+              <IconCalendarEvent
+                size={14}
+                className='text-primary'
+              />
+              Fechas de tu estadía
+            </p>
+
+            <div className='flex items-stretch overflow-hidden rounded-xl border border-default-200 bg-content1'>
+              <div className='flex-1 px-3 py-2.5'>
+                <p className='text-[11px] font-medium text-default-400'>
+                  Llegada
+                </p>
+                <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
+                  {checkInDate.day}
+                  <span className='ml-1 text-sm font-medium text-default-500'>
+                    {formatMonthShort(checkInDate.toDate(getLocalTimeZone()))}
+                  </span>
+                </p>
+                <p className='mt-1 text-xs text-default-500'>
+                  {formatWeekdayLong(checkInDate.toDate(getLocalTimeZone()))}
+                </p>
+              </div>
+
+              <div className='flex w-16 shrink-0 flex-col items-center justify-center gap-0.5 border-x border-default-200 bg-primary/10 px-1 text-primary'>
+                <span className='text-lg leading-none font-bold'>
+                  {selectedNights}
+                </span>
+                <span className='text-[10px] leading-none font-medium'>
+                  {selectedNights === 1 ? 'noche' : 'noches'}
+                </span>
+              </div>
+
+              <div className='flex-1 px-3 py-2.5 text-right'>
+                <p className='text-[11px] font-medium text-default-400'>
+                  Salida
+                </p>
+                <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
+                  {checkOutDate.day}
+                  <span className='ml-1 text-sm font-medium text-default-500'>
+                    {formatMonthShort(checkOutDate.toDate(getLocalTimeZone()))}
+                  </span>
+                </p>
+                <p className='mt-1 text-xs text-default-500'>
+                  {formatWeekdayLong(checkOutDate.toDate(getLocalTimeZone()))}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className='grid grid-cols-2 gap-2'>
           <Stepper
             label='Adultos'
             description='Edad: 13 años o más'
@@ -228,6 +301,7 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
             min={1}
             max={maxGuests}
             onChange={(value) => setAdults(String(value))}
+            className='rounded-lg border border-default-200'
           />
 
           <Stepper
@@ -237,6 +311,7 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
             min={0}
             max={maxGuests - 1}
             onChange={(value) => setChildren(String(value))}
+            className='rounded-lg border border-default-200'
           />
         </div>
 
@@ -259,71 +334,103 @@ const BookingWidget = ({ listing, initialCheckIn, initialCheckOut, initialAdults
       )}
 
       {pricing && !isLoading && (
-        <div className='mt-4 border-t border-default-200 pt-3'>
-          <table className='w-full text-sm text-default-600 border-collapse'>
-            <thead>
-              <tr className='text-xs text-default-400'>
-                <th className='text-left font-normal pb-1'>Concepto</th>
-                <th className='text-right font-normal pb-1'>Valor unidad</th>
-                <th className='text-right font-normal pb-1'>Cant.</th>
-                <th className='text-right font-normal pb-1'>Valor total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className='py-1'>Alojamiento (hasta 4 huéspedes)</td>
-                <td className='text-right'>—</td>
-                <td className='text-right'>—</td>
-                <td className='text-right'>{formatPrice(pricing.baseAccommodation, pricing.currency)}</td>
-              </tr>
-              {pricing.extraGuests > 0 && (
-                <tr>
-                  <td className='py-1'>
-                    Huéspedes adicionales ({pricing.nights} {pricing.nights === 1 ? 'noche' : 'noches'})
-                  </td>
-                  <td className='text-right'>{formatPrice(pricing.extraGuestUnitPrice, pricing.currency)}</td>
-                  <td className='text-right'>{pricing.extraGuests}</td>
-                  <td className='text-right'>{formatPrice(pricing.extraGuestTotal, pricing.currency)}</td>
-                </tr>
-              )}
-              <tr>
-                <td className='py-1'>Limpieza</td>
-                <td className='text-right'>—</td>
-                <td className='text-right'>—</td>
-                <td className='text-right'>{formatPrice(pricing.cleaningFee, pricing.currency)}</td>
-              </tr>
-              {pricing.taxes > 0 && (
-                <tr>
-                  <td className='py-1'>Impuestos</td>
-                  <td className='text-right'>—</td>
-                  <td className='text-right'>—</td>
-                  <td className='text-right'>{formatPrice(pricing.taxes, pricing.currency)}</td>
-                </tr>
-              )}
-            </tbody>
-            <tfoot>
-              <tr className='font-bold text-default-900 border-t border-default-200'>
-                <td
-                  className='pt-2'
-                  colSpan={3}
-                >
-                  Total
-                </td>
-                <td className='text-right pt-2'>{formatPrice(pricing.total, pricing.currency)}</td>
-              </tr>
-            </tfoot>
-          </table>
+        <div className='mt-4 rounded-xl border border-default-200 bg-content1 p-4'>
+          <div className='flex flex-col gap-3 text-sm text-default-600'>
+            <div className='flex items-center justify-between gap-2'>
+              <span className='flex items-center gap-2'>
+                <IconHome2
+                  size={16}
+                  className='shrink-0 text-primary'
+                />
+                Alojamiento
+              </span>
+              <span className='font-medium text-foreground'>
+                {formatPrice(pricing.baseAccommodation, pricing.currency)}
+              </span>
+            </div>
 
-          <p className='text-xs text-default-400 mt-2'>
-            {pricing.totalGuests} huéspedes · {pricing.nights} {pricing.nights === 1 ? 'noche' : 'noches'}
+            {pricing.discount > 0 && (
+              <div className='flex items-center justify-between gap-2'>
+                <span className='flex items-center gap-2'>
+                  <IconDiscount
+                    size={16}
+                    className='shrink-0 text-success'
+                  />
+                  Descuento
+                </span>
+                <span className='font-medium text-success'>
+                  -{formatPrice(pricing.discount, pricing.currency)}
+                </span>
+              </div>
+            )}
+
+            {pricing.cleaningFee > 0 && (
+              <div className='flex items-center justify-between gap-2'>
+                <span className='flex items-center gap-2'>
+                  <IconSparkles
+                    size={16}
+                    className='shrink-0 text-primary'
+                  />
+                  Limpieza
+                </span>
+                <span className='font-medium text-foreground'>
+                  {formatPrice(pricing.cleaningFee, pricing.currency)}
+                </span>
+              </div>
+            )}
+
+            {pricing.taxes > 0 && (
+              <div className='flex items-center justify-between gap-2'>
+                <span className='flex items-center gap-2'>
+                  <IconReceipt2
+                    size={16}
+                    className='shrink-0 text-primary'
+                  />
+                  Impuestos
+                </span>
+                <span className='font-medium text-foreground'>
+                  {formatPrice(pricing.taxes, pricing.currency)}
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className='mt-4 flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2.5'>
+            <span className='flex items-center gap-2 font-semibold text-foreground'>
+              <IconWallet
+                size={18}
+                className='text-primary'
+              />
+              Total
+            </span>
+            <span className='text-lg font-bold text-primary'>
+              {formatPrice(pricing.total, pricing.currency)}
+            </span>
+          </div>
+
+          <p className='mt-2 text-xs text-default-400'>
+            {pricing.totalGuests} huéspedes · {pricing.nights}{' '}
+            {pricing.nights === 1 ? 'noche' : 'noches'}
           </p>
         </div>
       )}
 
+      <Button
+        className='mt-4 text-white'
+        radius='full'
+        variant='solid'
+        color='primary'
+        isDisabled={!hasValidRange || !pricing || isLoading}
+        onPress={handleReserve}
+      >
+        Reservar ahora
+      </Button>
+
       {(listing.defaultCheckInTime || listing.defaultCheckOutTime) && (
         <p className='mt-3 flex items-center gap-1 text-xs text-default-500'>
           <IconClock size={14} />
-          Check-in {listing.defaultCheckInTime} · Check-out {listing.defaultCheckOutTime}
+          Check-in {listing.defaultCheckInTime} · Check-out{' '}
+          {listing.defaultCheckOutTime}
         </p>
       )}
     </Card>

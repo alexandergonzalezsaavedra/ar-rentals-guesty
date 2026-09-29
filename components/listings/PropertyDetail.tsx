@@ -1,10 +1,36 @@
 'use client';
 
-import Image from 'next/image';
-import { Chip } from '@heroui/react';
-import { IconBath, IconBed, IconCheck, IconMapPin, IconStarFilled, IconUsers } from '@tabler/icons-react';
-import type { GuestyBedArrangementRoom, GuestyListingDetail } from '@/lib/guesty/listings';
+import dynamic from 'next/dynamic';
+import { Spinner } from '@heroui/react';
+import {
+  IconBath,
+  IconBed,
+  IconCheck,
+  IconHome2,
+  IconInfoCircle,
+  IconKey,
+  IconMessageCircle,
+  IconNotes,
+  IconSparkles,
+  IconUsers,
+  type Icon,
+} from '@tabler/icons-react';
+import type {
+  GuestyBedArrangementRoom,
+  GuestyListingDetail,
+} from '@/lib/guesty/listings';
 import BookingWidget from './BookingWidget';
+import GridGallery from './GridGallery';
+import MobileBookingNav from './MobileBookingNav';
+
+const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
+  ssr: false,
+  loading: () => (
+    <div className='mt-6 flex h-80 w-full items-center justify-center rounded-xl bg-default-50 sm:h-96'>
+      <Spinner label='Cargando mapa...' />
+    </div>
+  ),
+});
 
 interface PropertyDetailProps {
   listing: GuestyListingDetail;
@@ -37,16 +63,26 @@ const ROOM_NAME_LABELS: Record<string, string> = {
 function describeBeds(beds: Record<string, number>): string {
   return Object.entries(beds)
     .filter(([, count]) => count > 0)
-    .map(([type, count]) => `${count} ${BED_TYPE_LABELS[type] ?? type.toLowerCase().replace(/_/g, ' ')}`)
+    .map(
+      ([type, count]) =>
+        `${count} ${BED_TYPE_LABELS[type] ?? type.toLowerCase().replace(/_/g, ' ')}`,
+    )
     .join(', ');
 }
 
-const DESCRIPTION_SECTIONS: { key: keyof NonNullable<GuestyListingDetail['publicDescription']>; title: string }[] = [
-  { key: 'summary', title: 'Sobre este alojamiento' },
-  { key: 'space', title: 'El espacio' },
-  { key: 'access', title: 'Acceso de huéspedes' },
-  { key: 'interactionWithGuests', title: 'Atención durante tu estadía' },
-  { key: 'notes', title: 'Notas importantes' },
+const DESCRIPTION_SECTIONS: {
+  key: keyof NonNullable<GuestyListingDetail['publicDescription']>;
+  title: string;
+  icon: Icon;
+}[] = [
+  { key: 'summary', title: 'Sobre este alojamiento', icon: IconInfoCircle },
+  { key: 'space', title: 'El espacio', icon: IconHome2 },
+  { key: 'access', title: 'Acceso de huéspedes', icon: IconKey },
+  {
+    key: 'interactionWithGuests',
+    title: 'Atención durante su estadía',
+    icon: IconMessageCircle,
+  },
 ];
 
 const PropertyDetail = ({
@@ -57,102 +93,103 @@ const PropertyDetail = ({
   initialAdults,
   initialChildren,
 }: PropertyDetailProps) => {
-  const heroSrc = listing.pictures[0]?.original ?? listing.picture.regular;
-  const thumbnails = listing.pictures.slice(1, 5);
-  const remainingCount = Math.max(0, listing.pictures.length - thumbnails.length - 1);
+  const galleryImages = listing.pictures.map((picture) => ({
+    url: picture.original,
+    name: picture.caption || listing.title,
+  }));
 
-  const ratingAvg = listing.reviews.avg;
-  const sleepingRooms = bedArrangements.filter((room) => Object.values(room.beds).some((count) => count > 0));
+  const sleepingRooms = bedArrangements.filter((room) =>
+    Object.values(room.beds).some((count) => count > 0),
+  );
+
+  const hasDescription = DESCRIPTION_SECTIONS.some(
+    ({ key }) => listing.publicDescription?.[key],
+  );
+  const hasAmenities = listing.amenities.length > 0;
+  const hasCoords =
+    Number.isFinite(listing.address.lat) && Number.isFinite(listing.address.lng);
 
   return (
-    <div>
-      <div className='grid grid-cols-4 grid-rows-2 gap-2 rounded-xl overflow-hidden h-64 sm:h-96'>
-        <div className='relative col-span-4 row-span-2 sm:col-span-2'>
-          <Image
-            src={heroSrc}
-            alt={listing.title}
-            fill
-            sizes='(max-width: 640px) 100vw, 50vw'
-            className='object-cover'
-            priority
-          />
-        </div>
-
-        {thumbnails.map((picture, index) => (
-          <div
-            key={picture.original}
-            className='relative hidden sm:block'
-          >
-            <Image
-              src={picture.thumbnail}
-              alt={listing.title}
-              fill
-              sizes='25vw'
-              className='object-cover'
-            />
-            {index === thumbnails.length - 1 && remainingCount > 0 && (
-              <div className='absolute inset-0 bg-black/50 flex items-center justify-center text-white font-semibold'>
-                +{remainingCount} fotos
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
+    <div className='pb-24 lg:pb-0'>
       <div className='mt-6 grid lg:grid-cols-3 gap-8'>
         <div className='lg:col-span-2'>
-          <h1 className='text-2xl font-bold'>{listing.title}</h1>
-
-          <div className='flex items-center gap-1 text-default-500 mt-1'>
-            <IconMapPin size={16} />
-            <span>{listing.address.full}</span>
-          </div>
-
-          {ratingAvg !== null && listing.reviews.total > 0 && (
-            <Chip
-              size='sm'
-              className='mt-2 bg-default-100'
-              startContent={
-                <IconStarFilled
-                  size={12}
-                  className='text-warning'
+          <div className='grid grid-cols-3 gap-2 sm:grid-cols-3 sm:gap-4'>
+            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
+              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
+                <IconUsers
+                  size={20}
+                  className='text-primary sm:hidden'
                 />
-              }
-            >
-              {ratingAvg.toFixed(1)} ({listing.reviews.total} reseñas)
-            </Chip>
-          )}
-
-          <div className='flex flex-wrap gap-x-6 gap-y-2 mt-4 text-sm text-default-600 border-y border-default-200 py-4'>
-            <span className='flex items-center gap-1'>
-              <IconUsers size={16} />
-              {listing.accommodates} huéspedes
-            </span>
-            <span className='flex items-center gap-1'>
-              <IconBed size={16} />
-              {listing.bedrooms} habitaciones · {listing.beds} camas
-            </span>
-            <span className='flex items-center gap-1'>
-              <IconBath size={16} />
-              {listing.bathrooms} baños
-            </span>
+                <IconUsers
+                  size={32}
+                  className='hidden text-primary sm:block'
+                />
+              </span>
+              <p className='text-lg font-bold text-foreground sm:text-2xl'>
+                {listing.accommodates}
+              </p>
+              <p className='text-[11px] text-default-500 sm:text-sm'>
+                huéspedes
+              </p>
+            </div>
+            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
+              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
+                <IconBed
+                  size={20}
+                  className='text-primary sm:hidden'
+                />
+                <IconBed
+                  size={32}
+                  className='hidden text-primary sm:block'
+                />
+              </span>
+              <p className='text-lg font-bold text-foreground sm:text-2xl'>
+                {listing.bedrooms}
+              </p>
+              <p className='text-[11px] text-default-500 sm:text-sm'>
+                habitaciones · {listing.beds} camas
+              </p>
+            </div>
+            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
+              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
+                <IconBath
+                  size={20}
+                  className='text-primary sm:hidden'
+                />
+                <IconBath
+                  size={32}
+                  className='hidden text-primary sm:block'
+                />
+              </span>
+              <p className='text-lg font-bold text-foreground sm:text-2xl'>
+                {listing.bathrooms}
+              </p>
+              <p className='text-[11px] text-default-500 sm:text-sm'>baños</p>
+            </div>
           </div>
 
           {sleepingRooms.length > 0 && (
-            <section className='mt-6'>
-              <h2 className='text-lg font-semibold mb-2'>Distribución de camas</h2>
+            <section className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'>
+              <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
+                <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                  <IconBed size={18} />
+                </span>
+                Distribución de camas
+              </h2>
               <ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-default-600'>
                 {sleepingRooms.map((room) => (
                   <li
                     key={room.roomNumber}
-                    className='flex items-start gap-2 border border-default-200 rounded-lg p-3'
+                    className='flex items-start gap-2 rounded-lg bg-content2 p-3'
                   >
                     <IconBed
                       size={16}
                       className='mt-0.5 shrink-0 text-default-400'
                     />
                     <div>
-                      <p className='font-medium text-default-700'>{ROOM_NAME_LABELS[room.name] ?? room.name}</p>
+                      <p className='font-medium text-default-700'>
+                        {ROOM_NAME_LABELS[room.name] ?? room.name}
+                      </p>
                       <p>{describeBeds(room.beds)}</p>
                     </div>
                   </li>
@@ -161,32 +198,63 @@ const PropertyDetail = ({
             </section>
           )}
 
-          {DESCRIPTION_SECTIONS.map(({ key, title }) => {
-            const content = listing.publicDescription?.[key];
+          <div
+            id='property-description'
+            className='scroll-mt-20'
+          >
+            {DESCRIPTION_SECTIONS.map(({ key, title, icon: SectionIcon }) => {
+              const content = listing.publicDescription?.[key];
 
-            if (!content) {
-              return null;
-            }
+              if (!content) {
+                return null;
+              }
 
-            return (
-              <section
-                key={key}
-                className='mt-6'
-              >
-                <h2 className='text-lg font-semibold mb-2'>{title}</h2>
-                <p className='text-default-600 whitespace-pre-line'>{content}</p>
-              </section>
-            );
-          })}
+              return (
+                <section
+                  key={key}
+                  className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
+                >
+                  <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
+                    <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                      <SectionIcon size={18} />
+                    </span>
+                    {title}
+                  </h2>
+                  <p className='text-default-600 whitespace-pre-line'>
+                    {content}
+                  </p>
+                </section>
+              );
+            })}
+          </div>
 
-          {listing.amenities.length > 0 && (
-            <section className='mt-6'>
-              <h2 className='text-lg font-semibold mb-2'>Comodidades</h2>
+          {/* Galeria */}
+          <div
+            id='property-gallery'
+            className='scroll-mt-20 rounded-xl overflow-hidden'
+          >
+            <GridGallery
+              images={galleryImages}
+              quantityImageRow={3}
+            />
+          </div>
+
+          {hasAmenities && (
+            <section
+              id='property-amenities'
+              className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
+            >
+              <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
+                <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                  <IconSparkles size={18} />
+                </span>
+                Comodidades
+              </h2>
               <ul className='grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-default-600'>
                 {listing.amenities.map((amenity) => (
                   <li
                     key={amenity}
-                    className='flex items-center gap-2'
+                    className='flex items-center gap-2 rounded-lg bg-content2 px-3 py-2'
                   >
                     <IconCheck
                       size={14}
@@ -198,9 +266,36 @@ const PropertyDetail = ({
               </ul>
             </section>
           )}
+
+          {hasCoords && (
+            <PropertyLocationMap
+              lat={listing.address.lat}
+              lng={listing.address.lng}
+              address={listing.address.full}
+            />
+          )}
+
+          {listing.publicDescription?.notes && (
+            <section className='mt-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-5 text-foreground'>
+              <span className='flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary'>
+                <IconNotes size={18} />
+              </span>
+              <div>
+                <h2 className='mb-1 text-lg font-semibold'>
+                  Notas importantes
+                </h2>
+                <p className='whitespace-pre-line text-default-700'>
+                  {listing.publicDescription.notes}
+                </p>
+              </div>
+            </section>
+          )}
         </div>
 
-        <aside>
+        <aside
+          id='booking-widget'
+          className='scroll-mt-22'
+        >
           <BookingWidget
             listing={listing}
             initialCheckIn={initialCheckIn}
@@ -210,6 +305,13 @@ const PropertyDetail = ({
           />
         </aside>
       </div>
+
+      <MobileBookingNav
+        title={listing.title}
+        hasDescription={hasDescription}
+        hasAmenities={hasAmenities}
+        hasLocation={hasCoords}
+      />
     </div>
   );
 };

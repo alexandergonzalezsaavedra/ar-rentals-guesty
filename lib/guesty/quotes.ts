@@ -11,6 +11,7 @@ export interface ReservationQuoteParams {
 export interface ReservationQuoteMoney {
   currency: string;
   fareAccommodation: number;
+  fareAccommodationAdjusted?: number;
   fareCleaning?: number;
   totalFees: number;
   subTotalPrice: number;

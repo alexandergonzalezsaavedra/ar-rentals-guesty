@@ -3,10 +3,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Button, Card, CardBody, Chip } from '@heroui/react';
-import { IconBath, IconBed, IconBookmark, IconCalendar, IconMapPin, IconStarFilled, IconUsers } from '@tabler/icons-react';
+import { Button, Card, CardBody, Chip, Tooltip } from '@heroui/react';
+import {
+  IconBath,
+  IconBed,
+  IconBookmark,
+  IconCalendar,
+  IconHeart,
+  IconMapPin,
+  IconStarFilled,
+  IconUsers,
+} from '@tabler/icons-react';
 import type { GuestyListing } from '@/lib/guesty/listings';
 import { buildCitySlug, buildTitleSlug } from '@/lib/guesty/slug';
+import { ConciergeBell } from 'lucide-react';
 
 interface PropertyCardProps {
   listing: GuestyListing;
@@ -39,22 +49,34 @@ function formatPrice(amount: number, currency: string): string {
 }
 
 function scrollToFilters() {
-  document.getElementById('booking-filters')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document
+    .getElementById('booking-filters')
+    ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index = 0 }: PropertyCardProps) => {
+const PropertyCard = ({
+  listing,
+  checkIn,
+  checkOut,
+  adults,
+  childrenCount,
+  index = 0,
+}: PropertyCardProps) => {
   const detailParams = new URLSearchParams();
   if (checkIn) detailParams.set('checkIn', checkIn);
   if (checkOut) detailParams.set('checkOut', checkOut);
   if (adults) detailParams.set('adults', adults);
   if (childrenCount) detailParams.set('children', childrenCount);
   const detailQuery = detailParams.toString();
-  const detailHref = `/propiedades/${buildCitySlug(listing)}/${buildTitleSlug(listing)}${detailQuery ? `?${detailQuery}` : ''}`;
+  const detailHref = `/alojamiento/${buildCitySlug(listing)}/${buildTitleSlug(listing)}${detailQuery ? `?${detailQuery}` : ''}`;
 
-  const nightlyValues = listing.nightlyRates ? Object.values(listing.nightlyRates) : [];
+  const nightlyValues = listing.nightlyRates
+    ? Object.values(listing.nightlyRates)
+    : [];
   const hasDates = nightlyValues.length > 0;
   const avgNightly = hasDates
-    ? nightlyValues.reduce((sum, value) => sum + value, 0) / nightlyValues.length
+    ? nightlyValues.reduce((sum, value) => sum + value, 0) /
+      nightlyValues.length
     : listing.prices.basePrice;
   const isDeal = hasDates && avgNightly < listing.prices.basePrice;
 
@@ -62,8 +84,11 @@ const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index
   const extraGuests = Math.max(0, totalGuests - BASE_OCCUPANCY);
   const nightlyPrice = avgNightly + extraGuests * EXTRA_GUEST_SURCHARGE;
 
-  const allotmentValues = listing.allotment ? Object.values(listing.allotment) : [];
-  const isLastUnit = allotmentValues.length > 0 && Math.min(...allotmentValues) <= 1;
+  const allotmentValues = listing.allotment
+    ? Object.values(listing.allotment)
+    : [];
+  const isLastUnit =
+    allotmentValues.length > 0 && Math.min(...allotmentValues) <= 1;
 
   const ratingAvg = listing.reviews.avg;
 
@@ -72,22 +97,26 @@ const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index
       initial={{ opacity: 0, filter: 'blur(12px)', y: 24 }}
       whileInView={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, delay: Math.min(index * 0.08, 0.4), ease: 'easeOut' }}
+      transition={{
+        duration: 0.6,
+        delay: Math.min(index * 0.08, 0.4),
+        ease: 'easeOut',
+      }}
     >
       <Card
         shadow='sm'
-        className='overflow-visible'
+        className='group overflow-visible p-3'
       >
-        <div className='relative aspect-4/3 w-full'>
+        <div className='relative aspect-4/3 w-full overflow-hidden rounded-[14px]'>
           <Image
             src={listing.picture.regular}
             alt={listing.title}
             fill
             sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
-            className='object-cover rounded-t-lg'
+            className='object-cover rounded-[14px] transition-transform duration-300 ease-out group-hover:scale-110'
           />
 
-          {isDeal && (
+          {/* {isDeal && (
             <Chip
               color='primary'
               size='sm'
@@ -95,38 +124,30 @@ const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index
             >
               Oferta limitada
             </Chip>
-          )}
+          )} */}
 
           <Button
             isIconOnly
-            size='sm'
+            size='md'
             radius='full'
             aria-label='Guardar propiedad'
             className='absolute top-2 right-2 bg-white/90 text-default-700'
           >
-            <IconBookmark size={16} />
+            <IconHeart
+              className='text-slate-600'
+              size={16}
+            />
           </Button>
-
-          {ratingAvg !== null && listing.reviews.total > 0 && (
-            <Chip
-              size='sm'
-              className='absolute bottom-2 left-2 bg-white/95 text-default-900 font-semibold'
-              startContent={
-                <IconStarFilled
-                  size={12}
-                  className='text-warning'
-                />
-              }
-            >
-              {ratingAvg.toFixed(1)} ({listing.reviews.total})
-            </Chip>
-          )}
         </div>
 
         <CardBody className='gap-1 p-3'>
-          <h3 className='font-semibold text-sm line-clamp-1'>{listing.title}</h3>
+          <Tooltip content={listing.title}>
+            <h3 className='font-semibold text-sm line-clamp-1 text-center'>
+              {listing.title}
+            </h3>
+          </Tooltip>
 
-          <div className='flex items-center gap-1 text-xs text-default-500'>
+          <div className='flex items-center gap-1 text-xs text-default-500 justify-center mb-2'>
             <IconMapPin size={14} />
             <span className='line-clamp-1'>
               {listing.address.city}
@@ -134,43 +155,68 @@ const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index
             </span>
           </div>
 
-          <div className='flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-default-500'>
+          <div className='flex flex-wrap items-center gap-x-4 gap-y-1 py-2 text-xs text-default-500'>
             <span
-              className='flex items-center gap-1'
+              className='flex items-center gap-1.5'
               title='Huéspedes'
             >
-              <IconUsers size={14} />
+              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
+                <IconUsers
+                  size={16}
+                  strokeWidth={1.5}
+                  className='text-default-500'
+                />
+              </span>
               {listing.accommodates} huéspedes
             </span>
             <span
-              className='flex items-center gap-1'
+              className='flex items-center gap-1.5'
               title='Habitaciones'
             >
-              <IconBed size={14} />
+              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
+                <IconBed
+                  size={16}
+                  strokeWidth={1.5}
+                  className='text-default-500'
+                />
+              </span>
               {listing.bedrooms} hab.
             </span>
             <span
-              className='flex items-center gap-1'
+              className='flex items-center gap-1.5'
               title='Baños'
             >
-              <IconBath size={14} />
+              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
+                <IconBath
+                  size={16}
+                  strokeWidth={1.5}
+                  className='text-default-500'
+                />
+              </span>
               {listing.bathrooms} baños
             </span>
           </div>
 
-          <div className='flex items-baseline gap-2 mt-1'>
-            {isDeal && (
+          <div className='flex items-baseline gap-2'>
+            {/* {isDeal && (
               <span className='text-xs text-default-400 line-through'>
                 {formatPrice(listing.prices.basePrice, listing.prices.currency)}
               </span>
-            )}
-            <span className='text-base font-bold text-danger'>
-              {formatPrice(Math.round(nightlyPrice), listing.prices.currency)}
-            </span>
-            <span className='text-xs text-default-500'>precio por noche</span>
+            )} */}
+            <div className='w-full text-center'>
+              <span className='font-bold text-primary text-3xl'>
+                {formatPrice(Math.round(nightlyPrice), listing.prices.currency)}{' '}
+                <small className='text-default-400'>COP</small>
+              </span>
+              <div className='text-xs text-default-500 font-bold'>
+                precio por noche
+              </div>
+            </div>
           </div>
           {extraGuests > 0 && (
-            <p className='text-xs text-default-400'>Incluye suplemento por {extraGuests} huésped(es) adicional(es)</p>
+            <p className='text-xs text-default-400'>
+              Incluye suplemento por {extraGuests} huésped(es) adicional(es)
+            </p>
           )}
 
           {!hasDates && (
@@ -178,25 +224,31 @@ const PropertyCard = ({ listing, checkIn, checkOut, adults, childrenCount, index
               type='button'
               variant='light'
               color='primary'
-              size='sm'
-              className='justify-start px-0 h-auto min-h-0 mt-0.5'
+              size='md'
+              className='justify-center p-2 h-auto min-h-0 mt-0.5'
               startContent={<IconCalendar size={14} />}
+              radius='full'
               onPress={scrollToFilters}
             >
               Elegir fecha para ver disponibilidad
             </Button>
           )}
 
-          {isLastUnit && <p className='text-xs text-danger'>Última unidad disponible a este precio</p>}
+          {/* {isLastUnit && (
+            <p className='text-xs text-danger'>
+              Última unidad disponible a este precio
+            </p>
+          )} */}
 
           <Button
             as={Link}
             href={detailHref}
             color='primary'
-            size='sm'
-            className='w-full mt-2'
+            size='md'
+            className='w-full mt-2 text-white font-bold'
+            radius='full'
           >
-            Reservar
+            Reservar <ConciergeBell size={18} />
           </Button>
         </CardBody>
       </Card>

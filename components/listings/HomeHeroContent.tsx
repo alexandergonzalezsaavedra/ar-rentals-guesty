@@ -20,12 +20,12 @@ const HomeHeroContent = ({ cities }: HomeHeroContentProps) => {
         animate={
           show
             ? { opacity: 1, y: 0, filter: 'blur(0px)' }
-            : { opacity: 0, y: -28, filter: 'blur(14px)' }
+            : { opacity: 0, y: -40, filter: 'blur(14px)' }
         }
-        transition={{ duration: 0.8, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 2, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h2 className='text-6xl font-semibold text-white drop-shadow-lg'>
-          Encuentra tu próximo alojamiento
+        <h2 className='text-3xl sm:text-6xl font-semibold text-white drop-shadow-lg'>
+          Encuentre su próximo alojamiento
         </h2>
         <p className='max-w-xl text-2xl text-white/90 drop-shadow-lg'>
           Arriendos cortos en los mejores destinos de Colombia, listos para
@@ -35,13 +35,13 @@ const HomeHeroContent = ({ cities }: HomeHeroContentProps) => {
 
       <motion.div
         className='w-full max-w-3xl'
-        initial={{ opacity: 0, y: 28, filter: 'blur(14px)' }}
+        initial={{ opacity: 0, y: 28, filter: 'blur(12px)' }}
         animate={
           show
             ? { opacity: 1, y: 0, filter: 'blur(0px)' }
-            : { opacity: 0, y: 28, filter: 'blur(14px)' }
+            : { opacity: 0, y: 40, filter: 'blur(12px)' }
         }
-        transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
       >
         <HomeSearchForm cities={cities} />
       </motion.div>

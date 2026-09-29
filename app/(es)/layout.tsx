@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 const SITE_URL = 'https://arrentals.com.co';
 const DEFAULT_TITLE = 'AR Rentals – Rentas cortas en Colombia';
 const DEFAULT_DESCRIPTION =
-  'Te invitamos a explorar las propiedades más fascinantes. Hacemos de tu estancia una experiencia única que te ofrecerá recuerdos inolvidables';
+  'Le invitamos a explorar las propiedades más fascinantes. Hacemos de su estancia una experiencia única que le ofrecerá recuerdos inolvidables';
 const DEFAULT_KEYWORDS = 'Rentas cortas';
 const OG_IMAGE_URL = `${SITE_URL}/Imagen-web-AR.jpg`;
 

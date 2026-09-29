@@ -1,5 +1,9 @@
 import { GuestyApiError } from '@/lib/guesty/client';
-import { listAllListings, type GuestyListing, type ListListingsParams } from '@/lib/guesty/listings';
+import {
+  listAllListings,
+  type GuestyListing,
+  type ListListingsParams,
+} from '@/lib/guesty/listings';
 import PropertyListingsGrid from './PropertyListingsGrid';
 import type { PropertyFiltersValues } from './PropertyFilters';
 
@@ -12,7 +16,7 @@ function firstValue(value: string | string[] | undefined): string | undefined {
 }
 
 async function fetchListings(
-  params: Omit<ListListingsParams, 'limit' | 'cursor'>
+  params: Omit<ListListingsParams, 'limit' | 'cursor'>,
 ): Promise<{ listings: GuestyListing[] } | { error: string }> {
   try {
     const { results } = await listAllListings(params);
@@ -29,7 +33,9 @@ async function fetchListings(
   }
 }
 
-export default async function PropertyListings({ searchParams }: PropertyListingsProps) {
+export default async function PropertyListings({
+  searchParams,
+}: PropertyListingsProps) {
   const initialFilters: PropertyFiltersValues = {
     city: firstValue(searchParams?.city),
     checkIn: firstValue(searchParams?.checkIn),
@@ -47,14 +53,24 @@ export default async function PropertyListings({ searchParams }: PropertyListing
   const catalogOutcome = await fetchListings({});
 
   if ('error' in catalogOutcome) {
-    return <p className='text-default-500 py-12 text-center'>{catalogOutcome.error}</p>;
+    return (
+      <p className='text-default-500 py-12 text-center'>
+        {catalogOutcome.error}
+      </p>
+    );
   }
 
   if (catalogOutcome.listings.length === 0) {
-    return <p className='text-default-500 py-12 text-center'>No hay inmuebles disponibles.</p>;
+    return (
+      <p className='text-default-500 py-12 text-center'>
+        No hay inmuebles disponibles.
+      </p>
+    );
   }
 
-  const cities = Array.from(new Set(catalogOutcome.listings.map((listing) => listing.address.city))).sort();
+  const cities = Array.from(
+    new Set(catalogOutcome.listings.map((listing) => listing.address.city)),
+  ).sort();
 
   let initialListings = catalogOutcome.listings;
 
@@ -70,7 +86,11 @@ export default async function PropertyListings({ searchParams }: PropertyListing
     });
 
     if ('error' in filteredOutcome) {
-      return <p className='text-default-500 py-12 text-center'>{filteredOutcome.error}</p>;
+      return (
+        <p className='text-default-500 py-12 text-center'>
+          {filteredOutcome.error}
+        </p>
+      );
     }
 
     initialListings = filteredOutcome.listings;
