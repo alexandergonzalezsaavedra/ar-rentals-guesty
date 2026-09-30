@@ -1,6 +1,7 @@
 import { configureStore, type Middleware } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 
+import favoritesReducer from './projects/favoritos';
 import themeReducer from './slices/theme/themeSlice';
 
 const persistanceLocalStorageMiddleware: Middleware = (store) => (next) => (action) => {
@@ -17,6 +18,7 @@ const persistanceLocalStorageMiddleware: Middleware = (store) => (next) => (acti
 export const store = configureStore({
   reducer: {
     theme: themeReducer,
+    favorites: favoritesReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(persistanceLocalStorageMiddleware),

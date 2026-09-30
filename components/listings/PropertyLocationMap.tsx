@@ -3,7 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Button } from '@heroui/react';
-import { IconBrandWaze, IconMapPin } from '@tabler/icons-react';
+import { IconBrandGoogleMaps, IconBrandWaze, IconMapPin } from '@tabler/icons-react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 
 interface PropertyLocationMapProps {
@@ -31,6 +31,7 @@ const markerIcon = L.divIcon({
 
 const PropertyLocationMap = ({ lat, lng, address }: PropertyLocationMapProps) => {
   const wazeUrl = `https://waze.com/ul?ll=${lat}%2C${lng}&navigate=yes`;
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat}%2C${lng}`;
 
   return (
     <section
@@ -62,18 +63,34 @@ const PropertyLocationMap = ({ lat, lng, address }: PropertyLocationMapProps) =>
         />
       </MapContainer>
 
-      <Button
-        as='a'
-        href={wazeUrl}
-        target='_blank'
-        rel='noopener noreferrer'
-        color='primary'
-        radius='full'
-        className='mt-4 w-full font-bold text-white sm:w-auto'
-        startContent={<IconBrandWaze size={20} />}
-      >
-        Cómo llegar con Waze
-      </Button>
+      <div className='mt-4 flex flex-col gap-2 sm:flex-row'>
+        <Button
+          as='a'
+          href={wazeUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          color='primary'
+          radius='full'
+          className='w-full font-bold text-white sm:w-auto'
+          startContent={<IconBrandWaze size={20} />}
+        >
+          Cómo llegar con Waze
+        </Button>
+
+        <Button
+          as='a'
+          href={googleMapsUrl}
+          target='_blank'
+          rel='noopener noreferrer'
+          variant='bordered'
+          color='primary'
+          radius='full'
+          className='w-full font-bold sm:w-auto'
+          startContent={<IconBrandGoogleMaps size={20} />}
+        >
+          Cómo llegar con Google Maps
+        </Button>
+      </div>
     </section>
   );
 };

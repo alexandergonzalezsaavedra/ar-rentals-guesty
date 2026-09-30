@@ -1,11 +1,14 @@
 'use client';
 
+import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Spinner } from '@heroui/react';
 import {
   IconBath,
   IconBed,
   IconCheck,
+  IconHeart,
+  IconHeartFilled,
   IconHome2,
   IconInfoCircle,
   IconKey,
@@ -15,6 +18,8 @@ import {
   IconUsers,
   type Icon,
 } from '@tabler/icons-react';
+import { useFavorites } from '@/hooks/favorites/useFavorites';
+import { useCustomToast } from '@/hooks/toast/useCustomToast';
 import type {
   GuestyBedArrangementRoom,
   GuestyListingDetail,
@@ -22,6 +27,8 @@ import type {
 import BookingWidget from './BookingWidget';
 import GridGallery from './GridGallery';
 import MobileBookingNav from './MobileBookingNav';
+import PropertyDetailSidebar from './PropertyDetailSidebar';
+import ShareButton from './ShareButton';
 
 const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
   ssr: false,
@@ -109,10 +116,71 @@ const PropertyDetail = ({
   const hasCoords =
     Number.isFinite(listing.address.lat) && Number.isFinite(listing.address.lng);
 
+  const { isFavorite, toggle } = useFavorites();
+  const { favoriteProperty } = useCustomToast();
+  const favoriteButtonRef = useRef<HTMLButtonElement>(null);
+  const isFav = isFavorite(listing._id);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+  const handleToggleFavorite = () => {
+    favoriteProperty(isFav, listing.title, favoriteButtonRef);
+    toggle(listing);
+  };
+
   return (
     <div className='pb-24 lg:pb-0'>
-      <div className='mt-6 grid lg:grid-cols-3 gap-8'>
-        <div className='lg:col-span-2'>
+      <div className='fixed top-1/2 right-3 z-40 flex -translate-y-1/2 flex-col items-center gap-3 sm:right-6'>
+        <ShareButton
+          title={listing.title}
+          className='size-11 sm:size-12 [&_svg]:size-5'
+        />
+
+        <button
+          ref={favoriteButtonRef}
+          type='button'
+          onClick={handleToggleFavorite}
+          aria-label={isFav ? 'Quitar de favoritos' : 'Guardar en favoritos'}
+          className={`flex size-11 items-center justify-center rounded-full bg-content1 shadow-lg ring-1 ring-default-200 transition-[opacity,transform] active:scale-90 sm:size-12 dark:ring-default-100/20 ${
+            isFav ? 'opacity-60 hover:opacity-100' : 'animate-heartbeat'
+          }`}
+        >
+          {isFav ? (
+            <>
+              <IconHeartFilled
+                className='text-default-400 sm:hidden'
+                size={20}
+              />
+              <IconHeartFilled
+                className='hidden text-default-400 sm:block'
+                size={22}
+              />
+            </>
+          ) : (
+            <>
+              <IconHeart
+                className='text-danger sm:hidden'
+                size={20}
+              />
+              <IconHeart
+                className='hidden text-danger sm:block'
+                size={22}
+              />
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className='mt-6 lg:flex lg:items-start lg:gap-6'>
+        <PropertyDetailSidebar
+          hasDescription={hasDescription}
+          hasAmenities={hasAmenities}
+          hasLocation={hasCoords}
+          expanded={isSidebarExpanded}
+          onToggle={() => setIsSidebarExpanded((value) => !value)}
+        />
+
+        <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3'>
+          <div className='lg:col-span-2'>
           <div className='grid grid-cols-3 gap-2 sm:grid-cols-3 sm:gap-4'>
             <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
               <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
@@ -304,6 +372,7 @@ const PropertyDetail = ({
             initialChildren={initialChildren}
           />
         </aside>
+        </div>
       </div>
 
       <MobileBookingNav

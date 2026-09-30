@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -10,10 +11,13 @@ import {
   IconBookmark,
   IconCalendar,
   IconHeart,
+  IconHeartFilled,
   IconMapPin,
   IconStarFilled,
   IconUsers,
 } from '@tabler/icons-react';
+import { useFavorites } from '@/hooks/favorites/useFavorites';
+import { useCustomToast } from '@/hooks/toast/useCustomToast';
 import type { GuestyListing } from '@/lib/guesty/listings';
 import { buildCitySlug, buildTitleSlug } from '@/lib/guesty/slug';
 import { ConciergeBell } from 'lucide-react';
@@ -92,6 +96,16 @@ const PropertyCard = ({
 
   const ratingAvg = listing.reviews.avg;
 
+  const { isFavorite, toggle } = useFavorites();
+  const { favoriteProperty } = useCustomToast();
+  const favoriteButtonRef = useRef<HTMLButtonElement>(null);
+  const isFav = isFavorite(listing._id);
+
+  const handleToggleFavorite = () => {
+    favoriteProperty(isFav, listing.title, favoriteButtonRef);
+    toggle(listing);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, filter: 'blur(12px)', y: 24 }}
@@ -127,16 +141,25 @@ const PropertyCard = ({
           )} */}
 
           <Button
+            ref={favoriteButtonRef}
             isIconOnly
             size='md'
             radius='full'
-            aria-label='Guardar propiedad'
+            aria-label={isFav ? 'Quitar de favoritos' : 'Guardar propiedad'}
             className='absolute top-2 right-2 bg-white/90 text-default-700'
+            onPress={handleToggleFavorite}
           >
-            <IconHeart
-              className='text-slate-600'
-              size={16}
-            />
+            {isFav ? (
+              <IconHeartFilled
+                className='text-danger'
+                size={16}
+              />
+            ) : (
+              <IconHeart
+                className='text-slate-600'
+                size={16}
+              />
+            )}
           </Button>
         </div>
 

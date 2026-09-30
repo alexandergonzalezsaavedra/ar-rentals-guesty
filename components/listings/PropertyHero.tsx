@@ -11,7 +11,6 @@ import {
   IconUsers,
 } from '@tabler/icons-react';
 import type { GuestyListingDetail } from '@/lib/guesty/listings';
-import ShareButton from './ShareButton';
 
 interface PropertyHeroProps {
   listing: GuestyListingDetail;
@@ -25,7 +24,10 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
   const ratingAvg = listing.reviews.avg;
 
   return (
-    <section className='relative flex min-h-[70vh] w-full items-center justify-center overflow-hidden sm:min-h-[85vh] rounded-xl'>
+    <section
+      id='property-hero'
+      className='relative flex min-h-[70vh] w-full scroll-mt-20 items-center justify-center overflow-hidden rounded-xl sm:min-h-[85vh]'
+    >
       <div className='absolute inset-0'>
         <Image
           src={listing.picture.large}
@@ -37,10 +39,6 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
         />
       </div>
       <div className='absolute inset-0 bg-linear-to-b from-black/70 via-black/40 to-black/65' />
-
-      <div className='absolute top-4 right-4 z-10 hidden lg:block'>
-        <ShareButton title={listing.title} />
-      </div>
 
       <div className='relative z-10 flex flex-col items-center gap-4 px-6 text-center'>
         {/* {ratingAvg !== null && listing.reviews.total > 0 && (

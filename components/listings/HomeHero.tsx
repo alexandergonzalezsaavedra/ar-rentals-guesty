@@ -18,16 +18,18 @@ export default async function HomeHero() {
 
   return (
     <section className='relative p-4'>
-      <div className='relative min-h-[85dvh] w-full overflow-hidden rounded-xl bg-default-200'>
-        <video
-          src='/hero-banner-ar-rentals.mp4'
-          autoPlay
-          loop
-          muted
-          playsInline
-          className='absolute inset-0 h-full w-full object-cover'
-        />
-        <div className='absolute inset-0 bg-linear-to-b from-black/60 via-black/25 to-black/70 rounded-xl' />
+      <div className='relative min-h-[85dvh] w-full overflow-hidden rounded-xl bg-background'>
+        <div className='animate-curtain-reveal absolute inset-0'>
+          <video
+            src='/hero-banner-ar-rentals.mp4'
+            autoPlay
+            loop
+            muted
+            playsInline
+            className='absolute inset-0 h-full w-full object-cover'
+          />
+          <div className='absolute inset-0 bg-linear-to-b from-black/60 via-black/25 to-black/70' />
+        </div>
 
         <HomeHeroContent cities={cities} />
       </div>

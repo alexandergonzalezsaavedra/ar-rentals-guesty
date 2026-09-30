@@ -19,10 +19,12 @@ import ButtonChangeTheme from '../theme/ButtonChangeTheme';
 import {
   IconBrandFacebook,
   IconBrandInstagram,
+  IconHeart,
   IconMap2,
 } from '@tabler/icons-react';
 import { ConciergeBell } from 'lucide-react';
 import { useReveal } from '@/components/home/RevealContext';
+import { useFavorites } from '@/hooks/favorites/useFavorites';
 
 function isActivePath(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -36,6 +38,9 @@ const Menu = () => {
 
   const isAlojamientoActive = isActivePath(pathname, '/alojamiento');
   const isDestinosActive = isActivePath(pathname, '/destinos');
+
+  const { favorites } = useFavorites();
+  const favoritesCount = Object.keys(favorites).length;
 
   const mobileMenuItems = [
     {
@@ -56,6 +61,7 @@ const Menu = () => {
     <Navbar
       maxWidth='2xl'
       position='sticky'
+      isBlurred={false}
       classNames={{ base: 'z-50', menu: 'z-50 bg-background' }}
       onMenuOpenChange={setIsMenuOpen}
     >
@@ -72,7 +78,7 @@ const Menu = () => {
               width={100}
               height={48}
               loading='eager'
-              className='w-25 h-12'
+              className='h-12 w-[100px]'
             />
           </Link>
         </NavbarBrand>
@@ -131,6 +137,27 @@ const Menu = () => {
         justify='end'
         className='gap-1'
       >
+        {favoritesCount > 0 && (
+          <NavbarItem>
+            <Button
+              as={Link}
+              href='/favoritos'
+              aria-label='Ver favoritos'
+              color='default'
+              variant='light'
+              radius='full'
+              className='min-w-0 gap-0 px-2'
+            >
+              <IconHeart
+                className='animate-pulse'
+                size={20}
+              />
+              <span className='flex size-4 items-center justify-center rounded-full bg-danger text-[8px] text-white'>
+                {favoritesCount}
+              </span>
+            </Button>
+          </NavbarItem>
+        )}
         <div className='flex items-center gap-1 rounded-full border border-default-200/60 bg-content2/60 px-1.5 py-1 backdrop-blur-md'>
           <ButtonChangeTheme />
           <Button

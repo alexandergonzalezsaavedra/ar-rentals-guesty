@@ -81,7 +81,7 @@ const ShareButton = ({
           <Button
             isIconOnly
             radius='full'
-            className={`bg-white/90 text-default-900 shadow ${className}`}
+            className={`bg-white/90 text-slate-900 shadow ${className}`}
             aria-label='Compartir'
           >
             <IconShare3 size={18} />

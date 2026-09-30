@@ -35,8 +35,8 @@ const Footer = () => {
             src='/ar-rentals-logo.png'
             alt='AR Rentals - Rentas cortas'
             width={160}
-            height={70}
-            className='h-auto w-40 brightness-0 invert'
+            height={71}
+            className='w-40 brightness-0 invert'
           />
         </div>
 

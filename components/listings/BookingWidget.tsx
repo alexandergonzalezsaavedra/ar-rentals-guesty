@@ -16,6 +16,9 @@ import {
   IconClock,
   IconDiscount,
   IconHome2,
+  IconMoonStars,
+  IconPlaneArrival,
+  IconPlaneDeparture,
   IconReceipt2,
   IconSparkles,
   IconWallet,
@@ -252,9 +255,13 @@ const BookingWidget = ({
 
             <div className='flex items-stretch overflow-hidden rounded-xl border border-default-200 bg-content1'>
               <div className='flex-1 px-3 py-2.5'>
-                <p className='text-[11px] font-medium text-default-400'>
+                <span className='flex items-center gap-1 text-[11px] font-medium text-default-400'>
+                  <IconPlaneArrival
+                    size={13}
+                    className='animate-icon-float shrink-0 text-primary'
+                  />
                   Llegada
-                </p>
+                </span>
                 <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
                   {checkInDate.day}
                   <span className='ml-1 text-sm font-medium text-default-500'>
@@ -266,7 +273,12 @@ const BookingWidget = ({
                 </p>
               </div>
 
-              <div className='flex w-16 shrink-0 flex-col items-center justify-center gap-0.5 border-x border-default-200 bg-primary/10 px-1 text-primary'>
+              <div className='flex w-16 shrink-0 flex-col items-center justify-center gap-1 border-x border-default-200 bg-primary/10 px-1 text-primary'>
+                <IconMoonStars
+                  size={16}
+                  className='animate-icon-float shrink-0'
+                  style={{ animationDelay: '0.4s' }}
+                />
                 <span className='text-lg leading-none font-bold'>
                   {selectedNights}
                 </span>
@@ -276,9 +288,14 @@ const BookingWidget = ({
               </div>
 
               <div className='flex-1 px-3 py-2.5 text-right'>
-                <p className='text-[11px] font-medium text-default-400'>
+                <span className='flex items-center justify-end gap-1 text-[11px] font-medium text-default-400'>
                   Salida
-                </p>
+                  <IconPlaneDeparture
+                    size={13}
+                    className='animate-icon-float shrink-0 text-primary'
+                    style={{ animationDelay: '0.8s' }}
+                  />
+                </span>
                 <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
                   {checkOutDate.day}
                   <span className='ml-1 text-sm font-medium text-default-500'>

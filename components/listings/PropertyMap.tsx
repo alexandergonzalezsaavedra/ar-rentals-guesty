@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'leaflet/dist/leaflet.css';
 import L, {
   type LatLngBounds,
@@ -14,10 +14,13 @@ import {
   IconBath,
   IconBed,
   IconHeart,
+  IconHeartFilled,
   IconMapPin,
   IconUsers,
 } from '@tabler/icons-react';
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { useFavorites } from '@/hooks/favorites/useFavorites';
+import { useCustomToast } from '@/hooks/toast/useCustomToast';
 import type { GuestyListing } from '@/lib/guesty/listings';
 import { buildCitySlug, buildTitleSlug } from '@/lib/guesty/slug';
 import { ConciergeBell } from 'lucide-react';
@@ -125,6 +128,16 @@ interface PropertyMapCardProps {
 }
 
 function PropertyMapCard({ listing }: PropertyMapCardProps) {
+  const { isFavorite, toggle } = useFavorites();
+  const { favoriteProperty } = useCustomToast();
+  const favoriteButtonRef = useRef<HTMLButtonElement>(null);
+  const isFav = isFavorite(listing._id);
+
+  const handleToggleFavorite = () => {
+    favoriteProperty(isFav, listing.title, favoriteButtonRef);
+    toggle(listing);
+  };
+
   return (
     <div className='w-56'>
       <div className='relative aspect-4/3 w-full overflow-hidden rounded-[14px]'>
@@ -137,16 +150,25 @@ function PropertyMapCard({ listing }: PropertyMapCardProps) {
         />
 
         <Button
+          ref={favoriteButtonRef}
           isIconOnly
           size='md'
           radius='full'
-          aria-label='Guardar propiedad'
+          aria-label={isFav ? 'Quitar de favoritos' : 'Guardar propiedad'}
           className='absolute top-2 right-2 bg-white/90 text-default-700'
+          onPress={handleToggleFavorite}
         >
-          <IconHeart
-            className='text-slate-600'
-            size={16}
-          />
+          {isFav ? (
+            <IconHeartFilled
+              className='text-danger'
+              size={16}
+            />
+          ) : (
+            <IconHeart
+              className='text-slate-600'
+              size={16}
+            />
+          )}
         </Button>
       </div>
 

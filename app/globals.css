@@ -24,3 +24,59 @@
 .animate-kenburns {
   animation: kenburns 16s ease-in-out infinite;
 }
+
+/* Draws attention to the floating favorite button while a property hasn't
+   been saved yet; mimics a double heartbeat instead of a flat opacity pulse. */
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  15% {
+    transform: scale(1.2);
+  }
+  30% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.15);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+.animate-heartbeat {
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+/* One-time curtain reveal for the hero video: starts fully masked down to a
+   sliver at the center, then the mask widens outward to both edges. */
+@keyframes curtain-reveal {
+  0% {
+    clip-path: inset(0 50% 0 50%);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.animate-curtain-reveal {
+  animation: curtain-reveal 1.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+/* Gentle up/down bob for small inline icons (stay date strip, etc.) —
+   subtle enough to sit next to text without distracting from it. */
+@keyframes icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2.5px);
+  }
+}
+
+.animate-icon-float {
+  animation: icon-float 2.4s ease-in-out infinite;
+}
