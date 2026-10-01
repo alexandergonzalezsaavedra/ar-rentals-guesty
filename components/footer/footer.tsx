@@ -19,7 +19,7 @@ const companyLinks = [
 ];
 
 const quickLinks = [
-  { label: 'Lugares Turísticos', href: '/destinos' },
+  { label: 'Lugares Turísticos', href: '/lugares-turisticos' },
   { label: 'Vincule su propiedad', href: '#' },
   { label: 'Reserva', href: '/alojamiento' },
 ];

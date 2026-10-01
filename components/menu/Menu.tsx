@@ -37,7 +37,7 @@ const Menu = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const isAlojamientoActive = isActivePath(pathname, '/alojamiento');
-  const isDestinosActive = isActivePath(pathname, '/destinos');
+  const isDestinosActive = isActivePath(pathname, '/lugares-turisticos');
 
   const { favorites } = useFavorites();
   const favoritesCount = Object.keys(favorites).length;
@@ -51,7 +51,7 @@ const Menu = () => {
     },
     {
       label: 'Destinos',
-      href: '/destinos',
+      href: '/lugares-turisticos',
       icon: IconMap2,
       isActive: isDestinosActive,
     },
@@ -112,7 +112,7 @@ const Menu = () => {
             </Button>
             <Button
               as='a'
-              href='/destinos'
+              href='/lugares-turisticos'
               radius='full'
               size='sm'
               variant={isDestinosActive ? 'solid' : 'light'}

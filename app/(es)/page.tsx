@@ -1,5 +1,6 @@
 import Menu from '@/components/menu/Menu';
 import HomeHero from '@/components/listings/HomeHero';
+import DiscoverPlaces from '@/components/listings/DiscoverPlaces';
 import { RevealProvider } from '@/components/home/RevealContext';
 
 export default function Home() {
@@ -10,6 +11,7 @@ export default function Home() {
       </header>
       <main>
         <HomeHero />
+        <DiscoverPlaces />
       </main>
     </RevealProvider>
   );

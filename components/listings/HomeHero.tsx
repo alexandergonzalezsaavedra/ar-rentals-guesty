@@ -17,7 +17,7 @@ export default async function HomeHero() {
   const cities = await fetchCities();
 
   return (
-    <section className='relative p-4'>
+    <section className='relative z-0 p-4 sm:sticky sm:top-0'>
       <div className='relative min-h-[85dvh] w-full overflow-hidden rounded-xl bg-background'>
         <div className='animate-curtain-reveal absolute inset-0'>
           <video
