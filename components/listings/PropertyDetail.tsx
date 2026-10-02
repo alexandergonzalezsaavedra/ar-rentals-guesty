@@ -181,58 +181,41 @@ const PropertyDetail = ({
 
         <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3'>
           <div className='lg:col-span-2'>
-          <div className='grid grid-cols-3 gap-2 sm:grid-cols-3 sm:gap-4'>
-            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
-              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
-                <IconUsers
-                  size={20}
-                  className='text-primary sm:hidden'
-                />
-                <IconUsers
-                  size={32}
-                  className='hidden text-primary sm:block'
-                />
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
+            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
+              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                <IconUsers size={24} />
               </span>
-              <p className='text-lg font-bold text-foreground sm:text-2xl'>
-                {listing.accommodates}
-              </p>
-              <p className='text-[11px] text-default-500 sm:text-sm'>
-                huéspedes
-              </p>
+              <div>
+                <p className='text-lg font-bold text-foreground'>
+                  {listing.accommodates}
+                </p>
+                <p className='text-sm text-default-500'>huéspedes</p>
+              </div>
             </div>
-            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
-              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
-                <IconBed
-                  size={20}
-                  className='text-primary sm:hidden'
-                />
-                <IconBed
-                  size={32}
-                  className='hidden text-primary sm:block'
-                />
+            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
+              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                <IconBed size={24} />
               </span>
-              <p className='text-lg font-bold text-foreground sm:text-2xl'>
-                {listing.bedrooms}
-              </p>
-              <p className='text-[11px] text-default-500 sm:text-sm'>
-                habitaciones · {listing.beds} camas
-              </p>
+              <div>
+                <p className='text-lg font-bold text-foreground'>
+                  {listing.bedrooms}
+                </p>
+                <p className='text-sm text-default-500'>
+                  habitaciones · {listing.beds} camas
+                </p>
+              </div>
             </div>
-            <div className='flex flex-col items-center gap-1 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-2 text-center shadow-sm sm:gap-2 sm:p-5'>
-              <span className='flex size-10 items-center justify-center rounded-full bg-content2 sm:size-16'>
-                <IconBath
-                  size={20}
-                  className='text-primary sm:hidden'
-                />
-                <IconBath
-                  size={32}
-                  className='hidden text-primary sm:block'
-                />
+            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
+              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                <IconBath size={24} />
               </span>
-              <p className='text-lg font-bold text-foreground sm:text-2xl'>
-                {listing.bathrooms}
-              </p>
-              <p className='text-[11px] text-default-500 sm:text-sm'>baños</p>
+              <div>
+                <p className='text-lg font-bold text-foreground'>
+                  {listing.bathrooms}
+                </p>
+                <p className='text-sm text-default-500'>baños</p>
+              </div>
             </div>
           </div>
 

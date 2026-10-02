@@ -119,15 +119,15 @@ const PropertyCard = ({
     >
       <Card
         shadow='sm'
-        className='group overflow-visible p-3'
+        className='group overflow-visible p-0'
       >
-        <div className='relative aspect-4/3 w-full overflow-hidden rounded-[14px]'>
+        <div className='relative aspect-4/3 w-full overflow-hidden rounded-t-[14px]'>
           <Image
             src={listing.picture.regular}
             alt={listing.title}
             fill
             sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
-            className='object-cover rounded-[14px] transition-transform duration-300 ease-out group-hover:scale-110'
+            className='object-cover rounded-t-[14px] transition-transform duration-300 ease-out group-hover:scale-110'
           />
 
           {/* {isDeal && (

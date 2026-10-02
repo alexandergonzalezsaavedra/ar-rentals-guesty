@@ -87,7 +87,9 @@ const Footer = () => {
                 size={16}
                 className='shrink-0'
               />
-              <a href='mailto:contacto@arrentals.com.co'>contacto@arrentals.com.co</a>
+              <a href='mailto:contacto@arrentals.com.co'>
+                contacto@arrentals.com.co
+              </a>
             </li>
             <li className='flex items-start gap-2'>
               <IconMapPin

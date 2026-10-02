@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { spaceGrotesk } from '@/lib/fonts';
 import { useReveal } from '@/components/home/RevealContext';
 import HomeSearchForm from './HomeSearchForm';
 
@@ -24,7 +25,9 @@ const HomeHeroContent = ({ cities }: HomeHeroContentProps) => {
         }
         transition={{ duration: 2, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h2 className='text-3xl sm:text-6xl font-semibold text-white drop-shadow-lg'>
+        <h2
+          className={`${spaceGrotesk.className} text-3xl sm:text-6xl font-bold text-white drop-shadow-lg`}
+        >
           Encuentre su próximo alojamiento
         </h2>
         <p className='max-w-xl text-2xl text-white/90 drop-shadow-lg'>

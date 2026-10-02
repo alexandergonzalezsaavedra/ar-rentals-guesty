@@ -3,7 +3,6 @@
 import type { ComponentType, CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { DM_Sans, Space_Grotesk } from 'next/font/google';
 import { Button } from '@heroui/react';
 import {
   IconArrowRight,
@@ -14,16 +13,7 @@ import {
   IconStarFilled,
   IconTrees,
 } from '@tabler/icons-react';
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['600', '700'],
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-});
+import { dmSans, spaceGrotesk } from '@/lib/fonts';
 
 interface Place {
   src: string;
