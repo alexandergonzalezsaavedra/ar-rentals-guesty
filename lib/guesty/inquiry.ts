@@ -2,6 +2,7 @@ import { guestyPost } from './client';
 
 export interface ReservationInquiryParams {
   quoteId: string;
+  ratePlanId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -30,7 +31,7 @@ export async function submitReservationInquiry(
   params: ReservationInquiryParams
 ): Promise<ReservationInquiryResult> {
   return guestyPost<ReservationInquiryResult>(`/reservations/quotes/${encodeURIComponent(params.quoteId)}/inquiry`, {
-    ratePlanId: 'default-rateplan-id',
+    ratePlanId: params.ratePlanId,
     guest: {
       firstName: params.firstName,
       lastName: params.lastName,

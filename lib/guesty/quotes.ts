@@ -1,4 +1,4 @@
-import { guestyPost } from './client';
+import { guestyFetch, guestyPost } from './client';
 
 export interface ReservationQuoteParams {
   listingId: string;
@@ -28,6 +28,7 @@ export interface ReservationQuote {
   rates: {
     ratePlans: {
       ratePlan: {
+        _id: string;
         name: string;
         minNights: number;
         money: ReservationQuoteMoney;
@@ -50,4 +51,8 @@ export async function getReservationQuote(params: ReservationQuoteParams): Promi
       numberOfChildren: children,
     },
   });
+}
+
+export async function getReservationQuoteById(quoteId: string): Promise<ReservationQuote> {
+  return guestyFetch<ReservationQuote>(`/reservations/quotes/${encodeURIComponent(quoteId)}`);
 }

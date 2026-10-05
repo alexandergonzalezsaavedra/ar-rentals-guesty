@@ -11,10 +11,11 @@ import {
   IconHeartFilled,
   IconHome2,
   IconInfoCircle,
+  IconChecklist,
   IconKey,
   IconMessageCircle,
   IconNotes,
-  IconSparkles,
+  IconPhoto,
   IconUsers,
   type Icon,
 } from '@tabler/icons-react';
@@ -170,7 +171,10 @@ const PropertyDetail = ({
         </button>
       </div>
 
-      <div className='mt-6 lg:flex lg:items-start lg:gap-6'>
+      <div
+        id='property-overview'
+        className='mt-6 scroll-mt-20 lg:flex lg:items-start lg:gap-6'
+      >
         <PropertyDetailSidebar
           hasDescription={hasDescription}
           hasAmenities={hasAmenities}
@@ -282,12 +286,24 @@ const PropertyDetail = ({
           {/* Galeria */}
           <div
             id='property-gallery'
-            className='scroll-mt-20 rounded-xl overflow-hidden'
+            className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
           >
-            <GridGallery
-              images={galleryImages}
-              quantityImageRow={3}
-            />
+            <h2 className='mb-1 flex items-center gap-2 text-lg font-semibold'>
+              <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
+                <IconPhoto size={18} />
+              </span>
+              Conoce cada espacio
+            </h2>
+            <p className='mb-3 text-sm text-default-500'>
+              Recorre la propiedad en imágenes y descubre los detalles que
+              harán de tu estadía una experiencia inolvidable.
+            </p>
+            <div className='overflow-hidden rounded-xl'>
+              <GridGallery
+                images={galleryImages}
+                quantityImageRow={3}
+              />
+            </div>
           </div>
 
           {hasAmenities && (
@@ -297,7 +313,7 @@ const PropertyDetail = ({
             >
               <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
                 <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                  <IconSparkles size={18} />
+                  <IconChecklist size={18} />
                 </span>
                 Comodidades
               </h2>

@@ -2,13 +2,13 @@
 
 import { useEffect, useState, type ComponentType } from 'react';
 import {
+  IconChecklist,
   IconChevronLeft,
   IconChevronRight,
   IconHome2,
   IconInfoCircle,
   IconMapPin,
   IconPhoto,
-  IconSparkles,
 } from '@tabler/icons-react';
 
 interface PropertyDetailSidebarProps {
@@ -47,7 +47,7 @@ const PropertyDetailSidebar = ({
     hasAmenities && {
       id: 'property-amenities',
       label: 'Comodidades',
-      icon: IconSparkles,
+      icon: IconChecklist,
     },
     hasLocation && {
       id: 'property-location',

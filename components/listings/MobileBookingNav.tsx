@@ -3,10 +3,10 @@
 import {
   IconBrandWhatsapp,
   IconCalendarCheck,
+  IconChecklist,
   IconInfoCircle,
   IconMapPin,
   IconPhoto,
-  IconSparkles,
 } from '@tabler/icons-react';
 import ShareButton from './ShareButton';
 
@@ -77,7 +77,7 @@ const MobileBookingNav = ({
               onClick={() => scrollToId('property-amenities')}
               className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
             >
-              <IconSparkles size={20} />
+              <IconChecklist size={20} />
               <span className='text-[9px] font-medium'>Comodidades</span>
             </button>
           )}

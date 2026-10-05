@@ -82,6 +82,7 @@ export default async function ReservationPage(
         <div className='lg:col-span-2'>
           <ReservationForm
             quoteId={quote._id}
+            ratePlanId={ratePlan.ratePlan._id}
             propertyHref={propertyHref}
           />
         </div>
