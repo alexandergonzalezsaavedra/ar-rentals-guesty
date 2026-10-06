@@ -3,7 +3,11 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Button } from '@heroui/react';
-import { IconBrandGoogleMaps, IconBrandWaze, IconMapPin } from '@tabler/icons-react';
+import {
+  IconBrandGoogleMaps,
+  IconBrandWaze,
+  IconMapPin,
+} from '@tabler/icons-react';
 import { MapContainer, Marker, TileLayer } from 'react-leaflet';
 
 interface PropertyLocationMapProps {
@@ -29,7 +33,11 @@ const markerIcon = L.divIcon({
   iconAnchor: [17, 34],
 });
 
-const PropertyLocationMap = ({ lat, lng, address }: PropertyLocationMapProps) => {
+const PropertyLocationMap = ({
+  lat,
+  lng,
+  address,
+}: PropertyLocationMapProps) => {
   const wazeUrl = `https://waze.com/ul?ll=${lat}%2C${lng}&navigate=yes`;
   const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat}%2C${lng}`;
 
@@ -63,7 +71,7 @@ const PropertyLocationMap = ({ lat, lng, address }: PropertyLocationMapProps) =>
         />
       </MapContainer>
 
-      <div className='mt-4 flex flex-col gap-2 sm:flex-row'>
+      <div className='mt-4 grid grid-cols-2 gap-2 sm:flex-row'>
         <Button
           as='a'
           href={wazeUrl}

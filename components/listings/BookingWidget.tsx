@@ -21,6 +21,7 @@ import {
   IconPlaneDeparture,
   IconReceipt2,
   IconSparkles,
+  IconUsers,
   IconWallet,
 } from '@tabler/icons-react';
 import type { GuestyListingDetail } from '@/lib/guesty/listings';
@@ -96,11 +97,19 @@ const BookingWidget = ({
   const [adults, setAdults] = useState(() =>
     String(clamp(initialAdults ? Number(initialAdults) : 2, 1, maxGuests)),
   );
+  // Adults and children share the listing's capacity, so each one's ceiling
+  // is whatever the other leaves free.
   const [children, setChildren] = useState(() =>
     String(
-      clamp(initialChildren ? Number(initialChildren) : 0, 0, maxGuests - 1),
+      clamp(
+        initialChildren ? Number(initialChildren) : 0,
+        0,
+        maxGuests - clamp(initialAdults ? Number(initialAdults) : 2, 1, maxGuests),
+      ),
     ),
   );
+  const totalGuests = Number(adults) + Number(children);
+  const isAtCapacity = totalGuests >= maxGuests;
   const [isLoading, setIsLoading] = useState(false);
   const [pricing, setPricing] = useState<PricingBreakdown | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -310,13 +319,26 @@ const BookingWidget = ({
           </div>
         )}
 
+        {error && !isLoading && (
+          <div
+            role='alert'
+            className='flex items-start gap-2 rounded-xl border border-danger/30 bg-danger/10 px-3 py-2.5 text-sm font-medium text-danger'
+          >
+            <IconAlertCircle
+              size={18}
+              className='mt-0.5 shrink-0'
+            />
+            <p>{error}</p>
+          </div>
+        )}
+
         <div className='grid grid-cols-2 gap-2'>
           <Stepper
             label='Adultos'
             description='Edad: 13 años o más'
             value={Number(adults)}
             min={1}
-            max={maxGuests}
+            max={maxGuests - Number(children)}
             onChange={(value) => setAdults(String(value))}
             className='rounded-lg border border-default-200'
           />
@@ -326,10 +348,42 @@ const BookingWidget = ({
             description='Edades 2 – 12'
             value={Number(children)}
             min={0}
-            max={maxGuests - 1}
+            max={maxGuests - Number(adults)}
             onChange={(value) => setChildren(String(value))}
             className='rounded-lg border border-default-200'
           />
+        </div>
+
+        <div>
+          <div className='flex items-center justify-between text-sm'>
+            <span className='flex items-center gap-1.5 font-semibold text-foreground'>
+              <IconUsers
+                size={16}
+                className='text-primary'
+              />
+              Capacidad
+            </span>
+            <span className='font-semibold text-foreground'>
+              {totalGuests} / {maxGuests}{' '}
+              <span className='font-normal text-default-500'>huéspedes</span>
+            </span>
+          </div>
+          <div
+            role='progressbar'
+            aria-label='Capacidad de huéspedes'
+            aria-valuemin={0}
+            aria-valuemax={maxGuests}
+            aria-valuenow={totalGuests}
+            className='mt-1.5 h-2 overflow-hidden rounded-full bg-default-200'
+          >
+            <div
+              className={`h-full rounded-full transition-all duration-300 ${isAtCapacity ? 'bg-warning' : 'bg-primary'}`}
+              style={{ width: `${(totalGuests / maxGuests) * 100}%` }}
+            />
+          </div>
+          {isAtCapacity && (
+            <p className='mt-1 text-xs text-default-500'>Alcanzaste el máximo de huéspedes permitido.</p>
+          )}
         </div>
 
         {isLoading && (
@@ -339,16 +393,6 @@ const BookingWidget = ({
           </div>
         )}
       </div>
-
-      {error && !isLoading && (
-        <div className='mt-3 flex items-start gap-2 text-sm text-danger'>
-          <IconAlertCircle
-            size={16}
-            className='mt-0.5 shrink-0'
-          />
-          <p>{error}</p>
-        </div>
-      )}
 
       {pricing && !isLoading && (
         <div className='mt-4 rounded-xl border border-default-200 bg-content1 p-4'>

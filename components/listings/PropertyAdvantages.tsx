@@ -34,7 +34,9 @@ const PropertyAdvantages = () => {
   return (
     <div className='mb-8 flex flex-col gap-6'>
       <div>
-        <p className='text-sm font-medium text-default-400'>Cómo funciona</p>
+        <p className='text-sm font-medium text-default-400'>
+          Planea tu próxima aventura
+        </p>
         <h2 className='text-3xl font-bold text-foreground'>
           Simple, rápido y seguro
         </h2>

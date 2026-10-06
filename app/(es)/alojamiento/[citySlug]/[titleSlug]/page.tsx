@@ -64,6 +64,26 @@ export default async function PropertyDetailPage(
         <PropertyHero listing={listing} />
       </div>
       <main className='container mx-auto px-4 py-8'>
+        <h2 className='text-3xl md:text-4xl font-bold tracking-tight text-foreground'>
+          Todo lo mejor{' '}
+          <span className='relative inline-block'>
+            para tí
+            <svg
+              viewBox='0 0 120 6'
+              className='absolute left-0 bottom-0 -mb-1 w-full'
+              aria-hidden='true'
+            >
+              <path
+                d='M1 4.5C25.46 1.63 78.43 1.39 119 4.5'
+                stroke='#f472b6'
+                strokeWidth='2'
+                strokeLinecap='round'
+                strokeLinejoin='round'
+                fill='none'
+              ></path>
+            </svg>
+          </span>
+        </h2>
         <PropertyDetail
           listing={listing}
           bedArrangements={bedArrangements}
