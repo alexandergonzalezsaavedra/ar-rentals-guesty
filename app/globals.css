@@ -207,3 +207,11 @@ html {
 .leaflet-bottom.leaflet-right {
   display: none;
 }
+
+/* On pages with the fixed mobile booking nav (property detail), the footer's
+   last line would sit hidden behind it; push it clear of the nav. */
+@media (max-width: 1023.98px) {
+  body:has([data-mobile-booking-nav]) .site-footer-bottom {
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+}

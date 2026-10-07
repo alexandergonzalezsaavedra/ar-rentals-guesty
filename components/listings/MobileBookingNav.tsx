@@ -34,7 +34,10 @@ const MobileBookingNav = ({
   )}`;
 
   return (
-    <nav className='fixed inset-x-0 bottom-0 z-40 lg:hidden'>
+    <nav
+      data-mobile-booking-nav
+      className='fixed inset-x-0 bottom-0 z-40 lg:hidden'
+    >
       <div className='relative grid grid-cols-[1fr_136px_1fr] items-center border-t border-slate-100 bg-content1/95 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur dark:border-slate-800'>
         <div className='flex items-center justify-evenly'>
           {hasDescription && (
@@ -47,14 +50,16 @@ const MobileBookingNav = ({
               <span className='text-[9px] font-medium'>Descripción</span>
             </button>
           )}
-          <button
-            type='button'
-            onClick={() => scrollToId('property-gallery')}
-            className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
-          >
-            <IconPhoto size={20} />
-            <span className='text-[9px] font-medium'>Galería</span>
-          </button>
+          {hasAmenities && (
+            <button
+              type='button'
+              onClick={() => scrollToId('property-amenities')}
+              className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
+            >
+              <IconChecklist size={20} />
+              <span className='text-[9px] font-medium'>Comodidades</span>
+            </button>
+          )}
         </div>
 
         <div />
@@ -70,16 +75,14 @@ const MobileBookingNav = ({
               <span className='text-[9px] font-medium'>Mapa</span>
             </button>
           )}
-          {hasAmenities && (
-            <button
-              type='button'
-              onClick={() => scrollToId('property-amenities')}
-              className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
-            >
-              <IconChecklist size={20} />
-              <span className='text-[9px] font-medium'>Comodidades</span>
-            </button>
-          )}
+          <button
+            type='button'
+            onClick={() => scrollToId('property-gallery')}
+            className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
+          >
+            <IconPhoto size={20} />
+            <span className='text-[9px] font-medium'>Galería</span>
+          </button>
         </div>
       </div>
 
