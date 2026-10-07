@@ -122,7 +122,7 @@ const DiscoverPlaces = () => {
         </span>
 
         <h2
-          className={`${spaceGrotesk.className} mt-5 text-4xl font-bold text-foreground sm:text-5xl`}
+          className={`${spaceGrotesk.className} mt-5 text-3xl font-bold text-foreground sm:text-6xl`}
         >
           Descubre lugares
         </h2>

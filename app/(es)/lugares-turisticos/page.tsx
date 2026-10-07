@@ -4,6 +4,7 @@ import { IconMap2, IconMapPin } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import LugaresTuristicosTabs from '@/components/listings/LugaresTuristicosTabs';
+import { spaceGrotesk } from '@/lib/fonts';
 
 export const metadata: Metadata = {
   title: 'Lugares Turísticos | AR Rentals',
@@ -32,7 +33,7 @@ export default function LugaresTuristicosPage() {
             Santa Marta
           </Link>
 
-          <h1 className='mt-3 text-3xl font-bold text-foreground sm:text-4xl'>
+          <h1 className={`${spaceGrotesk.className} mt-3 text-3xl font-bold text-foreground sm:text-6xl`}>
             Lugares Turísticos
           </h1>
           <p className='mt-2 max-w-2xl text-default-500'>

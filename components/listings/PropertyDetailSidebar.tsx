@@ -26,6 +26,13 @@ interface NavItem {
 }
 
 function scrollToId(id: string) {
+  // The hero is sticky on sm+, so once the content has slid over it the
+  // browser already considers it "in view" and scrollIntoView does nothing.
+  if (id === 'property-hero') {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 }
 

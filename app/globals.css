@@ -35,6 +35,29 @@ html {
   animation: kenburns 16s ease-in-out infinite;
 }
 
+/* Gentle zoom-and-drift for the corner photo on the listings banner. Anchored
+   bottom-right so the photo grows into the banner instead of sliding off it. */
+@keyframes banner-drift {
+  0%,
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-2%, -1.5%, 0);
+  }
+}
+
+.animate-banner-drift {
+  transform-origin: bottom right;
+  animation: banner-drift 22s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-banner-drift {
+    animation: none;
+  }
+}
+
 /* Draws attention to the floating favorite button while a property hasn't
    been saved yet; mimics a double heartbeat instead of a flat opacity pulse. */
 @keyframes heartbeat {
@@ -97,8 +120,7 @@ html {
    --dir (1 or -1) mirrors the same keyframes for the left/right side. */
 @keyframes corridor-fly {
   0% {
-    transform: translate(-50%, -50%) translateX(0) translateZ(-340px)
-      rotateY(0deg) scale(0.35);
+    transform: translate(-50%, -50%) translateX(0) translateZ(-340px) rotateY(0deg) scale(0.35);
     opacity: 0;
   }
   10% {
@@ -108,8 +130,8 @@ html {
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -50%) translateX(calc(var(--dir) * 46vw))
-      translateZ(0px) rotateY(calc(var(--dir) * -48deg)) scale(1.3);
+    transform: translate(-50%, -50%) translateX(calc(var(--dir) * 46vw)) translateZ(0px)
+      rotateY(calc(var(--dir) * -48deg)) scale(1.3);
     opacity: 0;
   }
 }
@@ -117,4 +139,71 @@ html {
 .animate-corridor-fly {
   animation: corridor-fly var(--corridor-duration, 14s) linear infinite;
   animation-delay: var(--corridor-delay, 0s);
+}
+
+/* Property location pin: the rings expand from the pin's tip (bottom center
+   of the 44px icon box) to draw the eye to the exact spot on the map. */
+.map-pin {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.map-pin-icon {
+  position: relative;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.45));
+  transform-origin: bottom center;
+  animation: map-pin-bob 1.8s ease-in-out infinite;
+}
+
+.map-pin-pulse {
+  position: absolute;
+  bottom: -5px;
+  left: 13px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #e11d48;
+  animation: map-pin-pulse 1.8s ease-out infinite;
+}
+
+.map-pin-pulse-late {
+  animation-delay: 0.9s;
+}
+
+@keyframes map-pin-pulse {
+  0% {
+    transform: scale(0.4);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(3.6);
+    opacity: 0;
+  }
+}
+
+@keyframes map-pin-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-pin-icon,
+  .map-pin-pulse {
+    animation: none;
+  }
+
+  .map-pin-pulse {
+    opacity: 0.35;
+    transform: scale(1.6);
+  }
+}
+
+.leaflet-bottom.leaflet-right {
+  display: none;
 }

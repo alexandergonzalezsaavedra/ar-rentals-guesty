@@ -4,6 +4,7 @@ import { IconMapPin } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
 import PropertyDetail from '@/components/listings/PropertyDetail';
 import PropertyHero from '@/components/listings/PropertyHero';
+import SectionBackdrop from '@/components/listings/SectionBackdrop';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import {
   getListingBedArrangements,
@@ -60,39 +61,25 @@ export default async function PropertyDetailPage(
           { label: listing.title },
         ]}
       />
-      <div className='p-4'>
-        <PropertyHero listing={listing} />
+      {/* Bounds the sticky hero to this page's content, so it lets go before the footer instead of showing through it. */}
+      <div className='relative'>
+        <div className='relative z-0 p-4 sm:sticky sm:top-0'>
+          <PropertyHero listing={listing} />
+        </div>
+        {/* Opaque and stacked above the sticky hero, so it slides over it on scroll (same effect as the home and listings pages). */}
+        <SectionBackdrop className='relative z-10 rounded-t-3xl shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
+          <main className='container mx-auto px-4 py-8'>
+            <PropertyDetail
+              listing={listing}
+              bedArrangements={bedArrangements}
+              initialCheckIn={firstValue(searchParams.checkIn)}
+              initialCheckOut={firstValue(searchParams.checkOut)}
+              initialAdults={firstValue(searchParams.adults)}
+              initialChildren={firstValue(searchParams.children)}
+            />
+          </main>
+        </SectionBackdrop>
       </div>
-      <main className='container mx-auto px-4 py-8'>
-        <h2 className='text-3xl md:text-4xl font-bold tracking-tight text-foreground'>
-          Todo lo mejor{' '}
-          <span className='relative inline-block'>
-            para tí
-            <svg
-              viewBox='0 0 120 6'
-              className='absolute left-0 bottom-0 -mb-1 w-full'
-              aria-hidden='true'
-            >
-              <path
-                d='M1 4.5C25.46 1.63 78.43 1.39 119 4.5'
-                stroke='#f472b6'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                fill='none'
-              ></path>
-            </svg>
-          </span>
-        </h2>
-        <PropertyDetail
-          listing={listing}
-          bedArrangements={bedArrangements}
-          initialCheckIn={firstValue(searchParams.checkIn)}
-          initialCheckOut={firstValue(searchParams.checkOut)}
-          initialAdults={firstValue(searchParams.adults)}
-          initialChildren={firstValue(searchParams.children)}
-        />
-      </main>
     </>
   );
 }

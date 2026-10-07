@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 import { Spinner } from '@heroui/react';
 import {
   IconBath,
@@ -29,7 +30,9 @@ import BookingWidget from './BookingWidget';
 import GridGallery from './GridGallery';
 import MobileBookingNav from './MobileBookingNav';
 import PropertyDetailSidebar from './PropertyDetailSidebar';
+import Reveal from './Reveal';
 import ShareButton from './ShareButton';
+import HighlightedHeading from '@/components/listings/HighlightedHeading';
 
 const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
   ssr: false,
@@ -115,13 +118,20 @@ const PropertyDetail = ({
   );
   const hasAmenities = listing.amenities.length > 0;
   const hasCoords =
-    Number.isFinite(listing.address.lat) && Number.isFinite(listing.address.lng);
+    Number.isFinite(listing.address.lat) &&
+    Number.isFinite(listing.address.lng);
 
   const { isFavorite, toggle } = useFavorites();
   const { favoriteProperty } = useCustomToast();
   const favoriteButtonRef = useRef<HTMLButtonElement>(null);
   const isFav = isFavorite(listing._id);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
+  const stats = [
+    { icon: IconUsers, value: listing.accommodates, label: 'huéspedes' },
+    { icon: IconBed, value: listing.bedrooms, label: `habitaciones · ${listing.beds} camas` },
+    { icon: IconBath, value: listing.bathrooms, label: 'baños' },
+  ];
 
   const handleToggleFavorite = () => {
     favoriteProperty(isFav, listing.title, favoriteButtonRef);
@@ -185,192 +195,184 @@ const PropertyDetail = ({
 
         <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3'>
           <div className='lg:col-span-2'>
-          <div className='grid grid-cols-1 gap-3 sm:grid-cols-3'>
-            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
-              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                <IconUsers size={24} />
-              </span>
-              <div>
-                <p className='text-lg font-bold text-foreground'>
-                  {listing.accommodates}
-                </p>
-                <p className='text-sm text-default-500'>huéspedes</p>
-              </div>
+            <div className='flex justify-start mb-8'>
+              <HighlightedHeading />
             </div>
-            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
-              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                <IconBed size={24} />
-              </span>
-              <div>
-                <p className='text-lg font-bold text-foreground'>
-                  {listing.bedrooms}
-                </p>
-                <p className='text-sm text-default-500'>
-                  habitaciones · {listing.beds} camas
-                </p>
-              </div>
-            </div>
-            <div className='flex items-center gap-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-4 shadow-sm'>
-              <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                <IconBath size={24} />
-              </span>
-              <div>
-                <p className='text-lg font-bold text-foreground'>
-                  {listing.bathrooms}
-                </p>
-                <p className='text-sm text-default-500'>baños</p>
-              </div>
-            </div>
-          </div>
-
-          {sleepingRooms.length > 0 && (
-            <section className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'>
-              <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
-                <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                  <IconBed size={18} />
-                </span>
-                Distribución de camas
-              </h2>
-              <ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-default-600'>
-                {sleepingRooms.map((room) => (
-                  <li
-                    key={room.roomNumber}
-                    className='flex items-start gap-2 rounded-lg bg-content2 p-3'
-                  >
-                    <IconBed
-                      size={16}
-                      className='mt-0.5 shrink-0 text-default-400'
-                    />
-                    <div>
-                      <p className='font-medium text-default-700'>
-                        {ROOM_NAME_LABELS[room.name] ?? room.name}
-                      </p>
-                      <p>{describeBeds(room.beds)}</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          <div
-            id='property-description'
-            className='scroll-mt-20'
-          >
-            {DESCRIPTION_SECTIONS.map(({ key, title, icon: SectionIcon }) => {
-              const content = listing.publicDescription?.[key];
-
-              if (!content) {
-                return null;
-              }
-
-              return (
-                <section
-                  key={key}
-                  className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
+            <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+              {stats.map(({ icon: StatIcon, value, label }, index) => (
+                <Reveal
+                  key={label}
+                  delay={index * 0.12}
+                  className='group flex items-center gap-4 rounded-2xl border border-slate-100 bg-content1 p-5 shadow-sm transition-shadow duration-300 hover:shadow-lg dark:border-slate-800'
                 >
-                  <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
-                    <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                      <SectionIcon size={18} />
-                    </span>
-                    {title}
-                  </h2>
-                  <p className='text-default-600 whitespace-pre-line'>
-                    {content}
-                  </p>
-                </section>
-              );
-            })}
-          </div>
-
-          {/* Galeria */}
-          <div
-            id='property-gallery'
-            className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
-          >
-            <h2 className='mb-1 flex items-center gap-2 text-lg font-semibold'>
-              <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                <IconPhoto size={18} />
-              </span>
-              Conoce cada espacio
-            </h2>
-            <p className='mb-3 text-sm text-default-500'>
-              Recorre la propiedad en imágenes y descubre los detalles que
-              harán de tu estadía una experiencia inolvidable.
-            </p>
-            <div className='overflow-hidden rounded-xl'>
-              <GridGallery
-                images={galleryImages}
-                quantityImageRow={3}
-              />
+                  <span className='flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white'>
+                    <StatIcon
+                      size={34}
+                      className='animate-icon-float'
+                      style={{ animationDelay: `${index * 0.4}s` }}
+                    />
+                  </span>
+                  <div>
+                    <p className='text-3xl leading-none font-bold text-foreground'>{value}</p>
+                    <p className='mt-1 text-sm text-default-500'>{label}</p>
+                  </div>
+                </Reveal>
+              ))}
             </div>
-          </div>
 
-          {hasAmenities && (
-            <section
-              id='property-amenities'
+            {sleepingRooms.length > 0 && (
+              <Reveal className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'>
+                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                    <IconBed size={26} />
+                  </span>
+                  Distribución de camas
+                </h2>
+                <ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-default-600'>
+                  {sleepingRooms.map((room) => (
+                    <li
+                      key={room.roomNumber}
+                      className='flex items-start gap-2 rounded-lg bg-content2 p-3'
+                    >
+                      <IconBed
+                        size={22}
+                        className='mt-0.5 shrink-0 text-primary'
+                      />
+                      <div>
+                        <p className='font-medium text-default-700'>
+                          {ROOM_NAME_LABELS[room.name] ?? room.name}
+                        </p>
+                        <p>{describeBeds(room.beds)}</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
+
+            <div
+              id='property-description'
+              className='scroll-mt-20'
+            >
+              {DESCRIPTION_SECTIONS.map(({ key, title, icon: SectionIcon }) => {
+                const content = listing.publicDescription?.[key];
+
+                if (!content) {
+                  return null;
+                }
+
+                return (
+                  <Reveal
+                    key={key}
+                    className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
+                  >
+                    <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                      <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                        <SectionIcon size={26} />
+                      </span>
+                      {title}
+                    </h2>
+                    <p className='text-default-600 whitespace-pre-line'>
+                      {content}
+                    </p>
+                  </Reveal>
+                );
+              })}
+            </div>
+
+            {/* Galeria */}
+            <Reveal
+              id='property-gallery'
               className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
             >
-              <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
-                <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-                  <IconChecklist size={18} />
+              <h2 className='mb-2 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                  <IconPhoto size={26} />
                 </span>
-                Comodidades
+                Conoce cada espacio
               </h2>
-              <ul className='grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-default-600'>
-                {listing.amenities.map((amenity) => (
-                  <li
-                    key={amenity}
-                    className='flex items-center gap-2 rounded-lg bg-content2 px-3 py-2'
-                  >
-                    <IconCheck
-                      size={14}
-                      className='text-success shrink-0'
-                    />
-                    {amenity}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {hasCoords && (
-            <PropertyLocationMap
-              lat={listing.address.lat}
-              lng={listing.address.lng}
-              address={listing.address.full}
-            />
-          )}
-
-          {listing.publicDescription?.notes && (
-            <section className='mt-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-5 text-foreground'>
-              <span className='flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-primary'>
-                <IconNotes size={18} />
-              </span>
-              <div>
-                <h2 className='mb-1 text-lg font-semibold'>
-                  Notas importantes
-                </h2>
-                <p className='whitespace-pre-line text-default-700'>
-                  {listing.publicDescription.notes}
-                </p>
+              <p className='mb-3 text-sm text-default-500'>
+                Recorre la propiedad en imágenes y descubre los detalles que
+                harán de tu estadía una experiencia inolvidable.
+              </p>
+              <div className='overflow-hidden rounded-xl'>
+                <GridGallery
+                  images={galleryImages}
+                  quantityImageRow={3}
+                />
               </div>
-            </section>
-          )}
-        </div>
+            </Reveal>
 
-        <aside
-          id='booking-widget'
-          className='scroll-mt-22'
-        >
-          <BookingWidget
-            listing={listing}
-            initialCheckIn={initialCheckIn}
-            initialCheckOut={initialCheckOut}
-            initialAdults={initialAdults}
-            initialChildren={initialChildren}
-          />
-        </aside>
+            {hasAmenities && (
+              <Reveal
+                id='property-amenities'
+                className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
+              >
+                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                    <IconChecklist size={26} />
+                  </span>
+                  Comodidades
+                </h2>
+                <ul className='grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-default-600'>
+                  {listing.amenities.map((amenity, index) => (
+                    <motion.li
+                      key={amenity}
+                      initial={{ opacity: 0, y: 16, scale: 0.95 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true, margin: '0px 0px -30px 0px' }}
+                      transition={{ duration: 0.4, delay: (index % 3) * 0.06, ease: 'easeOut' }}
+                      className='flex items-center gap-2.5 rounded-lg bg-content2 px-3 py-2.5 transition-colors duration-200 hover:bg-primary/10'
+                    >
+                      <span className='flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary'>
+                        <IconCheck size={16} />
+                      </span>
+                      {amenity}
+                    </motion.li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
+
+            {hasCoords && (
+              <Reveal>
+                <PropertyLocationMap
+                  lat={listing.address.lat}
+                  lng={listing.address.lng}
+                  address={listing.address.full}
+                />
+              </Reveal>
+            )}
+
+            {listing.publicDescription?.notes && (
+              <Reveal className='mt-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-5 text-foreground'>
+                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary'>
+                  <IconNotes size={26} />
+                </span>
+                <div>
+                  <h2 className='mb-1 text-xl font-bold sm:text-2xl'>
+                    Notas importantes
+                  </h2>
+                  <p className='whitespace-pre-line text-default-700'>
+                    {listing.publicDescription.notes}
+                  </p>
+                </div>
+              </Reveal>
+            )}
+          </div>
+
+          <aside
+            id='booking-widget'
+            className='scroll-mt-22'
+          >
+            <BookingWidget
+              listing={listing}
+              initialCheckIn={initialCheckIn}
+              initialCheckOut={initialCheckOut}
+              initialAdults={initialAdults}
+              initialChildren={initialChildren}
+            />
+          </aside>
         </div>
       </div>
 

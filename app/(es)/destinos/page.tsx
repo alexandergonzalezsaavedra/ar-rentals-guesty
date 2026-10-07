@@ -1,6 +1,7 @@
 import { IconMap2 } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
+import { spaceGrotesk } from '@/lib/fonts';
 
 export default function Home() {
   return (
@@ -12,7 +13,7 @@ export default function Home() {
         <PageBreadcrumbs
           items={[{ label: 'Destinos', icon: <IconMap2 size={12} /> }]}
         />
-        <h1 className='text-2xl font-bold mb-6'>
+        <h1 className={`${spaceGrotesk.className} text-3xl sm:text-6xl font-bold mb-6`}>
           Encuentre su próximo destino
         </h1>
       </main>

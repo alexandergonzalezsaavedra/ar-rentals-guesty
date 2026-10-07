@@ -18,19 +18,25 @@ interface PropertyLocationMapProps {
 
 // Guesty's default marker relies on image URLs that don't resolve under a
 // bundler, so we draw our own pin instead of fighting Leaflet's default icon.
-const PIN_SVG = `
-  <svg width="34" height="34" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));">
-    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#7c9c87" stroke="#ffffff" stroke-width="1.5"/>
-    <circle cx="12" cy="9" r="3" fill="#ffffff"/>
-  </svg>
+// Red pin with two rings pulsing out from its tip, so the property stands out
+// against the map tiles. The pulse styles live in globals.css (.map-pin-*).
+const PIN_HTML = `
+  <div class="map-pin">
+    <span class="map-pin-pulse"></span>
+    <span class="map-pin-pulse map-pin-pulse-late"></span>
+    <svg class="map-pin-icon" width="44" height="44" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#e11d48" stroke="#ffffff" stroke-width="1.5"/>
+      <circle cx="12" cy="9" r="3" fill="#ffffff"/>
+    </svg>
+  </div>
 `;
 
 const markerIcon = L.divIcon({
   className: '',
-  html: PIN_SVG,
-  iconSize: [34, 34],
+  html: PIN_HTML,
+  iconSize: [44, 44],
   // Anchor at the pin's tip, which is where the actual location sits.
-  iconAnchor: [17, 34],
+  iconAnchor: [22, 44],
 });
 
 const PropertyLocationMap = ({
@@ -46,9 +52,9 @@ const PropertyLocationMap = ({
       id='property-location'
       className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm dark:border-slate-800'
     >
-      <h2 className='mb-3 flex items-center gap-2 text-lg font-semibold'>
-        <span className='flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary'>
-          <IconMapPin size={18} />
+      <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+        <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+          <IconMapPin size={26} />
         </span>
         Ubicación
       </h2>
@@ -71,7 +77,7 @@ const PropertyLocationMap = ({
         />
       </MapContainer>
 
-      <div className='mt-4 grid grid-cols-2 gap-2 sm:flex-row'>
+      <div className='mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 sm:flex-row'>
         <Button
           as='a'
           href={wazeUrl}

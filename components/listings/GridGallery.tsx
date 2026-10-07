@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import 'photoswipe/style.css';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 import { IconZoomIn } from '@tabler/icons-react';
 
 interface GridGalleryProps {
@@ -133,8 +134,14 @@ const GridGallery = ({
         const isLastVisible = index === imageData.length - 1;
         const showMoreOverlay = isLastVisible && remainingCount > 0;
 
+        // Each photo scales and fades in as it scrolls into view; photos in the
+        // same row follow one another left to right.
         const imageBox = (
-          <div
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.94 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '0px 0px -40px 0px' }}
+            transition={{ duration: 0.5, delay: (index % quantityImageRow) * 0.08, ease: 'easeOut' }}
             className={
               containerHeightClassName
                 ? `relative w-full overflow-hidden rounded-lg flex items-center ${containerHeightClassName}`
@@ -168,7 +175,7 @@ const GridGallery = ({
                 />
               </div>
             )}
-          </div>
+          </motion.div>
         );
 
         if (showMoreOverlay) {

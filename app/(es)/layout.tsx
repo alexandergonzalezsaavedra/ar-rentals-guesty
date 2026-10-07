@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import '../globals.css';
 import { ProvidersUI } from '../heroproviders';
 import Footer from '@/components/footer/footer';
+import ClickBurst from '@/components/effects/ClickBurst';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 
       <body className='min-h-full flex flex-col'>
         <ProvidersUI>
+          <ClickBurst />
           {children}
           <footer>
             <Footer />
