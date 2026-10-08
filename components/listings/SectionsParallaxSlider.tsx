@@ -10,6 +10,11 @@ const TRANSITION = 0.9;
 /** How long a slide stays put, on top of whatever it needs to scroll its own content. */
 const DWELL = 0.3;
 
+// A card takes clicks while at rest, and also this close to it on either side
+// of a transition (as a fraction of the transition).
+const INTERACTIVE_MARGIN_IN = 0.8;
+const INTERACTIVE_MARGIN_OUT = 0.2;
+
 /** Share of the remaining distance covered each frame; lower is a longer, softer glide. */
 const SMOOTHING = 0.14;
 
@@ -187,9 +192,13 @@ const SectionsParallaxSlider = ({ slides }: SectionsParallaxSliderProps) => {
           visible = false;
         } else if (index > 0 && position < starts[index]) {
           // Rising into place.
-          const eased = ease((position - enterStart) / transition);
+          const progress = (position - enterStart) / transition;
+          const eased = ease(progress);
 
-          resting = false;
+          // Clickable for the last stretch of the rise: by then the card is
+          // all but in place, and a reader who stops scrolling a hair early
+          // shouldn't find its top rows dead to the mouse.
+          resting = progress > INTERACTIVE_MARGIN_IN;
 
           if (reducedMotion) {
             opacity = eased;
@@ -202,7 +211,8 @@ const SectionsParallaxSlider = ({ slides }: SectionsParallaxSliderProps) => {
           const progress = Math.min(1, (position - exitStart) / transition);
           const eased = ease(progress);
 
-          resting = false;
+          // Likewise still clickable for the first stretch of the way out.
+          resting = progress < INTERACTIVE_MARGIN_OUT;
           visible = progress < 1;
           opacity = 1 - eased;
 

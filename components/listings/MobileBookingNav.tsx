@@ -8,6 +8,8 @@ import {
   IconMapPin,
   IconPhoto,
 } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
+import { EASE_BRAND } from '@/lib/easing';
 import { scrollToPropertySection } from './propertySections';
 
 // AR Rentals' contact line (same number shown in the footer).
@@ -31,8 +33,12 @@ const MobileBookingNav = ({
   )}`;
 
   return (
-    <nav
+    // Mobile only (hidden from lg): rises from below the screen shortly after the page loads.
+    <motion.nav
       data-mobile-booking-nav
+      initial={{ y: '110%' }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.8, delay: 0.5, ease: EASE_BRAND }}
       className='fixed inset-x-0 bottom-0 z-40 lg:hidden'
     >
       <div className='relative grid grid-cols-[1fr_136px_1fr] items-center border-t border-slate-100 bg-content1/95 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur dark:border-slate-800'>
@@ -103,7 +109,7 @@ const MobileBookingNav = ({
           <IconCalendarCheck size={24} />
         </button>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

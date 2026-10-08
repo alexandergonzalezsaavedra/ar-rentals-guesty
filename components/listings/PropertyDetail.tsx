@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
+import { useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { Spinner } from '@heroui/react';
 import {
@@ -130,6 +131,8 @@ const PropertyDetail = ({
   const favoriteButtonRef = useRef<HTMLButtonElement>(null);
   const isFav = isFavorite(listing._id);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const bookingRef = useRef<HTMLElement>(null);
+  const isBookingInView = useInView(bookingRef, { once: true });
 
   const stats = [
     {
@@ -198,13 +201,13 @@ const PropertyDetail = ({
 
           {sleepingRooms.length > 0 && (
             <section className='mt-10 border-t border-default-200 pt-10 dark:border-default-100/20'>
-              <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+              <h2 className='mb-5 flex items-center gap-3 text-2xl leading-tight font-bold sm:text-4xl'>
                 <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
                   <IconBed size={26} />
                 </span>
                 Distribución de camas
               </h2>
-              <ul className='grid grid-cols-1 gap-3 text-sm text-default-600 sm:grid-cols-2'>
+              <ul className='grid grid-cols-1 gap-3 text-sm text-default-600 sm:grid-cols-2 lg:text-base'>
                 {sleepingRooms.map((room) => (
                   <li
                     key={room.roomNumber}
@@ -238,13 +241,13 @@ const PropertyDetail = ({
                 key={key}
                 className={position > 0 ? 'mt-8 border-t border-default-200 pt-8 dark:border-default-100/20' : undefined}
               >
-                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                <h2 className='mb-5 flex items-center gap-3 text-2xl leading-tight font-bold sm:text-4xl'>
                   <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
                     <SectionIcon size={26} />
                   </span>
                   {title}
                 </h2>
-                <p className='whitespace-pre-line text-default-600'>{listing.publicDescription?.[key]}</p>
+                <p className='whitespace-pre-line text-default-600 lg:text-lg lg:leading-relaxed'>{listing.publicDescription?.[key]}</p>
               </section>
             ))}
           </>
@@ -257,17 +260,18 @@ const PropertyDetail = ({
       navId: 'property-gallery',
       content: (
         <section>
-          <h2 className='mb-2 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+          <h2 className='mb-3 flex items-center gap-3 text-2xl leading-tight font-bold sm:text-4xl'>
             <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
               <IconPhoto size={26} />
             </span>
             Conoce cada espacio
           </h2>
-          <p className='mb-3 text-sm text-default-500'>
+          <p className='text-sm text-default-500 lg:text-base'>
             Recorre la propiedad en imágenes y descubre los detalles que harán de tu estadía una experiencia
             inolvidable.
           </p>
-          <div className='overflow-hidden rounded-xl'>
+          {/* Room above and below, so the first and last rows of photos aren't pressed against the text or the card's edge. */}
+          <div className='mt-8 mb-12 overflow-hidden rounded-xl lg:mt-10 lg:mb-16'>
             <GridGallery
               images={galleryImages}
               quantityImageRow={3}
@@ -284,13 +288,13 @@ const PropertyDetail = ({
             navId: 'property-amenities',
             content: (
               <section>
-                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                <h2 className='mb-5 flex items-center gap-3 text-2xl leading-tight font-bold sm:text-4xl'>
                   <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
                     <IconChecklist size={26} />
                   </span>
                   Comodidades
                 </h2>
-                <ul className='grid grid-cols-2 gap-2 text-sm text-default-600 sm:grid-cols-3'>
+                <ul className='grid grid-cols-2 gap-2 text-sm text-default-600 sm:grid-cols-3 lg:text-base'>
                   {listing.amenities.map((amenity) => (
                     <li
                       key={amenity}
@@ -336,8 +340,8 @@ const PropertyDetail = ({
                   <IconNotes size={26} />
                 </span>
                 <div>
-                  <h2 className='mb-1 text-xl font-bold sm:text-2xl'>Notas importantes</h2>
-                  <p className='whitespace-pre-line text-default-700'>{listing.publicDescription.notes}</p>
+                  <h2 className='mb-1 text-2xl leading-tight font-bold sm:text-4xl'>Notas importantes</h2>
+                  <p className='whitespace-pre-line text-default-700 lg:text-lg lg:leading-relaxed'>{listing.publicDescription.notes}</p>
                 </div>
               </section>
             ),
@@ -409,9 +413,14 @@ const PropertyDetail = ({
             <SectionsParallaxSlider slides={slides} />
           </div>
 
+          {/* On desktop the form slides in from the right the first time it scrolls into view. Below lg it sits
+              under the content at full width, where a sideways entrance would only cause horizontal scroll. */}
           <aside
+            ref={bookingRef}
             id='booking-widget'
-            className='scroll-mt-22'
+            className={`scroll-mt-22 transition-[translate,opacity] duration-800 ease-brand ${
+              isBookingInView ? '' : 'lg:translate-x-20 lg:opacity-0'
+            }`}
           >
             <BookingWidget
               listing={listing}

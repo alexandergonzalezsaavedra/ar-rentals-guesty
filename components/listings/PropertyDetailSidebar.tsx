@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ComponentType } from 'react';
+import { motion } from 'framer-motion';
 import {
   IconChecklist,
   IconChevronLeft,
@@ -11,6 +12,7 @@ import {
   IconNotes,
   IconPhoto,
 } from '@tabler/icons-react';
+import { EASE_BRAND } from '@/lib/easing';
 import { HERO_SECTION_ID, PROPERTY_SECTION_EVENT, scrollToPropertySection } from './propertySections';
 
 interface PropertyDetailSidebarProps {
@@ -72,7 +74,12 @@ const PropertyDetailSidebar = ({
   }, []);
 
   return (
-    <aside
+    // Desktop only (hidden below lg): slides in from the left the first time it scrolls into view.
+    <motion.aside
+      initial={{ opacity: 0, x: -72 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, ease: EASE_BRAND }}
       className={`top-24 z-30 hidden shrink-0 flex-col gap-0.5 self-start overflow-hidden rounded-2xl border border-default-200 bg-content1 py-3 shadow-lg transition-[width] duration-300 lg:sticky lg:flex dark:border-default-100/20 ${
         expanded ? 'w-56' : 'w-16'
       }`}
@@ -123,7 +130,7 @@ const PropertyDetailSidebar = ({
           </button>
         );
       })}
-    </aside>
+    </motion.aside>
   );
 };
 

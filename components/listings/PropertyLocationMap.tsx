@@ -52,14 +52,14 @@ const PropertyLocationMap = ({
       id='property-location'
       className='scroll-mt-20'
     >
-      <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+      <h2 className='mb-5 flex items-center gap-3 text-2xl leading-tight font-bold sm:text-4xl'>
         <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
           <IconMapPin size={26} />
         </span>
         Ubicación
       </h2>
 
-      <p className='mb-4 text-sm text-default-600'>{address}</p>
+      <p className='mb-4 text-sm text-default-600 lg:text-base'>{address}</p>
 
       <MapContainer
         center={[lat, lng]}
