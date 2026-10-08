@@ -24,7 +24,7 @@ const ReservationSummary = ({
   const totalGuests = adults + childrenCount;
 
   return (
-    <div className='overflow-hidden rounded-xl border border-slate-100 bg-content1 shadow-sm dark:border-slate-800'>
+    <div className='enter-card enter-from-right overflow-hidden rounded-xl border border-slate-100 bg-content1 shadow-sm dark:border-slate-800'>
       <div className='relative h-44 w-full'>
         <Image
           src={listing.picture.large}
@@ -35,7 +35,7 @@ const ReservationSummary = ({
         />
       </div>
 
-      <div className='p-5'>
+      <div className='enter-stagger enter-stagger-late p-5'>
         <h2 className='text-lg font-semibold text-foreground'>{listing.title}</h2>
         <p className='mt-1 text-sm text-default-500'>{listing.address.full}</p>
 
@@ -72,7 +72,7 @@ const ReservationSummary = ({
           {totalGuests} {totalGuests === 1 ? 'huésped' : 'huéspedes'}
         </p>
 
-        <div className='mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 text-sm text-default-600 dark:border-slate-800'>
+        <div className='enter-stagger enter-stagger-late mt-4 flex flex-col gap-2 border-t border-slate-100 pt-4 text-sm text-default-600 dark:border-slate-800'>
           <div className='flex items-center justify-between'>
             <span>Alojamiento</span>
             <span className='font-medium text-foreground'>

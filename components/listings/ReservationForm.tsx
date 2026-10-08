@@ -23,7 +23,7 @@ const STEPS = ['Tus datos', 'Pago'];
 const STORAGE_KEY = 'ar-rentals-guest';
 
 const ReservationSteps = ({ current }: { current: number }) => (
-  <ol className='mb-4 flex items-center gap-3 text-sm'>
+  <ol className='enter-stagger mb-4 flex items-center gap-3 text-sm'>
     {STEPS.map((label, index) => {
       const isDone = index < current;
       const isActive = index === current;
@@ -156,7 +156,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
 
   if (result) {
     return (
-      <div className='flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
+      <div className='enter-card enter-stagger flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
         <span className='flex size-16 items-center justify-center rounded-full bg-success/10 text-success'>
           <IconCircleCheckFilled size={36} />
         </span>
@@ -183,7 +183,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
       <ReservationSteps current={0} />
       <form
         onSubmit={handleSubmit}
-        className='flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'
+        className='enter-card enter-stagger flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'
       >
         <div>
           <h1 className='text-xl font-semibold text-foreground'>Completa tus datos</h1>

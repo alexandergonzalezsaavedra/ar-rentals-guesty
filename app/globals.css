@@ -326,3 +326,102 @@ html {
     transition: none;
   }
 }
+
+/* Entrance animations for content that is on screen as the page loads (the
+   reservation page). `enter-card` brings a whole card in; `enter-stagger`
+   brings a container's direct children in one after another. The fill is
+   `backwards` only: once done, nothing is left transformed. */
+@keyframes enter-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 26px, 0);
+  }
+}
+
+@keyframes enter-from-right {
+  from {
+    opacity: 0;
+    transform: translate3d(72px, 0, 0);
+  }
+}
+
+.enter-card {
+  animation: enter-rise 0.8s var(--ease-brand) backwards;
+}
+
+/* From the side only where the card actually sits to the side. */
+@media (min-width: 1024px) {
+  .enter-card.enter-from-right {
+    animation-name: enter-from-right;
+    animation-delay: 0.15s;
+  }
+}
+
+.enter-stagger > * {
+  animation: enter-rise 0.7s var(--ease-brand) backwards;
+  animation-delay: 0.82s;
+}
+
+.enter-stagger > :nth-child(1) {
+  animation-delay: 0.12s;
+}
+.enter-stagger > :nth-child(2) {
+  animation-delay: 0.19s;
+}
+.enter-stagger > :nth-child(3) {
+  animation-delay: 0.26s;
+}
+.enter-stagger > :nth-child(4) {
+  animation-delay: 0.33s;
+}
+.enter-stagger > :nth-child(5) {
+  animation-delay: 0.40s;
+}
+.enter-stagger > :nth-child(6) {
+  animation-delay: 0.47s;
+}
+.enter-stagger > :nth-child(7) {
+  animation-delay: 0.54s;
+}
+.enter-stagger > :nth-child(8) {
+  animation-delay: 0.61s;
+}
+.enter-stagger > :nth-child(9) {
+  animation-delay: 0.68s;
+}
+.enter-stagger > :nth-child(10) {
+  animation-delay: 0.75s;
+}
+
+/* For a container inside a card that itself arrives late. */
+.enter-stagger-late > :nth-child(1) {
+  animation-delay: 0.35s;
+}
+.enter-stagger-late > :nth-child(2) {
+  animation-delay: 0.42s;
+}
+.enter-stagger-late > :nth-child(3) {
+  animation-delay: 0.49s;
+}
+.enter-stagger-late > :nth-child(4) {
+  animation-delay: 0.56s;
+}
+.enter-stagger-late > :nth-child(5) {
+  animation-delay: 0.63s;
+}
+.enter-stagger-late > :nth-child(6) {
+  animation-delay: 0.70s;
+}
+.enter-stagger-late > :nth-child(7) {
+  animation-delay: 0.77s;
+}
+.enter-stagger-late > :nth-child(8) {
+  animation-delay: 0.84s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-card,
+  .enter-stagger > * {
+    animation: none;
+  }
+}

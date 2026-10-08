@@ -146,7 +146,7 @@ const ReservationPayment = ({ confirmationCode, payment, customer }: Reservation
     const isApproved = status === 'APPROVED';
 
     return (
-      <div className='flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
+      <div className='enter-card enter-stagger flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
         <span
           className={`flex size-16 items-center justify-center rounded-full ${
             isApproved ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'
@@ -177,7 +177,7 @@ const ReservationPayment = ({ confirmationCode, payment, customer }: Reservation
   }
 
   return (
-    <div className='flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'>
+    <div className='enter-card enter-stagger flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'>
       {!isLinkMode && (
         <Script
           src='https://checkout.wompi.co/widget.js'
