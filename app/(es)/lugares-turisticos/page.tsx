@@ -22,27 +22,33 @@ export default function LugaresTuristicosPage() {
 
       <main>
         <PageBreadcrumbs
-          items={[{ label: 'Lugares Turísticos', icon: <IconMap2 size={12} /> }]}
+          items={[
+            { label: 'Lugares Turísticos', icon: <IconMap2 size={12} /> },
+          ]}
         />
 
         {/* `isolate` gives the scroll line a layer of its own to sit behind the content. */}
         <div className='relative isolate w-full px-4 py-10'>
           <ScrollLine />
-          <Link
-            href='/alojamiento?city=Santa+Marta'
-            className='inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20'
-          >
-            <IconMapPin size={14} />
-            Santa Marta
-          </Link>
+          <div className='text-center'>
+            <Link
+              href='/alojamiento?city=Santa+Marta'
+              className='inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-primary/10 px-4 py-1.5 font-mono text-xs font-semibold tracking-[0.14em] text-primary uppercase transition-colors duration-300 ease-brand hover:bg-primary hover:text-white'
+            >
+              <IconMapPin size={14} />
+              Santa Marta
+            </Link>
 
-          <h1 className={`${spaceGrotesk.className} mt-3 text-3xl font-bold text-foreground sm:text-6xl`}>
-            Lugares Turísticos
-          </h1>
-          <p className='mt-2 max-w-2xl text-default-500'>
-            Naturaleza, cultura, historia y vida nocturna: todo lo que puedes
-            vivir alrededor de tu próximo alojamiento en Santa Marta.
-          </p>
+            <h1
+              className={`${spaceGrotesk.className} mt-3 text-3xl font-bold text-foreground sm:text-6xl`}
+            >
+              Lugares Turísticos
+            </h1>
+            <p className='mx-auto mt-2 max-w-2xl text-default-500'>
+              Naturaleza, cultura, historia y vida nocturna: todo lo que puedes
+              vivir alrededor de tu próximo alojamiento en Santa Marta.
+            </p>
+          </div>
 
           <div className='mt-8'>
             <LugaresTuristicosTabs />

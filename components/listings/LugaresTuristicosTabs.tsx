@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState, type ComponentType } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Button, Tab, Tabs } from '@heroui/react';
 import {
-  IconArrowRight,
   IconBeach,
   IconBuildingMonument,
   IconMapPin,
   IconMoonStars,
   IconTrees,
 } from '@tabler/icons-react';
+import DotArrowLabel from './DotArrowLabel';
+import PlacesRotateSlider from './PlacesRotateSlider';
 
 interface Place {
   src: string;
@@ -226,10 +226,12 @@ const LugaresTuristicosTabs = () => {
       color='primary'
       variant='solid'
       classNames={{
-        base: 'w-full',
+        base: 'w-full justify-center',
+        // A floating pill. Five categories don't fit across a phone, so there it scrolls sideways instead of wrapping into uneven rows.
         tabList:
-          'h-auto w-full flex-wrap gap-2 overflow-visible bg-content2 p-1.5',
-        tab: 'h-auto flex-1 basis-[46%] px-4 py-3 sm:basis-0',
+          'h-auto w-full max-w-full flex-nowrap gap-1.5 overflow-x-auto rounded-full border border-default-200 bg-content1 p-2 shadow-lg [scrollbar-width:none] sm:w-fit dark:border-default-100/20',
+        tab: 'group h-auto w-auto flex-none rounded-full px-4 py-2.5 data-[hover-unselected=true]:opacity-100 sm:px-5',
+        cursor: 'rounded-full bg-primary shadow-md',
         panel: 'pt-6',
       }}
     >
@@ -241,52 +243,36 @@ const LugaresTuristicosTabs = () => {
             key={slug}
             title={
               <span
-                className={`flex items-center gap-2 text-sm font-semibold ${
-                  isActive ? 'text-white' : 'text-default-600'
+                className={`flex items-center gap-2.5 text-sm font-semibold transition-colors duration-300 ${
+                  isActive ? 'text-white' : 'text-default-600 group-hover:text-primary'
                 }`}
               >
-                <CategoryIcon size={16} />
+                <span
+                  className={`flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300 ${
+                    isActive ? 'bg-white/20' : 'bg-primary/10 text-primary group-hover:bg-primary/20'
+                  }`}
+                >
+                  <CategoryIcon size={17} />
+                </span>
                 {label}
               </span>
             }
           >
-            <div className='grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3'>
-              {places.map((place) => (
-                <div
-                  key={place.src}
-                  className='group overflow-hidden rounded-xl border border-slate-100 bg-content1 shadow-sm transition-shadow hover:shadow-md dark:border-slate-800'
-                >
-                  <div className='relative aspect-4/3 overflow-hidden'>
-                    <Image
-                      src={place.src}
-                      alt={place.label}
-                      fill
-                      sizes='(min-width: 1024px) 31vw, (min-width: 640px) 47vw, 92vw'
-                      className='object-cover transition-transform duration-500 group-hover:scale-110'
-                    />
-                  </div>
-                  <div className='p-4'>
-                    <h3 className='font-semibold text-foreground'>
-                      {place.label}
-                    </h3>
-                    <p className='mt-1 text-sm text-default-500'>
-                      {place.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            {/* Full-bleed (cancels the page's side padding): the slider sizes its cards in viewport units and pins itself to the screen while it scrolls. */}
+            <div className='-mx-4'>
+              <PlacesRotateSlider places={places} />
             </div>
 
-            <div className='mt-6 flex justify-center'>
+            <div className='mt-10 flex justify-center'>
               <Button
                 as={Link}
                 href='/alojamiento?city=Santa+Marta'
                 color='primary'
-                variant='bordered'
                 radius='full'
-                endContent={<IconArrowRight size={16} />}
+                size='lg'
+                className='group px-8 font-semibold text-white shadow-lg'
               >
-                Ver todas las propiedades en Santa Marta
+                <DotArrowLabel>Ver todas las propiedades en Santa Marta</DotArrowLabel>
               </Button>
             </div>
           </Tab>
