@@ -8,13 +8,16 @@ import {
   IconHome2,
   IconInfoCircle,
   IconMapPin,
+  IconNotes,
   IconPhoto,
 } from '@tabler/icons-react';
+import { HERO_SECTION_ID, PROPERTY_SECTION_EVENT, scrollToPropertySection } from './propertySections';
 
 interface PropertyDetailSidebarProps {
   hasDescription: boolean;
   hasAmenities: boolean;
   hasLocation: boolean;
+  hasNotes: boolean;
   expanded: boolean;
   onToggle: () => void;
 }
@@ -25,21 +28,11 @@ interface NavItem {
   icon: ComponentType<{ size?: number; className?: string }>;
 }
 
-function scrollToId(id: string) {
-  // The hero is sticky on sm+, so once the content has slid over it the
-  // browser already considers it "in view" and scrollIntoView does nothing.
-  if (id === 'property-hero') {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
-  }
-
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-}
-
 const PropertyDetailSidebar = ({
   hasDescription,
   hasAmenities,
   hasLocation,
+  hasNotes,
   expanded,
   onToggle,
 }: PropertyDetailSidebarProps) => {
@@ -61,75 +54,22 @@ const PropertyDetailSidebar = ({
       label: 'Ubicación',
       icon: IconMapPin,
     },
+    hasNotes && {
+      id: 'property-notes',
+      label: 'Notas importantes',
+      icon: IconNotes,
+    },
   ].filter(Boolean) as NavItem[];
 
-  const trackedIds = items.map((item) => item.id).join(',');
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(HERO_SECTION_ID);
 
+  // The section slider announces which section is in focus as it scrolls.
   useEffect(() => {
-    const ids = trackedIds.split(',').filter(Boolean);
+    const handleChange = (event: Event) => setActiveId((event as CustomEvent<string>).detail);
 
-    if (ids.length === 0) {
-      return;
-    }
-
-    let observer: IntersectionObserver | null = null;
-    let rafId: number;
-    let attempts = 0;
-
-    // The location section (PropertyLocationMap) is loaded via next/dynamic
-    // with ssr:false, so on first paint only its loading placeholder exists —
-    // document.getElementById would miss it. Keep retrying a few frames
-    // until every tracked section has actually mounted before observing.
-    const trySetup = () => {
-      const sections = ids
-        .map((id) => document.getElementById(id))
-        .filter((el): el is HTMLElement => el !== null);
-
-      attempts += 1;
-
-      if (sections.length < ids.length && attempts < 60) {
-        rafId = requestAnimationFrame(trySetup);
-        return;
-      }
-
-      if (sections.length === 0) {
-        return;
-      }
-
-      // Counts a section as "active" once it reaches the top band of the
-      // viewport (below the sticky header) and until it's mostly scrolled
-      // past, instead of requiring the whole section to be on screen.
-      observer = new IntersectionObserver(
-        (entries) => {
-          const visible = entries.filter((entry) => entry.isIntersecting);
-
-          if (visible.length > 0) {
-            // Among the sections currently in the band, the one most
-            // recently reached is the one whose top is closest to (but not
-            // past) it — i.e. the largest top, not the smallest: a section
-            // that's almost scrolled away still "intersects" with a very
-            // negative top and would otherwise outrank the one actually
-            // coming into focus.
-            const current = visible.reduce((a, b) =>
-              a.boundingClientRect.top > b.boundingClientRect.top ? a : b,
-            );
-            setActiveId(current.target.id);
-          }
-        },
-        { rootMargin: '-110px 0px -65% 0px', threshold: [0, 1] },
-      );
-
-      sections.forEach((section) => observer?.observe(section));
-    };
-
-    trySetup();
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      observer?.disconnect();
-    };
-  }, [trackedIds]);
+    window.addEventListener(PROPERTY_SECTION_EVENT, handleChange);
+    return () => window.removeEventListener(PROPERTY_SECTION_EVENT, handleChange);
+  }, []);
 
   return (
     <aside
@@ -162,7 +102,7 @@ const PropertyDetailSidebar = ({
           <button
             key={id}
             type='button'
-            onClick={() => scrollToId(id)}
+            onClick={() => scrollToPropertySection(id)}
             aria-current={isActive ? 'true' : undefined}
             className={`relative flex h-11 items-center gap-3 px-[1.125rem] transition-colors ${
               isActive

@@ -5,6 +5,7 @@ import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import LugaresTuristicosTabs from '@/components/listings/LugaresTuristicosTabs';
 import { spaceGrotesk } from '@/lib/fonts';
+import ScrollLine from '@/components/effects/ScrollLine';
 
 export const metadata: Metadata = {
   title: 'Lugares Turísticos | AR Rentals',
@@ -24,7 +25,9 @@ export default function LugaresTuristicosPage() {
           items={[{ label: 'Lugares Turísticos', icon: <IconMap2 size={12} /> }]}
         />
 
-        <div className='container mx-auto px-4 py-10'>
+        {/* `isolate` gives the scroll line a layer of its own to sit behind the content. */}
+        <div className='relative isolate w-full px-4 py-10'>
+          <ScrollLine />
           <Link
             href='/alojamiento?city=Santa+Marta'
             className='inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/20'

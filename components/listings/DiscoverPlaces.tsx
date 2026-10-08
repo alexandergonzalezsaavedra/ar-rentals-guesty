@@ -14,6 +14,7 @@ import {
   IconTrees,
 } from '@tabler/icons-react';
 import { dmSans, spaceGrotesk } from '@/lib/fonts';
+import ScrollLine from '@/components/effects/ScrollLine';
 
 interface Place {
   src: string;
@@ -104,6 +105,7 @@ function CorridorCard({ place, direction, delay }: CorridorSlot) {
 const DiscoverPlaces = () => {
   return (
     <section className='relative z-10 overflow-hidden rounded-t-3xl bg-background py-16 shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
+      <ScrollLine />
       {/* Soft defocus zone just above the solid card, so the hero blurs out
           gradually as this section slides over it instead of a hard cut.
           Only relevant on sm+ where HomeHero is sticky and slides underneath. */}
@@ -115,7 +117,7 @@ const DiscoverPlaces = () => {
         }}
       />
 
-      <div className={`${dmSans.className} container mx-auto px-4 text-center`}>
+      <div className={`${dmSans.className} w-full px-4 text-center`}>
         <span className='inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-1.5 text-sm font-semibold text-primary'>
           <IconStarFilled size={14} />
           #1 en rentas cortas Colombia
@@ -170,7 +172,7 @@ const DiscoverPlaces = () => {
         </div>
       </div>
 
-      <div className='container mx-auto mt-6 px-4'>
+      <div className='w-full mt-6 px-4'>
         <div className='flex flex-wrap items-center justify-center gap-2'>
           {CATEGORIES.map(({ label, slug, icon: CategoryIcon }) => (
             <Link

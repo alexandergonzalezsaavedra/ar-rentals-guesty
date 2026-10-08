@@ -9,7 +9,7 @@ export default function Home() {
       <header className='sticky top-0 z-50'>
         <Menu />
       </header>
-      <main className='container mx-auto px-4 py-8'>
+      <main className='w-full px-4 py-8'>
         <PageBreadcrumbs
           items={[{ label: 'Destinos', icon: <IconMap2 size={12} /> }]}
         />

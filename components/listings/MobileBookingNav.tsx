@@ -8,6 +8,7 @@ import {
   IconMapPin,
   IconPhoto,
 } from '@tabler/icons-react';
+import { scrollToPropertySection } from './propertySections';
 
 // AR Rentals' contact line (same number shown in the footer).
 const WHATSAPP_NUMBER = '573143593612';
@@ -17,10 +18,6 @@ interface MobileBookingNavProps {
   hasDescription: boolean;
   hasAmenities: boolean;
   hasLocation: boolean;
-}
-
-function scrollToId(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 }
 
 const MobileBookingNav = ({
@@ -43,7 +40,7 @@ const MobileBookingNav = ({
           {hasDescription && (
             <button
               type='button'
-              onClick={() => scrollToId('property-description')}
+              onClick={() => scrollToPropertySection('property-description')}
               className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
             >
               <IconInfoCircle size={20} />
@@ -53,7 +50,7 @@ const MobileBookingNav = ({
           {hasAmenities && (
             <button
               type='button'
-              onClick={() => scrollToId('property-amenities')}
+              onClick={() => scrollToPropertySection('property-amenities')}
               className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
             >
               <IconChecklist size={20} />
@@ -68,7 +65,7 @@ const MobileBookingNav = ({
           {hasLocation && (
             <button
               type='button'
-              onClick={() => scrollToId('property-location')}
+              onClick={() => scrollToPropertySection('property-location')}
               className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
             >
               <IconMapPin size={20} />
@@ -77,7 +74,7 @@ const MobileBookingNav = ({
           )}
           <button
             type='button'
-            onClick={() => scrollToId('property-gallery')}
+            onClick={() => scrollToPropertySection('property-gallery')}
             className='flex flex-col items-center gap-1 px-1 py-1 text-default-500 active:scale-95'
           >
             <IconPhoto size={20} />
@@ -99,7 +96,7 @@ const MobileBookingNav = ({
         </a>
         <button
           type='button'
-          onClick={() => scrollToId('booking-widget')}
+          onClick={() => scrollToPropertySection('booking-widget')}
           aria-label='Ir a reservar'
           className='flex size-14 items-center justify-center rounded-full bg-primary text-white shadow-lg ring-4 ring-background active:scale-95'
         >

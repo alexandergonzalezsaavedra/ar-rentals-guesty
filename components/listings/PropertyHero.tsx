@@ -6,12 +6,13 @@ import { Button } from '@heroui/react';
 import {
   IconBath,
   IconBed,
-  IconCalendarHeart,
   IconChevronDown,
   IconStarFilled,
   IconUsers,
 } from '@tabler/icons-react';
+import { EASE_BRAND } from '@/lib/easing';
 import type { GuestyListingDetail } from '@/lib/guesty/listings';
+import DotArrowLabel from './DotArrowLabel';
 
 interface PropertyHeroProps {
   listing: GuestyListingDetail;
@@ -46,7 +47,7 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
           className='flex flex-col items-center gap-2'
           initial={{ opacity: 0, y: -28, filter: 'blur(14px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 2, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 2, delay: 0.05, ease: EASE_BRAND }}
         >
           {/* {ratingAvg !== null && listing.reviews.total > 0 && (
             <span className='flex items-center gap-1.5 rounded-full bg-white/90 px-4 py-1.5 text-sm font-semibold text-default-900 shadow'>
@@ -71,7 +72,7 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
           className='flex flex-col items-center gap-4'
           initial={{ opacity: 0, y: 28, filter: 'blur(12px)' }}
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ duration: 2, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 2, delay: 0.15, ease: EASE_BRAND }}
         >
           <div className='flex flex-wrap items-center gap-x-4 gap-y-1 py-2 text-xs text-white'>
             <span
@@ -119,10 +120,10 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
             color='primary'
             radius='full'
             size='lg'
-            className='font-bold text-white'
+            className='group px-8 font-bold text-white'
             onPress={() => scrollToId('booking-widget')}
           >
-            Ver disponibilidad <IconCalendarHeart size={25} />
+            <DotArrowLabel>Ver disponibilidad</DotArrowLabel>
           </Button>
         </motion.div>
       </div>

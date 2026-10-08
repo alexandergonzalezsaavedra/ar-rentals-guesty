@@ -50,7 +50,7 @@ const PropertyLocationMap = ({
   return (
     <section
       id='property-location'
-      className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm dark:border-slate-800'
+      className='scroll-mt-20'
     >
       <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
         <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>

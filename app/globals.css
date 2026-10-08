@@ -4,6 +4,15 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* The site's two motion curves (utilities: ease-brand, ease-brand-soft) and
+   its monospace face for counters and labels (utility: font-mono). The curves
+   are mirrored for JavaScript-driven animation in lib/easing.ts. */
+@theme {
+  --ease-brand: cubic-bezier(0.35, 0, 0, 1);
+  --ease-brand-soft: cubic-bezier(0.4, 0, 0.1, 1);
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -95,7 +104,7 @@ html {
 }
 
 .animate-curtain-reveal {
-  animation: curtain-reveal 1.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation: curtain-reveal 1.6s var(--ease-brand-soft) both;
 }
 
 /* Gentle up/down bob for small inline icons (stay date strip, etc.) —
@@ -213,5 +222,107 @@ html {
 @media (max-width: 1023.98px) {
   body:has([data-mobile-booking-nav]) .site-footer-bottom {
     padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* Custom cursor (site-wide). A dot trails the pointer; it opens into a
+   ring over anything clickable and into a labelled disc over elements that
+   carry data-cursor (the gallery photos). Sized by scaling one 88px circle. */
+.prop-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s var(--ease-brand-soft);
+}
+
+.prop-cursor[data-visible='true'] {
+  opacity: 1;
+}
+
+.prop-cursor-disc {
+  position: absolute;
+  top: -44px;
+  left: -44px;
+  display: flex;
+  width: 88px;
+  height: 88px;
+  align-items: center;
+  justify-content: center;
+  /* Translucent at rest, so the dot never hides what's under the pointer. */
+  border: 2px solid hsl(var(--heroui-primary) / 0.3);
+  border-radius: 9999px;
+  background: hsl(var(--heroui-primary) / 0.2);
+  transform: scale(0.14);
+  transition:
+    transform 0.5s var(--ease-brand),
+    background-color 0.35s var(--ease-brand-soft),
+    border-color 0.35s var(--ease-brand-soft);
+}
+
+.prop-cursor[data-state='link'] .prop-cursor-disc {
+  background: hsl(var(--heroui-primary) / 0.1);
+  transform: scale(0.55);
+}
+
+/* The labelled disc needs enough body for its white text to read over a photo. */
+.prop-cursor[data-state='label'] .prop-cursor-disc {
+  border-color: hsl(var(--heroui-primary) / 0.5);
+  background: hsl(var(--heroui-primary) / 0.72);
+  backdrop-filter: blur(6px);
+  transform: scale(1);
+}
+
+.prop-cursor[data-pressed='true'] .prop-cursor-disc {
+  transition-duration: 0.15s;
+  scale: 0.8;
+}
+
+.prop-cursor-label {
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.25s var(--ease-brand-soft);
+}
+
+.prop-cursor[data-state='label'] .prop-cursor-label {
+  opacity: 1;
+  transition-delay: 0.12s;
+}
+
+/* Property detail: each piece of a slide's content rises into place, one
+   after another, when the slide arrives (data-entered is toggled by the
+   slider; --reveal-index sets the order). */
+.slide-reveal {
+  opacity: 0;
+  transform: translate3d(0, 32px, 0);
+  transition:
+    opacity 0.7s var(--ease-brand-soft),
+    transform 0.9s var(--ease-brand);
+  transition-delay: calc(var(--reveal-index, 0) * 70ms);
+}
+
+[data-entered='true'] .slide-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+/* Leaving resets at once, so the entrance can replay next time. */
+[data-entered='false'] .slide-reveal {
+  transition-duration: 0.01s;
+  transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }

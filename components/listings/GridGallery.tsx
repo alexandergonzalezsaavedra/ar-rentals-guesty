@@ -185,6 +185,7 @@ const GridGallery = ({
               type='button'
               aria-label={`Ver ${remainingCount} fotos más`}
               onClick={() => setVisibleCount(images.length)}
+              data-cursor='Más'
               className={`${widthClass} p-2 group`}
             >
               {imageBox}
@@ -198,6 +199,7 @@ const GridGallery = ({
             href={image.url}
             data-pswp-width={image.width}
             data-pswp-height={image.height}
+            data-cursor='Ver'
             className={`${widthClass} p-2 group`}
           >
             {imageBox}

@@ -145,7 +145,7 @@ const Footer = () => {
       </div>
 
       {/* sm and up: the left-aligned column grid. */}
-      <div className='container mx-auto hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
+      <div className='w-full hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
         <div>
           <Image
             src='/ar-rentals-logo.png'

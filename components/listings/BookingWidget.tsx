@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Button, Card, DatePicker, Spinner } from '@heroui/react';
+import DotArrowLabel from './DotArrowLabel';
 import Stepper from './Stepper';
 import {
   getLocalTimeZone,
@@ -477,14 +478,14 @@ const BookingWidget = ({
       )}
 
       <Button
-        className='mt-4 text-white'
+        className='group mt-4 font-semibold text-white'
         radius='full'
         variant='solid'
         color='primary'
         isDisabled={!hasValidRange || !pricing || isLoading}
         onPress={handleReserve}
       >
-        Reservar ahora
+        <DotArrowLabel>Reservar ahora</DotArrowLabel>
       </Button>
 
       {(listing.defaultCheckInTime || listing.defaultCheckOutTime) && (

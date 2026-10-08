@@ -59,7 +59,7 @@ const Menu = () => {
 
   const navbar = (
     <Navbar
-      maxWidth='2xl'
+      maxWidth='full'
       position='sticky'
       isBlurred={false}
       classNames={{ base: 'z-50', menu: 'z-50 bg-background' }}

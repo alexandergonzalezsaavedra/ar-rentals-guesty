@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { Button, Pagination, Spinner } from '@heroui/react';
 import { IconLayoutGrid, IconMap2 } from '@tabler/icons-react';
 import type { GuestyListing } from '@/lib/guesty/listings';
+import ScrollLine from '@/components/effects/ScrollLine';
 import ActiveFiltersBar from './ActiveFiltersBar';
 import PropertyAdvantages from './PropertyAdvantages';
 import PropertyCard from './PropertyCard';
@@ -156,14 +157,15 @@ const PropertyListingsGrid = ({
           {/* sm+: the image takes the right side of the banner and a diagonal fade blends it into the flat background. */}
           <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#eef3f1]/40 to-[#eef3f1] sm:block dark:via-[#1c2420]/40 dark:to-[#1c2420]' />
         </motion.div>
-        <div className='container relative mx-auto px-4 sm:px-0'>
+        <div className='relative w-full px-4'>
           <PropertyAdvantages />
         </div>
       </div>
 
       {/* Opaque and stacked above the sticky banner, so it slides over it on scroll (same effect as the home page). */}
       <div className='relative z-10 rounded-t-3xl bg-background shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
-        <div className='container mx-auto px-4 pb-12'>
+        <ScrollLine mirrored />
+        <div className='w-full px-4 pb-12'>
           {/* Comes in last, after the banner title and step cards have settled. */}
           <motion.div
             ref={filtersRef}

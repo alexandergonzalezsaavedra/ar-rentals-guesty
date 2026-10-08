@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { EASE_BRAND, EASE_BRAND_SOFT } from '@/lib/easing';
 import { spaceGrotesk } from '@/lib/fonts';
 
 const RISE = {
@@ -8,7 +9,7 @@ const RISE = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' as const },
+    transition: { duration: 0.6, ease: EASE_BRAND },
   },
 };
 
@@ -19,7 +20,7 @@ const UNDERLINE = {
     pathLength: 1,
     opacity: 1,
     transition: {
-      pathLength: { duration: 0.7, delay: 0.55, ease: 'easeInOut' as const },
+      pathLength: { duration: 0.7, delay: 0.55, ease: EASE_BRAND_SOFT },
       opacity: { delay: 0.55 },
     },
   },
@@ -30,6 +31,7 @@ const UNDERLINE = {
 const HighlightedHeading = () => {
   return (
     <motion.h2
+      data-no-reveal
       initial='hidden'
       whileInView='show'
       viewport={{ once: true, amount: 0.8 }}

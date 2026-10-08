@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
 import { Spinner } from '@heroui/react';
 import {
   IconBath,
@@ -30,7 +29,7 @@ import BookingWidget from './BookingWidget';
 import GridGallery from './GridGallery';
 import MobileBookingNav from './MobileBookingNav';
 import PropertyDetailSidebar from './PropertyDetailSidebar';
-import Reveal from './Reveal';
+import SectionsParallaxSlider, { type SectionSlide } from './SectionsParallaxSlider';
 import ShareButton from './ShareButton';
 import HighlightedHeading from '@/components/listings/HighlightedHeading';
 
@@ -96,6 +95,11 @@ const DESCRIPTION_SECTIONS: {
   },
 ];
 
+const DESCRIPTION_SLIDE_GROUPS: (typeof DESCRIPTION_SECTIONS)[number]['key'][][] = [
+  ['summary', 'access', 'interactionWithGuests'],
+  ['space'],
+];
+
 const PropertyDetail = ({
   listing,
   bedArrangements,
@@ -151,6 +155,197 @@ const PropertyDetail = ({
     toggle(listing);
   };
 
+  // The stay-related texts share one slide; "El espacio" keeps its own.
+  // Groups left empty because Guesty has none of their texts are dropped.
+  const descriptionSlides = DESCRIPTION_SLIDE_GROUPS.map((keys) =>
+    DESCRIPTION_SECTIONS.filter(({ key }) => keys.includes(key) && listing.publicDescription?.[key]),
+  ).filter((group) => group.length > 0);
+
+  // Each entry is one slide of the section slider. `navId` ties a slide to an
+  // entry of the page navigation; slides without one belong to the section
+  // before them.
+  const slides: SectionSlide[] = [
+    {
+      key: 'capacity',
+      label: 'Capacidad',
+      content: (
+        <>
+          <div className='mb-8 flex justify-start'>
+            <HighlightedHeading />
+          </div>
+          {/* Always three across: stacked and centered on phones so the row stays compact, icon-beside-text from sm up. */}
+          <div className='grid grid-cols-3 gap-2 sm:gap-4'>
+            {stats.map(({ icon: StatIcon, value, label, detail }, index) => (
+              <div
+                key={label}
+                data-reveal
+                className='group flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left'
+              >
+                <span className='flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white sm:size-16'>
+                  <StatIcon
+                    className='animate-icon-float size-7 sm:size-9'
+                    style={{ animationDelay: `${index * 0.4}s` }}
+                  />
+                </span>
+                <div className='min-w-0'>
+                  <p className='text-2xl leading-none font-bold text-foreground sm:text-3xl'>{value}</p>
+                  <p className='mt-1.5 font-mono text-[10px] tracking-wider text-default-600 uppercase sm:text-[11px]'>{label}</p>
+                  {detail && <p className='font-mono text-[10px] tracking-wider text-default-400 uppercase'>{detail}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {sleepingRooms.length > 0 && (
+            <section className='mt-10 border-t border-default-200 pt-10 dark:border-default-100/20'>
+              <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                  <IconBed size={26} />
+                </span>
+                Distribución de camas
+              </h2>
+              <ul className='grid grid-cols-1 gap-3 text-sm text-default-600 sm:grid-cols-2'>
+                {sleepingRooms.map((room) => (
+                  <li
+                    key={room.roomNumber}
+                    className='flex items-start gap-2 rounded-lg bg-content2 p-3'
+                  >
+                    <IconBed
+                      size={22}
+                      className='mt-0.5 shrink-0 text-primary'
+                    />
+                    <div>
+                      <p className='font-medium text-default-700'>{ROOM_NAME_LABELS[room.name] ?? room.name}</p>
+                      <p>{describeBeds(room.beds)}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>
+      ),
+    },
+    ...descriptionSlides.map(
+      (group, index): SectionSlide => ({
+        key: group.map(({ key }) => key).join('-'),
+        label: group.length > 1 ? 'Descripción' : group[0].title,
+        navId: index === 0 ? 'property-description' : undefined,
+        content: (
+          <>
+            {group.map(({ key, title, icon: SectionIcon }, position) => (
+              <section
+                key={key}
+                className={position > 0 ? 'mt-8 border-t border-default-200 pt-8 dark:border-default-100/20' : undefined}
+              >
+                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                    <SectionIcon size={26} />
+                  </span>
+                  {title}
+                </h2>
+                <p className='whitespace-pre-line text-default-600'>{listing.publicDescription?.[key]}</p>
+              </section>
+            ))}
+          </>
+        ),
+      }),
+    ),
+    {
+      key: 'gallery',
+      label: 'Galería',
+      navId: 'property-gallery',
+      content: (
+        <section>
+          <h2 className='mb-2 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+            <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+              <IconPhoto size={26} />
+            </span>
+            Conoce cada espacio
+          </h2>
+          <p className='mb-3 text-sm text-default-500'>
+            Recorre la propiedad en imágenes y descubre los detalles que harán de tu estadía una experiencia
+            inolvidable.
+          </p>
+          <div className='overflow-hidden rounded-xl'>
+            <GridGallery
+              images={galleryImages}
+              quantityImageRow={3}
+            />
+          </div>
+        </section>
+      ),
+    },
+    ...(hasAmenities
+      ? [
+          {
+            key: 'amenities',
+            label: 'Comodidades',
+            navId: 'property-amenities',
+            content: (
+              <section>
+                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
+                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
+                    <IconChecklist size={26} />
+                  </span>
+                  Comodidades
+                </h2>
+                <ul className='grid grid-cols-2 gap-2 text-sm text-default-600 sm:grid-cols-3'>
+                  {listing.amenities.map((amenity) => (
+                    <li
+                      key={amenity}
+                      className='flex items-center gap-2.5 rounded-lg bg-content2 px-3 py-2.5 transition-colors duration-200 hover:bg-primary/10'
+                    >
+                      <span className='flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary'>
+                        <IconCheck size={16} />
+                      </span>
+                      {amenity}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ),
+          },
+        ]
+      : []),
+    ...(hasCoords
+      ? [
+          {
+            key: 'location',
+            label: 'Ubicación',
+            navId: 'property-location',
+            content: (
+              <PropertyLocationMap
+                lat={listing.address.lat}
+                lng={listing.address.lng}
+                address={listing.address.full}
+              />
+            ),
+          },
+        ]
+      : []),
+    ...(listing.publicDescription?.notes
+      ? [
+          {
+            key: 'notes',
+            label: 'Notas',
+            navId: 'property-notes',
+            content: (
+              <section className='flex items-start gap-3 text-foreground'>
+                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary'>
+                  <IconNotes size={26} />
+                </span>
+                <div>
+                  <h2 className='mb-1 text-xl font-bold sm:text-2xl'>Notas importantes</h2>
+                  <p className='whitespace-pre-line text-default-700'>{listing.publicDescription.notes}</p>
+                </div>
+              </section>
+            ),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <div className='pb-6 lg:pb-0'>
       {/* Below lg the mobile nav owns the bottom edge, so these sit just above it in the corner; on desktop they float mid-height. */}
@@ -203,177 +398,15 @@ const PropertyDetail = ({
           hasDescription={hasDescription}
           hasAmenities={hasAmenities}
           hasLocation={hasCoords}
+          hasNotes={Boolean(listing.publicDescription?.notes)}
           expanded={isSidebarExpanded}
           onToggle={() => setIsSidebarExpanded((value) => !value)}
         />
 
         <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3'>
-          <div className='lg:col-span-2'>
-            <div className='flex justify-start mb-8'>
-              <HighlightedHeading />
-            </div>
-            {/* Always three across: stacked and centered on phones so the row stays compact, icon-beside-text from sm up. */}
-            <div className='grid grid-cols-3 gap-2 sm:gap-4'>
-              {stats.map(({ icon: StatIcon, value, label, detail }, index) => (
-                <Reveal
-                  key={label}
-                  delay={index * 0.12}
-                  className='group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-content1 px-2 py-4 text-center shadow-sm transition-shadow duration-300 hover:shadow-lg sm:flex-row sm:gap-4 sm:p-5 sm:text-left dark:border-slate-800'
-                >
-                  <span className='flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-colors duration-300 group-hover:bg-primary group-hover:text-white sm:size-16'>
-                    <StatIcon
-                      className='animate-icon-float size-7 sm:size-9'
-                      style={{ animationDelay: `${index * 0.4}s` }}
-                    />
-                  </span>
-                  <div className='min-w-0'>
-                    <p className='text-2xl leading-none font-bold text-foreground sm:text-3xl'>{value}</p>
-                    <p className='mt-1 text-xs font-medium text-default-600 sm:text-sm'>{label}</p>
-                    {detail && <p className='text-[11px] text-default-400 sm:text-xs'>{detail}</p>}
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-
-            {sleepingRooms.length > 0 && (
-              <Reveal className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'>
-                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
-                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                    <IconBed size={26} />
-                  </span>
-                  Distribución de camas
-                </h2>
-                <ul className='grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-default-600'>
-                  {sleepingRooms.map((room) => (
-                    <li
-                      key={room.roomNumber}
-                      className='flex items-start gap-2 rounded-lg bg-content2 p-3'
-                    >
-                      <IconBed
-                        size={22}
-                        className='mt-0.5 shrink-0 text-primary'
-                      />
-                      <div>
-                        <p className='font-medium text-default-700'>
-                          {ROOM_NAME_LABELS[room.name] ?? room.name}
-                        </p>
-                        <p>{describeBeds(room.beds)}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-            )}
-
-            <div
-              id='property-description'
-              className='scroll-mt-20'
-            >
-              {DESCRIPTION_SECTIONS.map(({ key, title, icon: SectionIcon }) => {
-                const content = listing.publicDescription?.[key];
-
-                if (!content) {
-                  return null;
-                }
-
-                return (
-                  <Reveal
-                    key={key}
-                    className='mt-6 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
-                  >
-                    <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
-                      <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                        <SectionIcon size={26} />
-                      </span>
-                      {title}
-                    </h2>
-                    <p className='text-default-600 whitespace-pre-line'>
-                      {content}
-                    </p>
-                  </Reveal>
-                );
-              })}
-            </div>
-
-            {/* Galeria */}
-            <Reveal
-              id='property-gallery'
-              className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
-            >
-              <h2 className='mb-2 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
-                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                  <IconPhoto size={26} />
-                </span>
-                Conoce cada espacio
-              </h2>
-              <p className='mb-3 text-sm text-default-500'>
-                Recorre la propiedad en imágenes y descubre los detalles que
-                harán de tu estadía una experiencia inolvidable.
-              </p>
-              <div className='overflow-hidden rounded-xl'>
-                <GridGallery
-                  images={galleryImages}
-                  quantityImageRow={3}
-                />
-              </div>
-            </Reveal>
-
-            {hasAmenities && (
-              <Reveal
-                id='property-amenities'
-                className='mt-6 scroll-mt-20 rounded-xl border border-slate-100 dark:border-slate-800 bg-content1 p-5 shadow-sm'
-              >
-                <h2 className='mb-4 flex items-center gap-3 text-xl font-bold sm:text-2xl'>
-                  <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary'>
-                    <IconChecklist size={26} />
-                  </span>
-                  Comodidades
-                </h2>
-                <ul className='grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-default-600'>
-                  {listing.amenities.map((amenity, index) => (
-                    <motion.li
-                      key={amenity}
-                      initial={{ opacity: 0, y: 16, scale: 0.95 }}
-                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                      viewport={{ once: true, margin: '0px 0px -30px 0px' }}
-                      transition={{ duration: 0.4, delay: (index % 3) * 0.06, ease: 'easeOut' }}
-                      className='flex items-center gap-2.5 rounded-lg bg-content2 px-3 py-2.5 transition-colors duration-200 hover:bg-primary/10'
-                    >
-                      <span className='flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary'>
-                        <IconCheck size={16} />
-                      </span>
-                      {amenity}
-                    </motion.li>
-                  ))}
-                </ul>
-              </Reveal>
-            )}
-
-            {hasCoords && (
-              <Reveal>
-                <PropertyLocationMap
-                  lat={listing.address.lat}
-                  lng={listing.address.lng}
-                  address={listing.address.full}
-                />
-              </Reveal>
-            )}
-
-            {listing.publicDescription?.notes && (
-              <Reveal className='mt-6 flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/10 p-5 text-foreground'>
-                <span className='flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary'>
-                  <IconNotes size={26} />
-                </span>
-                <div>
-                  <h2 className='mb-1 text-xl font-bold sm:text-2xl'>
-                    Notas importantes
-                  </h2>
-                  <p className='whitespace-pre-line text-default-700'>
-                    {listing.publicDescription.notes}
-                  </p>
-                </div>
-              </Reveal>
-            )}
+          {/* min-w-0 keeps the column at its grid width whatever the slides hold. */}
+          <div className='min-w-0 lg:col-span-2'>
+            <SectionsParallaxSlider slides={slides} />
           </div>
 
           <aside

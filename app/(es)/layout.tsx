@@ -4,6 +4,8 @@ import '../globals.css';
 import { ProvidersUI } from '../heroproviders';
 import Footer from '@/components/footer/footer';
 import ClickBurst from '@/components/effects/ClickBurst';
+import CursorFluid from '@/components/effects/CursorFluid';
+import SiteCursor from '@/components/effects/SiteCursor';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -73,6 +75,8 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       <body className='min-h-full flex flex-col'>
         <ProvidersUI>
           <ClickBurst />
+          <CursorFluid />
+          <SiteCursor />
           {children}
           <footer>
             <Footer />

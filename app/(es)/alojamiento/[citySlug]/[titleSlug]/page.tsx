@@ -4,7 +4,6 @@ import { IconMapPin } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
 import PropertyDetail from '@/components/listings/PropertyDetail';
 import PropertyHero from '@/components/listings/PropertyHero';
-import SectionBackdrop from '@/components/listings/SectionBackdrop';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import {
   getListingBedArrangements,
@@ -67,8 +66,8 @@ export default async function PropertyDetailPage(
           <PropertyHero listing={listing} />
         </div>
         {/* Opaque and stacked above the sticky hero, so it slides over it on scroll (same effect as the home and listings pages). */}
-        <SectionBackdrop className='relative z-10 rounded-t-3xl shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
-          <main className='container mx-auto px-4 py-8'>
+        <div className='relative z-10 rounded-t-3xl bg-background shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
+          <main className='w-full px-4 py-8'>
             <PropertyDetail
               listing={listing}
               bedArrangements={bedArrangements}
@@ -78,7 +77,7 @@ export default async function PropertyDetailPage(
               initialChildren={firstValue(searchParams.children)}
             />
           </main>
-        </SectionBackdrop>
+        </div>
       </div>
     </>
   );

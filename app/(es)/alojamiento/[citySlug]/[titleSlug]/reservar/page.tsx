@@ -78,7 +78,7 @@ export default async function ReservationPage(
           { label: 'Reservar' },
         ]}
       />
-      <main className='container mx-auto grid gap-8 px-4 py-8 lg:grid-cols-3'>
+      <main className='w-full grid gap-8 px-4 py-8 lg:grid-cols-3'>
         <div className='lg:col-span-2'>
           <ReservationForm
             quoteId={quote._id}
