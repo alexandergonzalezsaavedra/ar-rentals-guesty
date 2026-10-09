@@ -100,7 +100,7 @@ const TiltCard = ({
 
 const PropertyAdvantages = () => {
   return (
-    <div className='mb-8 flex flex-col gap-8'>
+    <div className='container mx-auto mb-8 flex flex-col gap-8'>
       <div className='text-center'>
         <motion.p
           initial={{ opacity: 0, y: -12 }}
@@ -112,7 +112,7 @@ const PropertyAdvantages = () => {
         </motion.p>
         {/* The two sentences rise in one after the other, then the step cards follow. */}
         <h2
-          className={`${spaceGrotesk.className} mx-auto mt-2 max-w-4xl text-3xl font-bold text-balance text-foreground sm:text-6xl`}
+          className={`mx-auto mt-2 max-w-4xl text-3xl font-bold text-balance text-foreground sm:text-6xl`}
         >
           <motion.span
             initial={{ opacity: 0, y: 24 }}

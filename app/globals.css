@@ -268,12 +268,12 @@ html {
   transform: scale(0.55);
 }
 
-/* The labelled disc needs enough body for its white text to read over a photo. */
+/* See-through, with no blur, so whatever sits under the pointer stays
+   readable; the label carries its own shadow to stand out over photos. */
 .prop-cursor[data-state='label'] .prop-cursor-disc {
-  border-color: hsl(var(--heroui-primary) / 0.5);
-  background: hsl(var(--heroui-primary) / 0.72);
-  backdrop-filter: blur(6px);
-  transform: scale(1);
+  border-color: hsl(var(--heroui-primary) / 0.45);
+  background: hsl(var(--heroui-primary) / 0.28);
+  transform: scale(0.9);
 }
 
 .prop-cursor[data-pressed='true'] .prop-cursor-disc {
@@ -283,6 +283,7 @@ html {
 
 .prop-cursor-label {
   color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.55);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.16em;

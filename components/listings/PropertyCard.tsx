@@ -146,18 +146,18 @@ const PropertyCard = ({
             size='md'
             radius='full'
             aria-label={isFav ? 'Quitar de favoritos' : 'Guardar propiedad'}
-            className='absolute top-2 right-2 bg-white/90 text-default-700'
+            className={`${isFav ? 'bg-danger text-white absolute top-2 right-2' : 'bg-white/90 text-default-700 absolute top-2 right-2'}`}
             onPress={handleToggleFavorite}
           >
             {isFav ? (
               <IconHeartFilled
-                className='text-danger'
-                size={16}
+                className='text-white'
+                size={20}
               />
             ) : (
               <IconHeart
                 className='text-slate-600'
-                size={16}
+                size={20}
               />
             )}
           </Button>

@@ -1,20 +1,14 @@
 'use client';
 
-import type { ComponentType, CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@heroui/react';
-import {
-  IconArrowRight,
-  IconBeach,
-  IconBuildingMonument,
-  IconMapPin,
-  IconMoonStars,
-  IconStarFilled,
-  IconTrees,
-} from '@tabler/icons-react';
+import { IconArrowRight, IconStarFilled } from '@tabler/icons-react';
 import { dmSans, spaceGrotesk } from '@/lib/fonts';
 import ScrollLine from '@/components/effects/ScrollLine';
+import CategoryStackCard from './CategoryStackCard';
+import { CATEGORIES } from './LugaresTuristicosTabs';
 
 interface Place {
   src: string;
@@ -22,36 +16,41 @@ interface Place {
 }
 
 const PLACES: Place[] = [
-  { src: '/home/lugares-por-descubrir/lugares-de-interes.jpg', label: 'Lugares de interés' },
-  { src: '/home/lugares-por-descubrir/parques-naturales.jpg', label: 'Parques naturales' },
+  {
+    src: '/home/lugares-por-descubrir/lugares-de-interes.jpg',
+    label: 'Lugares de interés',
+  },
+  {
+    src: '/home/lugares-por-descubrir/parques-naturales.jpg',
+    label: 'Parques naturales',
+  },
   {
     src: '/home/lugares-por-descubrir/sitios-culturales-y-historicos.jpg',
     label: 'Sitios culturales e históricos',
   },
-  { src: '/home/lugares-por-descubrir/vida-nocturna.jpg', label: 'Vida nocturna' },
+  {
+    src: '/home/lugares-por-descubrir/vida-nocturna.jpg',
+    label: 'Vida nocturna',
+  },
   {
     src: '/home/lugares-por-descubrir/Destinos-AR-Rentals-7.jpg',
     label: 'Destinos destacados',
   },
 ];
 
-interface Category {
-  label: string;
-  slug: string;
-  icon: ComponentType<{ size?: number; className?: string }>;
-}
-
-const CATEGORIES: Category[] = [
-  { label: 'Playas', slug: 'playas', icon: IconBeach },
-  { label: 'Parques Naturales', slug: 'parques-naturales', icon: IconTrees },
-  {
-    label: 'Sitios Históricos y Culturales',
-    slug: 'sitios-historicos-y-culturales',
-    icon: IconBuildingMonument,
-  },
-  { label: 'Sitios de Interés', slug: 'sitios-de-interes', icon: IconMapPin },
-  { label: 'Vida Nocturna', slug: 'vida-nocturna', icon: IconMoonStars },
-];
+// One line per category for the home cards; the photos and place counts come
+// from the tourist places page so the two never drift apart.
+const CATEGORY_SUMMARIES: Record<string, string> = {
+  playas:
+    'Aguas cristalinas, bahías escondidas y atardeceres frente al Caribe.',
+  'parques-naturales':
+    'Selva, montaña y mar: el Tayrona, la Sierra Nevada y Minca.',
+  'sitios-historicos-y-culturales':
+    'La historia de Santa Marta, de Teyuna al centro colonial.',
+  'sitios-de-interes':
+    'Miradores, cascadas y paseos para llenar cualquier tarde.',
+  'vida-nocturna': 'Rooftops, música en vivo y noches que terminan tarde.',
+};
 
 const CARDS_PER_SIDE = 5;
 const DURATION_SECONDS = 14;
@@ -172,17 +171,22 @@ const DiscoverPlaces = () => {
         </div>
       </div>
 
-      <div className='w-full mt-6 px-4'>
-        <div className='flex flex-wrap items-center justify-center gap-2'>
-          {CATEGORIES.map(({ label, slug, icon: CategoryIcon }) => (
-            <Link
+      {/* Category cards: a swipeable row on phones, a grid from sm up. */}
+      <div className='container mx-auto mt-8 w-full'>
+        <div className='flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:grid sm:snap-none sm:grid-cols-2 sm:overflow-visible lg:grid-cols-3 xl:grid-cols-5'>
+          {CATEGORIES.map(({ label, slug, icon, places }) => (
+            <CategoryStackCard
               key={slug}
               href={`/lugares-turisticos#${slug}`}
-              className='flex items-center gap-2 rounded-lg bg-content2 px-5 py-3 text-sm font-semibold text-default-600 transition-colors hover:bg-content3'
-            >
-              <CategoryIcon size={18} />
-              {label}
-            </Link>
+              title={label}
+              icon={icon}
+              description={CATEGORY_SUMMARIES[slug] ?? ''}
+              images={places.map((place) => ({
+                src: place.src,
+                alt: place.label,
+              }))}
+              stats={[`${places.length} lugares`, 'Santa Marta']}
+            />
           ))}
         </div>
       </div>

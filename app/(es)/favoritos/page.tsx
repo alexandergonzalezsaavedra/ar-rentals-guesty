@@ -17,8 +17,10 @@ export default function FavoritosPage() {
       <PageBreadcrumbs
         items={[{ label: 'Favoritos', icon: <IconHeart size={12} /> }]}
       />
-      <main className='w-full px-4 py-8'>
-        <h1 className={`${spaceGrotesk.className} mb-6 text-3xl font-bold text-foreground sm:text-6xl`}>
+      <main className='container mx-auto px-4 py-8'>
+        <h1
+          className={`${spaceGrotesk.className} text-center mb-6 text-3xl font-bold text-foreground sm:text-6xl`}
+        >
           Tus propiedades favoritas
         </h1>
         <FavoritesList />

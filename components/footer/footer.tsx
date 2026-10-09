@@ -32,7 +32,8 @@ const linkGroups = [
 const PHONE_HREF = 'tel:+573143593612';
 const PHONE_LABEL = '+57 314 359 3612';
 const EMAIL = 'contacto@arrentals.com.co';
-const ADDRESS = 'Calle 22 # 1 - 67 Edificio Reserva del Mar, Playa Salguero, Santa Marta.';
+const ADDRESS =
+  'Calle 22 # 1 - 67 Edificio Reserva del Mar, Playa Salguero, Santa Marta.';
 
 const socialLinks = [
   {
@@ -88,14 +89,18 @@ const Footer = () => {
 
         {linkGroups.map(({ title, links }) => (
           <div key={title}>
-            <h3 className='text-[11px] font-semibold tracking-[0.2em] text-white/50 uppercase'>{title}</h3>
+            <h3 className='text-[11px] font-semibold tracking-[0.2em] text-white/50 uppercase'>
+              {title}
+            </h3>
             <ul className='mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-sm'>
               {links.map((link, index) => (
                 <li
                   key={link.label}
                   className='flex items-center gap-2'
                 >
-                  {index > 0 && <span className='size-1 rounded-full bg-primary' />}
+                  {index > 0 && (
+                    <span className='size-1 rounded-full bg-primary' />
+                  )}
                   <Link
                     href={link.href}
                     className='py-1 text-white/90 active:text-primary'
@@ -109,7 +114,9 @@ const Footer = () => {
         ))}
 
         <div className='flex w-full max-w-xs flex-col items-center gap-3'>
-          <h3 className='text-[11px] font-semibold tracking-[0.2em] text-white/50 uppercase'>Contacto</h3>
+          <h3 className='text-[11px] font-semibold tracking-[0.2em] text-white/50 uppercase'>
+            Contacto
+          </h3>
           <a
             href={PHONE_HREF}
             className='flex w-full items-center justify-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-3 text-sm font-medium active:bg-white/10'
@@ -145,7 +152,7 @@ const Footer = () => {
       </div>
 
       {/* sm and up: the left-aligned column grid. */}
-      <div className='w-full hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
+      <div className='container mx-auto hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
         <div>
           <Image
             src='/ar-rentals-logo.png'

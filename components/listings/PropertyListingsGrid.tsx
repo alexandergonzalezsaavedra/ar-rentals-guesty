@@ -70,7 +70,10 @@ const PropertyListingsGrid = ({
     }
 
     const observer = new IntersectionObserver(
-      ([entry]) => setIsPastFilters(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      ([entry]) =>
+        setIsPastFilters(
+          !entry.isIntersecting && entry.boundingClientRect.top < 0,
+        ),
       // Offset by the sticky menu, which covers the top of the viewport.
       { rootMargin: '-64px 0px 0px 0px' },
     );
@@ -172,7 +175,7 @@ const PropertyListingsGrid = ({
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9, ease: 'easeOut' }}
-            className='relative z-10 scroll-mt-20 pt-8'
+            className='container mx-auto relative z-10 scroll-mt-20 pt-8'
           >
             <PropertyFilters
               key={resetKey}
@@ -191,7 +194,7 @@ const PropertyListingsGrid = ({
           />
           {error && <p className='text-danger text-sm mb-4'>{error}</p>}
 
-          <div className='mb-4 flex items-center justify-between gap-3'>
+          <div className='container mx-auto mb-4 flex items-center justify-between gap-3'>
             <p className='text-default-500 text-sm'>
               {listings.length} inmuebles
               {view === 'list' && ` · página ${page} de ${totalPages}`}
@@ -234,7 +237,7 @@ const PropertyListingsGrid = ({
           ) : view === 'map' ? (
             <PropertyMap listings={listings} />
           ) : (
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+            <div className='container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
               {pageListings.map((listing, index) => (
                 <PropertyCard
                   key={listing._id}

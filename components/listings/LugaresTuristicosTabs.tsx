@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ComponentType } from 'react';
+import { useEffect, useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import { Button, Tab, Tabs } from '@heroui/react';
 import {
@@ -22,13 +22,16 @@ interface Place {
 interface CategorySection {
   slug: string;
   label: string;
+  /** One word, for the phone layout where five tabs share the width. */
+  shortLabel: string;
   icon: ComponentType<{ size?: number; className?: string }>;
   places: Place[];
 }
 
-const CATEGORIES: CategorySection[] = [
+export const CATEGORIES: CategorySection[] = [
   {
     slug: 'playas',
+    shortLabel: 'Playas',
     label: 'Playas',
     icon: IconBeach,
     places: [
@@ -72,6 +75,7 @@ const CATEGORIES: CategorySection[] = [
   },
   {
     slug: 'parques-naturales',
+    shortLabel: 'Parques',
     label: 'Parques Naturales',
     icon: IconTrees,
     places: [
@@ -97,6 +101,7 @@ const CATEGORIES: CategorySection[] = [
   },
   {
     slug: 'sitios-historicos-y-culturales',
+    shortLabel: 'Historia',
     label: 'Sitios Históricos y Culturales',
     icon: IconBuildingMonument,
     places: [
@@ -134,6 +139,7 @@ const CATEGORIES: CategorySection[] = [
   },
   {
     slug: 'sitios-de-interes',
+    shortLabel: 'Interés',
     label: 'Sitios de Interés',
     icon: IconMapPin,
     places: [
@@ -165,6 +171,7 @@ const CATEGORIES: CategorySection[] = [
   },
   {
     slug: 'vida-nocturna',
+    shortLabel: 'Noche',
     label: 'Vida Nocturna',
     icon: IconMoonStars,
     places: [
@@ -206,15 +213,59 @@ function getSlugFromHash(): string {
 const LugaresTuristicosTabs = () => {
   const [selected, setSelected] = useState(CATEGORIES[0].slug);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Scrolls the page so the tab content starts right under the sticky tab
+  // bar. With `onlyIfPast`, it only moves when the reader is already further
+  // down than that.
+  const scrollToContentStart = (behavior: ScrollBehavior, onlyIfPast: boolean) => {
+    const container = containerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const stickyTop = parseFloat(getComputedStyle(container.firstElementChild ?? container).top) || 0;
+    const target = container.getBoundingClientRect().top + window.scrollY - stickyTop;
+
+    if (!onlyIfPast || window.scrollY > target) {
+      window.scrollTo({ top: target, behavior });
+    }
+  };
+
   useEffect(() => {
     setSelected(getSlugFromHash());
 
-    const onHashChange = () => setSelected(getSlugFromHash());
+    // Arriving from a category link (/lugares-turisticos#playas): there's no
+    // element with that id, so the browser keeps whatever scroll position the
+    // previous page had and the reader lands deep inside, or past, the
+    // category. Start them at its beginning instead. Deferred a beat so it
+    // runs after the router's own scroll handling.
+    let frame = 0;
+    const timeout = window.setTimeout(() => {
+      if (window.location.hash) {
+        frame = requestAnimationFrame(() => scrollToContentStart('instant', false));
+      }
+    }, 50);
+
+    const onHashChange = () => {
+      setSelected(getSlugFromHash());
+      scrollToContentStart('smooth', false);
+    };
+
     window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+
+    return () => {
+      window.clearTimeout(timeout);
+      cancelAnimationFrame(frame);
+      window.removeEventListener('hashchange', onHashChange);
+    };
   }, []);
 
   return (
+    // Wraps the tabs so there's one element marking where the content starts;
+    // it also still spans the whole panel, which the sticky tab bar needs.
+    <div ref={containerRef}>
     <Tabs
       aria-label='Categorías de lugares turísticos'
       selectedKey={selected}
@@ -222,20 +273,27 @@ const LugaresTuristicosTabs = () => {
         const slug = String(key);
         setSelected(slug);
         window.history.replaceState(null, '', `#${slug}`);
+        // Switching category while scrolled into the previous one would leave the reader
+        // in the middle (or past the end) of the new one.
+        scrollToContentStart('smooth', true);
       }}
       color='primary'
       variant='solid'
       classNames={{
-        base: 'w-full justify-center',
-        // A floating pill. Five categories don't fit across a phone, so there it scrolls sideways instead of wrapping into uneven rows.
+        // Stays pinned under the menu and breadcrumb while the places scroll
+        // by. It's the wrapper that sticks: its parent spans the whole panel,
+        // which gives it room to; the tab list alone is only as tall as itself.
+        base: 'sticky top-24 z-30 w-full justify-center',
+        // A floating pill. On phones the five categories share the width
+        // equally as icon-over-word buttons; from sm up each gets its full name.
         tabList:
-          'h-auto w-full max-w-full flex-nowrap gap-1.5 overflow-x-auto rounded-full border border-default-200 bg-content1 p-2 shadow-lg [scrollbar-width:none] sm:w-fit dark:border-default-100/20',
-        tab: 'group h-auto w-auto flex-none rounded-full px-4 py-2.5 data-[hover-unselected=true]:opacity-100 sm:px-5',
-        cursor: 'rounded-full bg-primary shadow-md',
+          'h-auto w-full max-w-full flex-nowrap gap-1 overflow-visible rounded-3xl border border-default-200 bg-content1 p-1.5 shadow-lg sm:w-fit sm:gap-1.5 sm:rounded-full sm:p-2 dark:border-default-100/20',
+        tab: 'group h-auto min-w-0 flex-1 rounded-2xl px-1 py-2 data-[hover-unselected=true]:opacity-100 sm:w-auto sm:flex-none sm:rounded-full sm:px-5 sm:py-2.5',
+        cursor: 'rounded-2xl bg-primary shadow-md sm:rounded-full',
         panel: 'pt-6',
       }}
     >
-      {CATEGORIES.map(({ slug, label, icon: CategoryIcon, places }) => {
+      {CATEGORIES.map(({ slug, label, shortLabel, icon: CategoryIcon, places }) => {
         const isActive = selected === slug;
 
         return (
@@ -243,7 +301,7 @@ const LugaresTuristicosTabs = () => {
             key={slug}
             title={
               <span
-                className={`flex items-center gap-2.5 text-sm font-semibold transition-colors duration-300 ${
+                className={`flex flex-col items-center gap-1 text-[11px] font-semibold transition-colors duration-300 sm:flex-row sm:gap-2.5 sm:text-sm ${
                   isActive ? 'text-white' : 'text-default-600 group-hover:text-primary'
                 }`}
               >
@@ -254,7 +312,8 @@ const LugaresTuristicosTabs = () => {
                 >
                   <CategoryIcon size={17} />
                 </span>
-                {label}
+                <span className='sm:hidden'>{shortLabel}</span>
+                <span className='hidden sm:inline'>{label}</span>
               </span>
             }
           >
@@ -279,6 +338,7 @@ const LugaresTuristicosTabs = () => {
         );
       })}
     </Tabs>
+    </div>
   );
 };
 

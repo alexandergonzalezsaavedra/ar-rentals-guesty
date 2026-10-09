@@ -182,8 +182,8 @@ void main() {
 // Tuning. Lusion's own values are noted where these differ: theirs bend a
 // WebGL scene, where a thin fast stroke is enough; drawn as visible liquid
 // over a page it needs to be wider, slower and longer-lived to read at all.
-const MIN_RADIUS = 14; // px on screen, for the slowest movement (Lusion: 0)
-const MAX_RADIUS = 150; // px on screen, reached at RADIUS_DISTANCE_RANGE px of travel per frame (Lusion: 100)
+const MIN_RADIUS = 9; // px on screen, for the slowest movement (Lusion: 0)
+const MAX_RADIUS = 95; // px on screen, reached at RADIUS_DISTANCE_RANGE px of travel per frame (Lusion: 100)
 const RADIUS_DISTANCE_RANGE = 90;
 const PUSH_STRENGTH = 13; // texels the paint is carried per frame at full speed (Lusion: 25)
 const ACCELERATION_DISSIPATION = 0.8;
@@ -378,6 +378,13 @@ export function createCursorFluid(canvas: HTMLCanvasElement, color: [number, num
     drawTo = [0, 0, 0, 0];
     velocity = [0, 0];
     lastPointer = null;
+
+    // Resizing reallocates the canvas; start it out fully transparent rather
+    // than trusting whatever the driver hands back before the first frame.
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
   };
 
   resize();

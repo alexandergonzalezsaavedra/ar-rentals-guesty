@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { ConciergeBell } from 'lucide-react';
 import { IconMapPin } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
+import ScrollToTopOnArrive from '@/components/effects/ScrollToTopOnArrive';
 import PropertyDetail from '@/components/listings/PropertyDetail';
 import PropertyHero from '@/components/listings/PropertyHero';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
@@ -42,6 +43,7 @@ export default async function PropertyDetailPage(
 
   return (
     <>
+      <ScrollToTopOnArrive />
       <header className='sticky top-0 z-50'>
         <Menu />
       </header>
