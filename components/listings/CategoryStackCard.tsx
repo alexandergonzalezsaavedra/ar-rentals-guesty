@@ -39,7 +39,7 @@ const CategoryStackCard = ({
       data-cursor='Ver'
       className='group flex w-[78vw] max-w-xs shrink-0 snap-center flex-col rounded-3xl border border-default-200 bg-content1 p-4 shadow-sm transition-[translate,box-shadow] duration-500 ease-brand hover:-translate-y-1.5 hover:shadow-xl sm:w-auto sm:max-w-none dark:border-default-100/20'
     >
-      <div className='relative h-44 overflow-hidden rounded-2xl bg-primary/10'>
+      <div className='relative h-44 overflow-hidden rounded-2xl bg-arena/50 dark:bg-arena/10'>
         {images.slice(0, 3).map((image, index) => (
           <div
             key={image.src}

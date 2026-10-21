@@ -8,6 +8,14 @@
    its monospace face for counters and labels (utility: font-mono). The curves
    are mirrored for JavaScript-driven animation in lib/easing.ts. */
 @theme {
+  /* Brand palette (mirrored in heroui.plugin.js). */
+  --color-sierra: #243a2c;
+  --color-arena: #e3d3b8;
+  --color-salvia: #7c9a82;
+  --color-arena-tostada: #7a6246;
+  --color-lino: #f4f5ef;
+  --color-noche: #1a2b20;
+
   --ease-brand: cubic-bezier(0.35, 0, 0, 1);
   --ease-brand-soft: cubic-bezier(0.4, 0, 0.1, 1);
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -253,9 +261,9 @@ html {
   align-items: center;
   justify-content: center;
   /* Translucent at rest, so the dot never hides what's under the pointer. */
-  border: 2px solid hsl(var(--heroui-primary) / 0.3);
+  border: 2px solid hsl(var(--heroui-secondary) / 0.35);
   border-radius: 9999px;
-  background: hsl(var(--heroui-primary) / 0.2);
+  background: hsl(var(--heroui-secondary) / 0.25);
   transform: scale(0.14);
   transition:
     transform 0.5s var(--ease-brand),
@@ -264,15 +272,15 @@ html {
 }
 
 .prop-cursor[data-state='link'] .prop-cursor-disc {
-  background: hsl(var(--heroui-primary) / 0.1);
+  background: hsl(var(--heroui-secondary) / 0.14);
   transform: scale(0.55);
 }
 
 /* See-through, with no blur, so whatever sits under the pointer stays
    readable; the label carries its own shadow to stand out over photos. */
 .prop-cursor[data-state='label'] .prop-cursor-disc {
-  border-color: hsl(var(--heroui-primary) / 0.45);
-  background: hsl(var(--heroui-primary) / 0.28);
+  border-color: hsl(var(--heroui-secondary) / 0.5);
+  background: hsl(var(--heroui-secondary) / 0.32);
   transform: scale(0.9);
 }
 

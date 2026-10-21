@@ -140,7 +140,7 @@ const PropertyListingsGrid = ({
 
   return (
     <div>
-      <div className='relative z-0 overflow-hidden bg-[#eef3f1] py-16 sm:sticky sm:top-0 dark:bg-[#1c2420]'>
+      <div className='relative z-0 overflow-hidden bg-[#dee5db] py-16 sm:sticky sm:top-0 dark:bg-noche'>
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -156,9 +156,9 @@ const PropertyListingsGrid = ({
             className='animate-banner-drift object-cover object-bottom'
           />
           {/* Mobile: the photo is the backdrop for the whole section. The veil is only strong at the top, behind the title; the step cards below are opaque and don't need it. */}
-          <div className='absolute inset-0 bg-linear-to-b from-[#eef3f1]/85 via-[#eef3f1]/45 to-[#eef3f1]/10 sm:hidden dark:from-[#1c2420]/85 dark:via-[#1c2420]/45 dark:to-[#1c2420]/10' />
+          <div className='absolute inset-0 bg-linear-to-b from-[#dee5db]/85 via-[#dee5db]/45 to-[#dee5db]/10 sm:hidden dark:from-noche/85 dark:via-noche/45 dark:to-noche/10' />
           {/* sm+: the image takes the right side of the banner and a diagonal fade blends it into the flat background. */}
-          <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#eef3f1]/40 to-[#eef3f1] sm:block dark:via-[#1c2420]/40 dark:to-[#1c2420]' />
+          <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#dee5db]/40 to-[#dee5db] sm:block dark:via-noche/40 dark:to-noche' />
         </motion.div>
         <div className='relative w-full px-4'>
           <PropertyAdvantages />

@@ -58,7 +58,7 @@ const SocialButtons = ({ size }: { size: 'sm' | 'md' }) => (
         target='_blank'
         rel='noopener noreferrer'
         aria-label={label}
-        className='bg-primary shadow-sm'
+        className='bg-secondary shadow-sm'
         isIconOnly
         radius='full'
         size={size}
@@ -76,7 +76,7 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <div className='bg-black text-white'>
+    <div className='bg-noche text-white'>
       {/* Phones: one centered column. Link groups read as short inline rows and the contact details become tap targets, instead of a shrunk copy of the desktop grid. */}
       <div className='flex flex-col items-center gap-9 px-6 pt-12 pb-10 text-center sm:hidden'>
         <Image

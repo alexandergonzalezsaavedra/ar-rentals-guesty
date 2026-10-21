@@ -16,7 +16,7 @@ interface PageBreadcrumbsProps {
 
 const PageBreadcrumbs = ({ items }: PageBreadcrumbsProps) => {
   return (
-    <div className='sticky top-16 z-40 bg-slate-100 px-4 py-0.5 dark:bg-black'>
+    <div className='sticky top-16 z-40 border-b border-default-200 bg-lino px-4 py-0.5 dark:border-default-100/20 dark:bg-noche'>
       <Breadcrumbs
         className='container mx-auto'
         classNames={{ list: 'flex-nowrap overflow-hidden' }}

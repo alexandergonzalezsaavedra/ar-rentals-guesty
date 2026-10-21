@@ -57,7 +57,7 @@ const HighlightedHeading = () => {
           <motion.path
             variants={UNDERLINE}
             d='M1 4.5C25.46 1.63 78.43 1.39 119 4.5'
-            stroke='#7c9c87'
+            stroke='#7C9A82'
             strokeWidth='2'
             strokeLinecap='round'
             strokeLinejoin='round'

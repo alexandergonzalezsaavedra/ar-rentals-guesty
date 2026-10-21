@@ -26,8 +26,8 @@ const ClickBurst = () => {
       return;
     }
 
-    const primary = getComputedStyle(document.documentElement).getPropertyValue('--heroui-primary').trim();
-    const color = primary ? `hsl(${primary})` : '#7c9c87';
+    const primary = getComputedStyle(document.documentElement).getPropertyValue('--heroui-secondary').trim();
+    const color = primary ? `hsl(${primary})` : '#7c9a82';
 
     let particles: Particle[] = [];
     let frame = 0;

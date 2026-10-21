@@ -33,7 +33,7 @@ interface PropertyMapProps {
 // bundler, so we draw our own pin instead of fighting Leaflet's default icon.
 const PIN_SVG = `
   <svg width="34" height="34" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 2px 3px rgba(0,0,0,0.45));">
-    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#7c9c87" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#243A2C" stroke="#ffffff" stroke-width="1.5"/>
     <circle cx="12" cy="9" r="3" fill="#ffffff"/>
   </svg>
 `;

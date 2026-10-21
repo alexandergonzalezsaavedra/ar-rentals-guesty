@@ -7,7 +7,7 @@ import { createCursorFluid } from '@/lib/cursorFluid';
 function readPrimaryColor(): [number, number, number] {
   const probe = document.createElement('span');
 
-  probe.style.color = `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--heroui-primary')})`;
+  probe.style.color = `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--heroui-secondary')})`;
   document.body.appendChild(probe);
 
   const channels = getComputedStyle(probe).color.match(/[\d.]+/g)?.map(Number) ?? [];

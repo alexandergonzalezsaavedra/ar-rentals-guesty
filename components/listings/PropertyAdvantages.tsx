@@ -91,7 +91,7 @@ const TiltCard = ({
         transformPerspective: 900,
         transformStyle: 'preserve-3d',
       }}
-      className='rounded-3xl bg-[#ffffff] p-6 shadow-[10px_10px_24px_#cdd6d2,-10px_-10px_24px_#ffffff] dark:bg-[#1c2420] dark:shadow-[10px_10px_24px_#131916,-10px_-10px_24px_#252f2a]'
+      className='rounded-3xl bg-[#ffffff] p-6 shadow-[10px_10px_24px_#c3ccc0,-10px_-10px_24px_#f7faf5] dark:bg-[#1c2420] dark:shadow-[10px_10px_24px_#131916,-10px_-10px_24px_#252f2a]'
     >
       {children}
     </motion.li>
@@ -106,7 +106,7 @@ const PropertyAdvantages = () => {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className='text-sm font-medium tracking-wide text-default-500 uppercase sm:text-base'
+          className='text-sm font-medium tracking-wide text-primary/70 uppercase sm:text-base'
         >
           Negocios · Descanso · Aventura
         </motion.p>
@@ -145,14 +145,14 @@ const PropertyAdvantages = () => {
               style={{ transform: 'translateZ(36px)' }}
             >
               <div>
-                <p className='text-xs font-semibold tracking-widest text-default-500 uppercase'>
+                <p className='text-xs font-semibold tracking-widest text-primary/70 uppercase'>
                   Paso {index + 1}
                 </p>
                 <p className='mt-1 text-2xl leading-tight font-bold text-foreground'>
                   {title}
                 </p>
               </div>
-              <span className='flex size-14 shrink-0 items-center justify-center rounded-full bg-[#eef3f1] shadow-[inset_4px_4px_8px_#cdd6d2,inset_-4px_-4px_8px_#ffffff] dark:bg-[#1c2420] dark:shadow-[inset_4px_4px_8px_#131916,inset_-4px_-4px_8px_#252f2a]'>
+              <span className='flex size-14 shrink-0 items-center justify-center rounded-full bg-[#dee5db] shadow-[inset_4px_4px_8px_#c3ccc0,inset_-4px_-4px_8px_#f7faf5] dark:bg-[#1c2420] dark:shadow-[inset_4px_4px_8px_#131916,inset_-4px_-4px_8px_#252f2a]'>
                 <Icon
                   size={24}
                   className='text-primary'

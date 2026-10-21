@@ -23,8 +23,8 @@ const SMOOTHING = 0.14;
 // cards without the page turning multicolored.
 const CARD_TONES = [
   'bg-content1',
-  'bg-[#eef3f1] dark:bg-[#1c2420]',
-  'bg-[#dfe9e3] dark:bg-[#232e28]',
+  'bg-[#f1e9dc] dark:bg-[#1f3226]',
+  'bg-[#e1e8df] dark:bg-[#243a2c]',
 ];
 
 // One sweeping stroke per card, drawn behind its content as the page scrolls
@@ -339,7 +339,7 @@ const SectionsParallaxSlider = ({ slides }: SectionsParallaxSliderProps) => {
               aria-hidden='true'
               viewBox='0 0 1000 1000'
               preserveAspectRatio='xMidYMid slice'
-              className='pointer-events-none absolute inset-0 h-full w-full text-primary/15'
+              className='pointer-events-none absolute inset-0 h-full w-full text-secondary/25'
             >
               <path
                 ref={(element) => {
@@ -363,7 +363,7 @@ const SectionsParallaxSlider = ({ slides }: SectionsParallaxSliderProps) => {
             >
               <div
                 data-reveal
-                className='mb-6 flex items-center justify-between gap-4 border-b border-default-300/60 pb-3 font-mono text-[11px] tracking-[0.18em] text-default-500 uppercase'
+                className='mb-6 flex items-center justify-between gap-4 border-b border-default-300/60 pb-3 font-mono text-[11px] tracking-[0.18em] text-arena-tostada uppercase'
               >
                 <span className='flex items-center gap-2'>
                   <span className='size-1.5 rounded-full bg-primary' />

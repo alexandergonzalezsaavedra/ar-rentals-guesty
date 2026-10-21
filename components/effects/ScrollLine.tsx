@@ -80,7 +80,7 @@ const ScrollLine = ({ mirrored = false }: ScrollLineProps) => {
     <div
       ref={ref}
       aria-hidden='true'
-      className='pointer-events-none absolute inset-0 -z-10 overflow-hidden text-primary/10'
+      className='pointer-events-none absolute inset-0 -z-10 overflow-hidden text-secondary/20'
     >
       {hasSize && (
         <svg
