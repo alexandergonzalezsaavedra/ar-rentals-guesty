@@ -74,14 +74,17 @@ const Menu = () => {
           <Link href='/'>
             {/* Dark lettering on the light theme, light lettering on the dark one.
                 width/height are the file's own size (they only set the aspect
-                ratio); CSS sets the displayed size. */}
+                ratio); CSS sets the displayed size. On phones the brand slot is
+                narrow, so the logo gets a smaller height instead of being
+                squeezed sideways by max-width, and object-contain guards the
+                proportions if it ever is. */}
             <Image
               src='/logo-positivo-vaiven.png'
               alt='Vaivén - Cortas estadías'
               width={481}
               height={165}
               loading='eager'
-              className='h-12 w-auto dark:hidden'
+              className='h-9 w-auto object-contain sm:h-12 dark:hidden'
             />
             <Image
               src='/logo-negativo-vaiven.png'
@@ -89,7 +92,7 @@ const Menu = () => {
               width={481}
               height={165}
               loading='eager'
-              className='hidden h-12 w-auto dark:block'
+              className='hidden h-9 w-auto object-contain sm:h-12 dark:block'
             />
           </Link>
         </NavbarBrand>

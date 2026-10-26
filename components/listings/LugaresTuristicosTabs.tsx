@@ -322,7 +322,11 @@ const LugaresTuristicosTabs = () => {
               <PlacesRotateSlider places={places} />
             </div>
 
-            <div className='mt-10 flex justify-center'>
+            {/* The slider's pinned stage is a full screen tall with the cards centered in it, which leaves
+                empty space under the last card. These margins pull the button up into that space so it sits
+                ~1.5rem below the cards (cards are 52vh tall, 46vh on tablets; on phones they start 13rem from
+                the top of the stage instead of being centered). */}
+            <div className='relative z-10 -mt-[calc(24vh-1.5rem)] flex justify-center max-[1025px]:-mt-[calc(27vh+2rem)] max-sm:-mt-[calc(48vh-256px)]'>
               <Button
                 as={Link}
                 href='/alojamiento?city=Santa+Marta#listado'

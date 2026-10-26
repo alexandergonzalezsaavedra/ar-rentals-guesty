@@ -200,14 +200,16 @@ const PlacesRotateSlider = ({ places }: PlacesRotateSliderProps) => {
       className='relative'
       style={{ overflowX: 'clip' }}
     >
+      {/* On phones the page's sticky tab bar covers the top ~185px of the screen,
+          so the cards start just below it instead of being centered under it. */}
       <div
         ref={stageRef}
-        className='sticky top-0 flex h-screen items-center overflow-hidden'
+        className='sticky top-0 flex h-screen items-center overflow-hidden max-sm:items-start max-sm:pt-52'
         style={{ perspective: PERSPECTIVE }}
       >
         <div
           ref={trackRef}
-          className='relative flex h-full items-center gap-[5vw] pr-[31vw] pl-[31vw] will-change-transform max-[1025px]:gap-[8vw] max-[1025px]:pr-[22.5vw] max-[1025px]:pl-[22.5vw] max-sm:gap-[10vw] max-sm:pr-[11vw] max-sm:pl-[11vw]'
+          className='relative flex h-full items-center gap-[5vw] max-sm:items-start pr-[31vw] pl-[31vw] will-change-transform max-[1025px]:gap-[8vw] max-[1025px]:pr-[22.5vw] max-[1025px]:pl-[22.5vw] max-sm:gap-[10vw] max-sm:pr-[11vw] max-sm:pl-[11vw]'
           style={{ transformStyle: 'preserve-3d' }}
         >
           {places.map((place, index) => (
