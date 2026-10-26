@@ -31,11 +31,6 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   keywords: DEFAULT_KEYWORDS,
-  icons: {
-    icon: '/ar-construcciones.ico',
-    shortcut: '/ar-construcciones.ico',
-    apple: '/ar-construcciones.ico',
-  },
   openGraph: {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
@@ -64,14 +59,11 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
     <html
       lang='es'
+      // Lets Next switch off the smooth scroll from globals.css while navigating,
+      // so a new page opens at its top instead of gliding (and stalling) mid-way.
+      data-scroll-behavior='smooth'
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased light text-foreground bg-background`}
     >
-      <link
-        rel='icon'
-        href='/ar-rentals-icon.png'
-        sizes='192x192'
-      ></link>
-
       <body className='min-h-full flex flex-col'>
         <ProvidersUI>
           <ClickBurst />

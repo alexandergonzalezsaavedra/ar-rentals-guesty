@@ -325,7 +325,7 @@ const LugaresTuristicosTabs = () => {
             <div className='mt-10 flex justify-center'>
               <Button
                 as={Link}
-                href='/alojamiento?city=Santa+Marta'
+                href='/alojamiento?city=Santa+Marta#listado'
                 color='primary'
                 radius='full'
                 size='lg'

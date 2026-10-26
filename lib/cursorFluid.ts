@@ -182,8 +182,8 @@ void main() {
 // Tuning. Lusion's own values are noted where these differ: theirs bend a
 // WebGL scene, where a thin fast stroke is enough; drawn as visible liquid
 // over a page it needs to be wider, slower and longer-lived to read at all.
-const MIN_RADIUS = 9; // px on screen, for the slowest movement (Lusion: 0)
-const MAX_RADIUS = 95; // px on screen, reached at RADIUS_DISTANCE_RANGE px of travel per frame (Lusion: 100)
+const MIN_RADIUS = 6; // px on screen, for the slowest movement (Lusion: 0)
+const MAX_RADIUS = 65; // px on screen, reached at RADIUS_DISTANCE_RANGE px of travel per frame (Lusion: 100)
 const RADIUS_DISTANCE_RANGE = 90;
 const PUSH_STRENGTH = 13; // texels the paint is carried per frame at full speed (Lusion: 25)
 const ACCELERATION_DISSIPATION = 0.8;

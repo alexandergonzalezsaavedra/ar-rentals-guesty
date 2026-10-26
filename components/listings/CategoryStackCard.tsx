@@ -31,7 +31,6 @@ const CategoryStackCard = ({
   description,
   icon: Icon,
   images,
-  stats,
 }: CategoryStackCardProps) => {
   return (
     <Link

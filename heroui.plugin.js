@@ -30,9 +30,14 @@ module.exports = heroui({
         },
         dark: {
             colors: {
-                background: '#1A2B20',
+                // Near-black greens rather than Noche/Sierra themselves: those read as
+                // a saturated green wash over a whole screen. Salvia stays as the accent.
+                background: '#0A0F0C',
                 foreground: '#F4F5EF',
-                content1: '#243A2C',
+                content1: '#111814',
+                content2: '#17201A',
+                content3: '#1D2820',
+                content4: '#243026',
                 // Sierra disappears against Noche, so on dark the lighter Salvia leads.
                 primary: {
                     DEFAULT: '#7C9A82',

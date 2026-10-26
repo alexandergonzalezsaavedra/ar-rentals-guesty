@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type SubmitEvent } from 'react';
-import { Button, DatePicker, Select, SelectItem } from '@heroui/react';
+import { Button, Select, SelectItem } from '@heroui/react';
 import {
   getLocalTimeZone,
   parseDate,
@@ -17,6 +17,7 @@ import {
   IconUser,
   IconX,
 } from '@tabler/icons-react';
+import StayDatesPicker from './StayDatesPicker';
 import Stepper from './Stepper';
 
 export interface PropertyFiltersValues {
@@ -125,21 +126,18 @@ const PropertyFilters = ({
       }
     >
       <div className='grid grid-cols-1 @sm:grid-cols-3 gap-3'>
-        <DatePicker
-          label='Fecha de llegada'
-          size='sm'
-          value={checkInDate}
-          onChange={setCheckInDate}
-          minValue={minCheckIn}
-        />
-
-        <DatePicker
-          label='Fecha de salida'
-          size='sm'
-          value={checkOutDate}
-          onChange={setCheckOutDate}
-          minValue={checkInDate ?? minCheckIn}
-        />
+        <div className='@sm:col-span-2'>
+          <StayDatesPicker
+            checkIn={checkInDate}
+            checkOut={checkOutDate}
+            minValue={minCheckIn}
+            onChange={(start, end) => {
+              setCheckInDate(start);
+              setCheckOutDate(end);
+              setDateError(null);
+            }}
+          />
+        </div>
 
         <Select
           label='Ciudad'

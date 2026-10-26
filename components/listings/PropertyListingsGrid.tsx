@@ -86,6 +86,13 @@ const PropertyListingsGrid = ({
     filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // A new page of results starts back at the top of the listing (the filters
+  // just above the cards), not down by the pagination where the click happened.
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const totalPages = Math.max(1, Math.ceil(listings.length / PAGE_SIZE));
 
   const pageListings = useMemo(() => {
@@ -140,7 +147,7 @@ const PropertyListingsGrid = ({
 
   return (
     <div>
-      <div className='relative z-0 overflow-hidden bg-[#dee5db] py-16 sm:sticky sm:top-0 dark:bg-noche'>
+      <div className='relative z-0 overflow-hidden bg-[#dee5db] py-16 sm:sticky sm:top-0 dark:bg-content1'>
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
@@ -156,9 +163,11 @@ const PropertyListingsGrid = ({
             className='animate-banner-drift object-cover object-bottom'
           />
           {/* Mobile: the photo is the backdrop for the whole section. The veil is only strong at the top, behind the title; the step cards below are opaque and don't need it. */}
-          <div className='absolute inset-0 bg-linear-to-b from-[#dee5db]/85 via-[#dee5db]/45 to-[#dee5db]/10 sm:hidden dark:from-noche/85 dark:via-noche/45 dark:to-noche/10' />
-          {/* sm+: the image takes the right side of the banner and a diagonal fade blends it into the flat background. */}
-          <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#dee5db]/40 to-[#dee5db] sm:block dark:via-noche/40 dark:to-noche' />
+          <div className='absolute inset-0 bg-linear-to-b from-[#dee5db]/85 via-[#dee5db]/45 to-[#dee5db]/10 sm:hidden dark:from-content1/85 dark:via-content1/45 dark:to-content1/10' />
+          {/* sm+: the image takes the right side of the banner and a diagonal fade blends it into the flat background. The tints match the banner's own background exactly, or the photo's edge shows as a seam. */}
+          <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#dee5db]/40 to-[#dee5db] sm:block dark:via-content1/40 dark:to-content1' />
+          {/* The diagonal alone leaves the photo's top-left edge half visible; this melts that edge into the background too. */}
+          <div className='absolute inset-y-0 left-0 hidden w-2/5 bg-linear-to-r from-[#dee5db] to-transparent sm:block dark:from-content1' />
         </motion.div>
         <div className='relative w-full px-4'>
           <PropertyAdvantages />
@@ -172,6 +181,7 @@ const PropertyListingsGrid = ({
           {/* Comes in last, after the banner title and step cards have settled. */}
           <motion.div
             ref={filtersRef}
+            id='listado'
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.9, ease: 'easeOut' }}
@@ -257,7 +267,7 @@ const PropertyListingsGrid = ({
               <Pagination
                 total={totalPages}
                 page={page}
-                onChange={setPage}
+                onChange={handlePageChange}
                 showControls
                 className='text-white'
               />

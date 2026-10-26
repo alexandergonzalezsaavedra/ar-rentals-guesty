@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Button, Card, DatePicker, Spinner } from '@heroui/react';
+import { Button, Card, Spinner } from '@heroui/react';
 import DotArrowLabel from './DotArrowLabel';
+import StayDatesPicker from './StayDatesPicker';
 import Stepper from './Stepper';
 import {
   getLocalTimeZone,
@@ -236,22 +237,17 @@ const BookingWidget = ({
       </p>
 
       <div className='mt-4 flex flex-col gap-3'>
-        <div className='grid grid-cols-2 gap-2'>
-          <DatePicker
-            label='Llegada'
-            size='sm'
-            value={checkInDate}
-            onChange={(value) => value && setCheckInDate(value)}
-            minValue={minCheckIn}
-          />
-          <DatePicker
-            label='Salida'
-            size='sm'
-            value={checkOutDate}
-            onChange={(value) => value && setCheckOutDate(value)}
-            minValue={checkInDate}
-          />
-        </div>
+        <StayDatesPicker
+          checkIn={checkInDate}
+          checkOut={checkOutDate}
+          minValue={minCheckIn}
+          checkInLabel='Llegada'
+          checkOutLabel='Salida'
+          onChange={(start, end) => {
+            setCheckInDate(start);
+            setCheckOutDate(end);
+          }}
+        />
 
         {hasValidRange && (
           <div>

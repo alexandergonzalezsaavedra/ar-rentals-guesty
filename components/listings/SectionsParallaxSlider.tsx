@@ -23,8 +23,8 @@ const SMOOTHING = 0.14;
 // cards without the page turning multicolored.
 const CARD_TONES = [
   'bg-content1',
-  'bg-[#f1e9dc] dark:bg-[#1f3226]',
-  'bg-[#e1e8df] dark:bg-[#243a2c]',
+  'bg-[#f1e9dc] dark:bg-content2',
+  'bg-[#e1e8df] dark:bg-content3',
 ];
 
 // One sweeping stroke per card, drawn behind its content as the page scrolls

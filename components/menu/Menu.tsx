@@ -72,13 +72,24 @@ const Menu = () => {
         />
         <NavbarBrand>
           <Link href='/'>
+            {/* Dark lettering on the light theme, light lettering on the dark one.
+                width/height are the file's own size (they only set the aspect
+                ratio); CSS sets the displayed size. */}
             <Image
-              src='/ar-rentals-logo.png'
-              alt='AR Rentals - Rentas cortas'
-              width={100}
-              height={48}
+              src='/logo-positivo-vaiven.png'
+              alt='Vaivén - Cortas estadías'
+              width={481}
+              height={165}
               loading='eager'
-              className='h-12 w-[100px]'
+              className='h-12 w-auto dark:hidden'
+            />
+            <Image
+              src='/logo-negativo-vaiven.png'
+              alt='Vaivén - Cortas estadías'
+              width={481}
+              height={165}
+              loading='eager'
+              className='hidden h-12 w-auto dark:block'
             />
           </Link>
         </NavbarBrand>

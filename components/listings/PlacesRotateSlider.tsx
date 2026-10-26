@@ -230,6 +230,8 @@ const PlacesRotateSlider = ({ places }: PlacesRotateSliderProps) => {
                   src={place.src}
                   alt={place.label}
                   fill
+                  // The track opens with its first cards on screen; the first one is the page's LCP.
+                  loading={index < 2 ? 'eager' : 'lazy'}
                   sizes='(max-width: 639px) 78vw, (max-width: 1024px) 55vw, 38vw'
                   className='object-cover transition-transform duration-700 ease-brand group-hover:scale-105'
                 />

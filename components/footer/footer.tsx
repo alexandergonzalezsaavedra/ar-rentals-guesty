@@ -76,15 +76,15 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <div className='bg-noche text-white'>
+    <div className='bg-noche text-white dark:bg-content1'>
       {/* Phones: one centered column. Link groups read as short inline rows and the contact details become tap targets, instead of a shrunk copy of the desktop grid. */}
       <div className='flex flex-col items-center gap-9 px-6 pt-12 pb-10 text-center sm:hidden'>
         <Image
-          src='/ar-rentals-logo.png'
-          alt='AR Rentals - Rentas cortas'
-          width={160}
-          height={71}
-          className='w-44 brightness-0 invert'
+          src='/logo-negativo-vaiven.png'
+          alt='Vaivén - Cortas estadías'
+          width={481}
+          height={165}
+          className='h-auto w-48'
         />
 
         {linkGroups.map(({ title, links }) => (
@@ -155,11 +155,11 @@ const Footer = () => {
       <div className='container mx-auto hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
         <div>
           <Image
-            src='/ar-rentals-logo.png'
-            alt='AR Rentals - Rentas cortas'
-            width={160}
-            height={71}
-            className='w-40 brightness-0 invert'
+            src='/logo-negativo-vaiven.png'
+            alt='Vaivén - Cortas estadías'
+            width={481}
+            height={165}
+            className='h-auto w-44'
           />
         </div>
 
@@ -219,7 +219,7 @@ const Footer = () => {
           size={14}
           className='text-danger'
         />
-        <span>por AR Rentals</span>
+        <span>por Vaiven cortas estadias</span>
         <span className='mx-1'>-</span>
         <span>Todos los derechos reservados © {year}</span>
       </div>
