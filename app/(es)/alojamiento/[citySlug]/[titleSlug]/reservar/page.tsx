@@ -42,29 +42,25 @@ export default async function ReservationPage(
     notFound();
   }
 
-  let quote;
+  // A failed quote doesn't send the visitor away from here: if they already
+  // created a reservation for these dates and haven't paid it, that very
+  // reservation is what makes the dates unavailable now. ReservationForm
+  // resumes its payment from the browser, or goes back to the property if
+  // there is none.
+  let quote = null;
 
   try {
     quote = await getReservationQuote({ listingId: listing._id, checkIn, checkOut, adults, children });
   } catch (error) {
-    if (error instanceof GuestyApiError && error.status >= 400 && error.status < 500) {
-      redirect(`${propertyHref}?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&children=${children}`);
+    if (!(error instanceof GuestyApiError && error.status >= 400 && error.status < 500)) {
+      throw error;
     }
-
-    throw error;
   }
 
-  const ratePlan = quote.rates.ratePlans[0];
-
-  if (!ratePlan) {
-    redirect(`${propertyHref}?checkIn=${checkIn}&checkOut=${checkOut}&adults=${adults}&children=${children}`);
-  }
-
-  const pricing = buildPricingBreakdown(
-    ratePlan.ratePlan.money,
-    ratePlan.days.length,
-    adults + children,
-  );
+  const ratePlan = quote?.rates.ratePlans[0] ?? null;
+  const pricing = ratePlan
+    ? buildPricingBreakdown(ratePlan.ratePlan.money, ratePlan.days.length, adults + children)
+    : null;
 
   return (
     <>
@@ -86,9 +82,10 @@ export default async function ReservationPage(
       <main className='w-full grid gap-8 px-4 py-8 lg:grid-cols-3'>
         <div className='lg:col-span-2'>
           <ReservationForm
-            quoteId={quote._id}
-            ratePlanId={ratePlan.ratePlan._id}
+            quoteId={quote && ratePlan ? quote._id : null}
+            ratePlanId={ratePlan?.ratePlan._id ?? null}
             propertyHref={propertyHref}
+            stay={{ propertyHref, listingTitle: listing.title, checkIn, checkOut, adults, children }}
           />
         </div>
         <aside>

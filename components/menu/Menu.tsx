@@ -16,6 +16,7 @@ import {
 } from '@heroui/react';
 import Image from 'next/image';
 import ButtonChangeTheme from '../theme/ButtonChangeTheme';
+import PendingPaymentsButton from './PendingPaymentsButton';
 import {
   IconBrandFacebook,
   IconBrandInstagram,
@@ -172,6 +173,9 @@ const Menu = () => {
             </Button>
           </NavbarItem>
         )}
+        <NavbarItem>
+          <PendingPaymentsButton />
+        </NavbarItem>
         <div className='flex items-center gap-1 rounded-full border border-default-200/60 bg-content2/60 px-1.5 py-1 backdrop-blur-md'>
           <ButtonChangeTheme />
           <Button

@@ -57,9 +57,11 @@ interface ReservationPaymentProps {
     phoneNumber: string;
     phoneNumberPrefix: string;
   };
+  /** Called once Wompi reports the payment as approved or in process. */
+  onSettled?: (status: 'APPROVED' | 'PENDING') => void;
 }
 
-const ReservationPayment = ({ confirmationCode, payment, customer }: ReservationPaymentProps) => {
+const ReservationPayment = ({ confirmationCode, payment, customer, onSettled }: ReservationPaymentProps) => {
   const [isWidgetReady, setIsWidgetReady] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +86,14 @@ const ReservationPayment = ({ confirmationCode, payment, customer }: Reservation
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, []);
+
+  useEffect(() => {
+    if (status === 'APPROVED' || status === 'PENDING') {
+      onSettled?.(status);
+    }
+    // onSettled is a fresh function each render; reacting to the status is what matters.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status]);
 
   const total = formatPrice(payment.amountInCents / 100, payment.currency);
 

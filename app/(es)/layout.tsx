@@ -8,6 +8,7 @@ import Footer from '@/components/footer/footer';
 import ClickBurst from '@/components/effects/ClickBurst';
 import CursorFluid from '@/components/effects/CursorFluid';
 import SiteCursor from '@/components/effects/SiteCursor';
+import PendingPaymentBanner from '@/components/listings/PendingPaymentBanner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
           <ClickBurst />
           <CursorFluid />
           <SiteCursor />
+          <PendingPaymentBanner />
           {children}
           <footer>
             <Footer />

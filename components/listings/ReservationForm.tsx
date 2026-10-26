@@ -2,15 +2,24 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Input, Select, SelectItem, Textarea } from '@heroui/react';
 import { IconAlertCircle, IconCheck, IconCircleCheckFilled } from '@tabler/icons-react';
 import { DEFAULT_PHONE_COUNTRY, PHONE_COUNTRIES } from '@/lib/phoneCountries';
+import {
+  findPendingReservation,
+  removePendingReservation,
+  savePendingReservation,
+  type PendingStay,
+} from '@/lib/pendingReservation';
 import ReservationPayment, { type ReservationPaymentInfo } from './ReservationPayment';
 
 interface ReservationFormProps {
-  quoteId: string;
-  ratePlanId: string;
+  /** Null when Guesty couldn't quote the stay, e.g. because this visitor's own unpaid reservation holds the dates. */
+  quoteId: string | null;
+  ratePlanId: string | null;
   propertyHref: string;
+  stay: PendingStay;
 }
 
 interface InquiryResult {
@@ -48,7 +57,8 @@ const ReservationSteps = ({ current }: { current: number }) => (
   </ol>
 );
 
-const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormProps) => {
+const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay }: ReservationFormProps) => {
+  const router = useRouter();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -60,6 +70,36 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<InquiryResult | null>(null);
+  // Until the browser's saved reservation has been checked we can't tell the
+  // form from the payment step, so nothing renders for that first moment.
+  const [isCheckingPending, setIsCheckingPending] = useState(true);
+
+  // Coming back to this stay with a reservation already created and unpaid:
+  // go straight to the payment step instead of creating a second one.
+  useEffect(() => {
+    const pending = findPendingReservation(stay);
+
+    /* eslint-disable react-hooks/set-state-in-effect -- restoring browser-saved state on mount */
+    if (pending) {
+      setFirstName(pending.customer.firstName);
+      setLastName(pending.customer.lastName);
+      setEmail(pending.customer.email);
+      setDialCode(pending.customer.dialCode);
+      setPhone(pending.customer.phone);
+      setResult({ confirmationCode: pending.confirmationCode, payment: pending.payment });
+    } else if (!quoteId) {
+      // Nothing to resume and nothing to book: back to the property, which explains why.
+      router.replace(
+        `${propertyHref}?checkIn=${stay.checkIn}&checkOut=${stay.checkOut}&adults=${stay.adults}&children=${stay.children}`,
+      );
+      return;
+    }
+
+    setIsCheckingPending(false);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // Runs once per visit; the stay comes from the URL and doesn't change in place.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -87,6 +127,10 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!quoteId || !ratePlanId) {
+      return;
+    }
 
     if (!acceptPrivacy) {
       setError('Debes aceptar la política de privacidad para continuar.');
@@ -129,12 +173,26 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
         confirmationCode: data.reservation.confirmationCode,
         payment: data.payment ?? null,
       });
+
+      if (data.payment) {
+        savePendingReservation({
+          ...stay,
+          confirmationCode: data.reservation.confirmationCode,
+          payment: data.payment,
+          customer: { firstName, lastName, email, dialCode, phone },
+          createdAt: Date.now(),
+        });
+      }
     } catch {
       setError('No pudimos completar la reserva. Intenta de nuevo.');
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isCheckingPending) {
+    return null;
+  }
 
   if (result?.payment) {
     return (
@@ -149,6 +207,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref }: ReservationFormP
             phoneNumber: phone.replace(/\D/g, ''),
             phoneNumberPrefix: `+${dialCode}`,
           }}
+          onSettled={() => removePendingReservation(result.confirmationCode)}
         />
       </>
     );
