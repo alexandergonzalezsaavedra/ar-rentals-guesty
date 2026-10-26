@@ -13,6 +13,7 @@ import {
 import { EASE_BRAND } from '@/lib/easing';
 import type { GuestyListingDetail } from '@/lib/guesty/listings';
 import DotArrowLabel from './DotArrowLabel';
+import PropertyActions from './PropertyActions';
 
 interface PropertyHeroProps {
   listing: GuestyListingDetail;
@@ -126,6 +127,11 @@ const PropertyHero = ({ listing }: PropertyHeroProps) => {
             <DotArrowLabel>Ver disponibilidad</DotArrowLabel>
           </Button>
         </motion.div>
+      </div>
+
+      {/* Desktop: share and favorite ride on the hero's right edge and scroll away with it. */}
+      <div className='absolute top-1/2 right-8 z-10 hidden -translate-y-1/2 flex-col items-center gap-3 lg:flex'>
+        <PropertyActions listing={listing} />
       </div>
 
       <button

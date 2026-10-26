@@ -5,13 +5,15 @@ import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import LugaresTuristicosTabs from '@/components/listings/LugaresTuristicosTabs';
 import { spaceGrotesk } from '@/lib/fonts';
+import { pageMetadata } from '@/lib/seo';
 import ScrollLine from '@/components/effects/ScrollLine';
 
-export const metadata: Metadata = {
-  title: 'Lugares Turísticos | AR Rentals',
+export const metadata: Metadata = pageMetadata({
+  title: 'Lugares turísticos en Santa Marta',
   description:
-    'Descubre playas, parques naturales, sitios históricos y culturales, lugares de interés y vida nocturna cerca de tu próximo alojamiento con AR Rentals en Santa Marta.',
-};
+    'Playas, parques naturales, sitios históricos y culturales, lugares de interés y vida nocturna cerca de su alojamiento en Santa Marta.',
+  path: '/lugares-turisticos',
+});
 
 export default function LugaresTuristicosPage() {
   return (

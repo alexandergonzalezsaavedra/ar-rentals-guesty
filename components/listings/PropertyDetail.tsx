@@ -1,15 +1,13 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { useInView } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion, useInView } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { Spinner } from '@heroui/react';
 import {
   IconBath,
   IconBed,
   IconCheck,
-  IconHeart,
-  IconHeartFilled,
   IconHome2,
   IconInfoCircle,
   IconChecklist,
@@ -20,8 +18,6 @@ import {
   IconUsers,
   type Icon,
 } from '@tabler/icons-react';
-import { useFavorites } from '@/hooks/favorites/useFavorites';
-import { useCustomToast } from '@/hooks/toast/useCustomToast';
 import type {
   GuestyBedArrangementRoom,
   GuestyListingDetail,
@@ -31,8 +27,9 @@ import GridGallery from './GridGallery';
 import MobileBookingNav from './MobileBookingNav';
 import PropertyDetailSidebar from './PropertyDetailSidebar';
 import SectionsParallaxSlider, { type SectionSlide } from './SectionsParallaxSlider';
-import ShareButton from './ShareButton';
+import PropertyActions from './PropertyActions';
 import HighlightedHeading from '@/components/listings/HighlightedHeading';
+import { EASE_BRAND } from '@/lib/easing';
 
 const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
   ssr: false,
@@ -126,10 +123,6 @@ const PropertyDetail = ({
     Number.isFinite(listing.address.lat) &&
     Number.isFinite(listing.address.lng);
 
-  const { isFavorite, toggle } = useFavorites();
-  const { favoriteProperty } = useCustomToast();
-  const favoriteButtonRef = useRef<HTMLButtonElement>(null);
-  const isFav = isFavorite(listing._id);
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const bookingRef = useRef<HTMLElement>(null);
   const isBookingInView = useInView(bookingRef, { once: true });
@@ -153,10 +146,27 @@ const PropertyDetail = ({
     },
   ];
 
-  const handleToggleFavorite = () => {
-    favoriteProperty(isFav, listing.title, favoriteButtonRef);
-    toggle(listing);
-  };
+  // Desktop: the share/favorite buttons sit on the hero (see PropertyHero)
+  // until the content sheet has covered half the screen; then a copy rises in
+  // under the section menu.
+  const [isPastHero, setIsPastHero] = useState(false);
+
+  useEffect(() => {
+    const overview = document.getElementById('property-overview');
+
+    if (!overview) return;
+
+    const update = () => setIsPastHero(overview.getBoundingClientRect().top < window.innerHeight / 2);
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+
+    return () => {
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
 
   // The stay-related texts share one slide; "El espacio" keeps its own.
   // Groups left empty because Guesty has none of their texts are dropped.
@@ -352,62 +362,45 @@ const PropertyDetail = ({
 
   return (
     <div className='pb-6 lg:pb-0'>
-      {/* Below lg the mobile nav owns the bottom edge, so these sit just above it in the corner; on desktop they float mid-height. */}
-      <div className='fixed right-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-center gap-3 sm:right-6 lg:top-1/2 lg:bottom-auto lg:-translate-y-1/2'>
-        <ShareButton
-          title={listing.title}
-          className='size-11 sm:size-12 [&_svg]:size-5'
-        />
-
-        <button
-          ref={favoriteButtonRef}
-          type='button'
-          onClick={handleToggleFavorite}
-          aria-label={isFav ? 'Quitar de favoritos' : 'Guardar en favoritos'}
-          className={`flex size-11 items-center justify-center rounded-full bg-content1 shadow-lg ring-1 ring-default-200 transition-[opacity,transform] active:scale-90 sm:size-12 dark:ring-default-100/20 ${
-            isFav ? 'opacity-60 hover:opacity-100' : 'animate-heartbeat'
-          }`}
-        >
-          {isFav ? (
-            <>
-              <IconHeartFilled
-                className='text-default-400 sm:hidden'
-                size={20}
-              />
-              <IconHeartFilled
-                className='hidden text-default-400 sm:block'
-                size={22}
-              />
-            </>
-          ) : (
-            <>
-              <IconHeart
-                className='text-danger sm:hidden'
-                size={20}
-              />
-              <IconHeart
-                className='hidden text-danger sm:block'
-                size={22}
-              />
-            </>
-          )}
-        </button>
+      {/* Below lg the mobile nav owns the bottom edge, so these sit just above it in the corner. */}
+      <div className='fixed right-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-center gap-3 sm:right-6 lg:hidden'>
+        <PropertyActions listing={listing} />
       </div>
 
       <div
         id='property-overview'
         className='mt-6 scroll-mt-20 lg:flex lg:items-start lg:gap-6'
       >
-        <PropertyDetailSidebar
-          hasDescription={hasDescription}
-          hasAmenities={hasAmenities}
-          hasLocation={hasCoords}
-          hasNotes={Boolean(listing.publicDescription?.notes)}
-          expanded={isSidebarExpanded}
-          onToggle={() => setIsSidebarExpanded((value) => !value)}
-        />
+        {/* Desktop: the section menu, and once the hero has scrolled away, the share and favorite buttons rising in beneath it. */}
+        <div className='z-30 hidden shrink-0 flex-col items-start gap-3 self-start lg:sticky lg:top-24 lg:flex'>
+          <PropertyDetailSidebar
+            hasDescription={hasDescription}
+            hasAmenities={hasAmenities}
+            hasLocation={hasCoords}
+            hasNotes={Boolean(listing.publicDescription?.notes)}
+            expanded={isSidebarExpanded}
+            onToggle={() => setIsSidebarExpanded((value) => !value)}
+          />
 
-        <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3'>
+          <AnimatePresence>
+            {isPastHero && (
+              <motion.div
+                key='actions'
+                initial={{ opacity: 0, y: 48 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 24 }}
+                transition={{ duration: 0.6, ease: EASE_BRAND }}
+                className='flex w-16 flex-col items-center gap-3'
+              >
+                <PropertyActions listing={listing} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* overflow-x: clip (not hidden, which would break the sticky slider and card) keeps the booking card's
+            slide-in from the right from widening the page; the clip margin leaves room for the card's shadow. */}
+        <div className='grid gap-8 lg:min-w-0 lg:flex-1 lg:grid-cols-3 lg:overflow-x-clip lg:[overflow-clip-margin:1rem]'>
           {/* min-w-0 keeps the column at its grid width whatever the slides hold. */}
           <div className='min-w-0 lg:col-span-2'>
             <SectionsParallaxSlider slides={slides} />

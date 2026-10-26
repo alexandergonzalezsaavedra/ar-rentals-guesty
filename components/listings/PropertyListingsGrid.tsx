@@ -23,7 +23,8 @@ const PropertyMap = dynamic(() => import('./PropertyMap'), {
   ),
 });
 
-const PAGE_SIZE = 20;
+// A multiple of the grid's column counts (1, 2, 3), so every page ends on a full row.
+const PAGE_SIZE = 18;
 
 interface PropertyListingsGridProps {
   listings: GuestyListing[];
@@ -247,7 +248,7 @@ const PropertyListingsGrid = ({
           ) : view === 'map' ? (
             <PropertyMap listings={listings} />
           ) : (
-            <div className='container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
+            <div className='container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
               {pageListings.map((listing, index) => (
                 <PropertyCard
                   key={listing._id}

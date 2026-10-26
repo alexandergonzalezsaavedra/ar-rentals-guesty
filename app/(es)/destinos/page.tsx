@@ -1,7 +1,15 @@
 import { IconMap2 } from '@tabler/icons-react';
 import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
+import type { Metadata } from 'next';
 import { spaceGrotesk } from '@/lib/fonts';
+import { pageMetadata } from '@/lib/seo';
+
+export const metadata: Metadata = pageMetadata({
+  title: 'Destinos',
+  description: 'Los destinos de Colombia donde Vaivén tiene alojamientos para estadías cortas.',
+  path: '/destinos',
+});
 
 export default function Home() {
   return (

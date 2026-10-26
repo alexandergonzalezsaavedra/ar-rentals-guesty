@@ -80,7 +80,7 @@ const PropertyDetailSidebar = ({
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, ease: EASE_BRAND }}
-      className={`top-24 z-30 hidden shrink-0 flex-col gap-0.5 self-start overflow-hidden rounded-2xl border border-default-200 bg-content1 py-3 shadow-lg transition-[width] duration-300 lg:sticky lg:flex dark:border-default-100/20 ${
+      className={`z-30 hidden shrink-0 flex-col gap-0.5 self-start overflow-hidden rounded-2xl border border-default-200 bg-content1 py-3 shadow-lg transition-[width] duration-300 lg:flex dark:border-default-100/20 ${
         expanded ? 'w-56' : 'w-16'
       }`}
     >

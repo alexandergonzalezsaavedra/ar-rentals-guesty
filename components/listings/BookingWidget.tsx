@@ -14,7 +14,6 @@ import {
 } from '@internationalized/date';
 import {
   IconAlertCircle,
-  IconCalendarEvent,
   IconClock,
   IconDiscount,
   IconHome2,
@@ -229,14 +228,16 @@ const BookingWidget = ({
   return (
     <Card
       shadow='sm'
-      className='p-4 sm:sticky sm:top-24'
+      // Spacing kept tight so the whole card, reserve button included, fits
+      // beside the content on laptop screens as short as 680px.
+      className='p-3 sm:sticky sm:top-24'
     >
-      <p className='text-3xl font-bold text-primary'>
+      <p className='text-2xl font-bold text-primary'>
         {formatPrice(listing.prices.basePrice, listing.prices.currency)}{' '}
         <span className='text-sm font-normal text-default-500'>/ noche</span>
       </p>
 
-      <div className='mt-4 flex flex-col gap-3'>
+      <div className='mt-2 flex flex-col gap-2'>
         <StayDatesPicker
           checkIn={checkInDate}
           checkOut={checkOutDate}
@@ -251,16 +252,8 @@ const BookingWidget = ({
 
         {hasValidRange && (
           <div>
-            <p className='mb-1.5 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-default-400 uppercase'>
-              <IconCalendarEvent
-                size={14}
-                className='text-primary'
-              />
-              Fechas de tu estadía
-            </p>
-
             <div className='flex items-stretch overflow-hidden rounded-xl border border-default-200 bg-content1'>
-              <div className='flex-1 px-3 py-2.5'>
+              <div className='flex-1 px-3 py-1.5'>
                 <span className='flex items-center gap-1 text-[11px] font-medium text-default-400'>
                   <IconPlaneArrival
                     size={13}
@@ -268,13 +261,13 @@ const BookingWidget = ({
                   />
                   Llegada
                 </span>
-                <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
+                <p className='mt-0.5 text-lg leading-none font-bold text-foreground'>
                   {checkInDate.day}
                   <span className='ml-1 text-sm font-medium text-default-500'>
                     {formatMonthShort(checkInDate.toDate(getLocalTimeZone()))}
                   </span>
                 </p>
-                <p className='mt-1 text-xs text-default-500'>
+                <p className='mt-0.5 text-xs text-default-500'>
                   {formatWeekdayLong(checkInDate.toDate(getLocalTimeZone()))}
                 </p>
               </div>
@@ -293,7 +286,7 @@ const BookingWidget = ({
                 </span>
               </div>
 
-              <div className='flex-1 px-3 py-2.5 text-right'>
+              <div className='flex-1 px-3 py-1.5 text-right'>
                 <span className='flex items-center justify-end gap-1 text-[11px] font-medium text-default-400'>
                   Salida
                   <IconPlaneDeparture
@@ -302,13 +295,13 @@ const BookingWidget = ({
                     style={{ animationDelay: '0.8s' }}
                   />
                 </span>
-                <p className='mt-0.5 text-xl leading-none font-bold text-foreground'>
+                <p className='mt-0.5 text-lg leading-none font-bold text-foreground'>
                   {checkOutDate.day}
                   <span className='ml-1 text-sm font-medium text-default-500'>
                     {formatMonthShort(checkOutDate.toDate(getLocalTimeZone()))}
                   </span>
                 </p>
-                <p className='mt-1 text-xs text-default-500'>
+                <p className='mt-0.5 text-xs text-default-500'>
                   {formatWeekdayLong(checkOutDate.toDate(getLocalTimeZone()))}
                 </p>
               </div>
@@ -331,8 +324,9 @@ const BookingWidget = ({
 
         <div className='grid grid-cols-2 gap-2'>
           <Stepper
+            compact
             label='Adultos'
-            description='Edad: 13 años o más'
+            tooltip='Adultos: 13 años o más.'
             value={Number(adults)}
             min={1}
             max={maxGuests - Number(children)}
@@ -341,8 +335,9 @@ const BookingWidget = ({
           />
 
           <Stepper
+            compact
             label='Niños'
-            description='Edades 2 – 12'
+            tooltip='Niños: de 2 a 12 años. Los menores de 2 años no cuentan como huéspedes.'
             value={Number(children)}
             min={0}
             max={maxGuests - Number(adults)}
@@ -352,7 +347,7 @@ const BookingWidget = ({
         </div>
 
         <div>
-          <div className='flex items-center justify-between text-sm'>
+          <div className='flex items-center justify-between text-xs'>
             <span className='flex items-center gap-1.5 font-semibold text-foreground'>
               <IconUsers
                 size={16}
@@ -371,7 +366,7 @@ const BookingWidget = ({
             aria-valuemin={0}
             aria-valuemax={maxGuests}
             aria-valuenow={totalGuests}
-            className='mt-1.5 h-2 overflow-hidden rounded-full bg-default-200'
+            className='mt-1 h-1.5 overflow-hidden rounded-full bg-default-200'
           >
             <div
               className={`h-full rounded-full transition-all duration-300 ${isAtCapacity ? 'bg-warning' : 'bg-primary'}`}
@@ -392,8 +387,8 @@ const BookingWidget = ({
       </div>
 
       {pricing && !isLoading && (
-        <div className='mt-4 rounded-xl border border-default-200 bg-content1 p-4'>
-          <div className='flex flex-col gap-3 text-sm text-default-600'>
+        <div className='mt-2 rounded-xl border border-default-200 bg-content1 p-3'>
+          <div className='flex flex-col gap-1.5 text-sm text-default-600'>
             <div className='flex items-center justify-between gap-2'>
               <span className='flex items-center gap-2'>
                 <IconHome2
@@ -453,7 +448,7 @@ const BookingWidget = ({
             )}
           </div>
 
-          <div className='mt-4 flex items-center justify-between rounded-lg bg-primary/10 px-3 py-2.5'>
+          <div className='mt-2.5 flex items-center justify-between rounded-lg bg-primary/10 px-3 py-1.5'>
             <span className='flex items-center gap-2 font-semibold text-foreground'>
               <IconWallet
                 size={18}
@@ -466,31 +461,29 @@ const BookingWidget = ({
             </span>
           </div>
 
-          <p className='mt-2 text-xs text-default-400'>
-            {pricing.totalGuests} huéspedes · {pricing.nights}{' '}
-            {pricing.nights === 1 ? 'noche' : 'noches'}
-          </p>
         </div>
       )}
 
-      <Button
-        className='group mt-4 font-semibold text-white'
-        radius='full'
-        variant='solid'
-        color='primary'
-        isDisabled={!hasValidRange || !pricing || isLoading}
-        onPress={handleReserve}
-      >
-        <DotArrowLabel>Reservar ahora</DotArrowLabel>
-      </Button>
+      <div className='mt-2'>
+        <Button
+          className='group w-full font-semibold text-white'
+          radius='full'
+          variant='solid'
+          color='primary'
+          isDisabled={!hasValidRange || !pricing || isLoading}
+          onPress={handleReserve}
+        >
+          <DotArrowLabel>Reservar ahora</DotArrowLabel>
+        </Button>
 
-      {(listing.defaultCheckInTime || listing.defaultCheckOutTime) && (
-        <p className='mt-3 flex items-center gap-1 text-xs text-default-500'>
-          <IconClock size={14} />
-          Check-in {listing.defaultCheckInTime} · Check-out{' '}
-          {listing.defaultCheckOutTime}
-        </p>
-      )}
+        {(listing.defaultCheckInTime || listing.defaultCheckOutTime) && (
+          <p className='mt-1.5 flex items-center gap-1 text-xs text-default-500'>
+            <IconClock size={14} />
+            Check-in {listing.defaultCheckInTime} · Check-out{' '}
+            {listing.defaultCheckOutTime}
+          </p>
+        )}
+      </div>
     </Card>
   );
 };

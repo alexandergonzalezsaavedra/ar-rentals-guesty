@@ -25,11 +25,11 @@ const HomeHeroContent = ({ cities }: HomeHeroContentProps) => {
         }
         transition={{ duration: 2, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h2
+        <h1
           className={`${spaceGrotesk.className} text-3xl sm:text-6xl font-bold text-white drop-shadow-lg`}
         >
           Encuentre su próximo alojamiento
-        </h2>
+        </h1>
         <p className='max-w-xl text-2xl text-white/90 drop-shadow-lg'>
           Arriendos cortos en los mejores destinos de Colombia, listos para
           reservar.

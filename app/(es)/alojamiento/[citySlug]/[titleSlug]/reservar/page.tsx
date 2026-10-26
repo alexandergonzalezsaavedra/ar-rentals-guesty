@@ -10,6 +10,11 @@ import { getListingBySlug } from '@/lib/guesty/listings';
 import { getReservationQuote } from '@/lib/guesty/quotes';
 import { buildPricingBreakdown } from '@/lib/pricing';
 
+export const metadata = {
+  title: 'Reservar',
+  robots: { index: false },
+};
+
 function firstValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }

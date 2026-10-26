@@ -126,9 +126,9 @@ const PropertyCard = ({
             src={listing.picture.regular}
             alt={listing.title}
             fill
-            // The first row (4 cards on lg) can land above the fold, e.g. via the
+            // The first row (3 cards on lg) can land above the fold, e.g. via the
             // #listado anchor, and its photo is then the page's LCP.
-            loading={index < 4 ? 'eager' : 'lazy'}
+            loading={index < 3 ? 'eager' : 'lazy'}
             sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
             className='object-cover rounded-t-[14px] transition-transform duration-300 ease-out group-hover:scale-110'
           />

@@ -16,6 +16,7 @@ import {
   IconCopy,
   IconShare3,
 } from '@tabler/icons-react';
+import { SITE_URL } from '@/lib/site';
 
 interface ShareButtonProps {
   title: string;
@@ -30,8 +31,11 @@ const ShareButton = ({
 }: ShareButtonProps) => {
   const [copied, setCopied] = useState(false);
 
+  // Always the public, canonical address: never localhost or a preview host
+  // (WhatsApp and Facebook can't reach those to build the link preview), and
+  // without the visitor's own ?checkIn=… search.
   const getUrl = () =>
-    typeof window !== 'undefined' ? window.location.href : '';
+    typeof window !== 'undefined' ? `${SITE_URL}${window.location.pathname}` : SITE_URL;
 
   const handleAction = async (key: string) => {
     const url = getUrl();

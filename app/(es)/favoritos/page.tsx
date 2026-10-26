@@ -6,6 +6,7 @@ import { spaceGrotesk } from '@/lib/fonts';
 
 export const metadata = {
   title: 'Favoritos',
+  robots: { index: false },
 };
 
 export default function FavoritosPage() {
