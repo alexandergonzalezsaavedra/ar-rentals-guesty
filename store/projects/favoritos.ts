@@ -25,8 +25,6 @@ const favoritesSlice = createSlice({
       } else {
         state.favorites[listing._id] = listing;
       }
-
-      localStorage.setItem('ar-rentals-favorites', JSON.stringify(state.favorites));
     },
   },
 });

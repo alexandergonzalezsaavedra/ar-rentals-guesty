@@ -12,6 +12,7 @@ import {
   savePendingReservation,
   type PendingStay,
 } from '@/lib/pendingReservation';
+import { readStorage, writeGuest } from '@/lib/storage';
 import ReservationPayment, { type ReservationPaymentInfo } from './ReservationPayment';
 
 interface ReservationFormProps {
@@ -31,7 +32,6 @@ interface InquiryResult {
 
 const STEPS = ['Tus datos', 'Pago'];
 
-const STORAGE_KEY = 'ar-rentals-guest';
 
 const ReservationSteps = ({ current }: { current: number }) => (
   <ol className='enter-stagger mb-4 flex items-center gap-3 text-sm'>
@@ -104,27 +104,21 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const guest = readStorage().guest;
 
-    if (!stored) {
+    if (!guest) {
       return;
     }
 
-    try {
-      const guest = JSON.parse(stored);
-
-      /* eslint-disable react-hooks/set-state-in-effect */
-      if (typeof guest.firstName === 'string') setFirstName(guest.firstName);
-      if (typeof guest.lastName === 'string') setLastName(guest.lastName);
-      if (typeof guest.email === 'string') setEmail(guest.email);
-      if (typeof guest.phone === 'string') setPhone(guest.phone);
-      if (PHONE_COUNTRIES.some((country) => country.dialCode === guest.dialCode)) {
-        setDialCode(guest.dialCode);
-      }
-      /* eslint-enable react-hooks/set-state-in-effect */
-    } catch {
-      // Corrupted localStorage value; ignore and start with an empty form.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    if (typeof guest.firstName === 'string') setFirstName(guest.firstName);
+    if (typeof guest.lastName === 'string') setLastName(guest.lastName);
+    if (typeof guest.email === 'string') setEmail(guest.email);
+    if (typeof guest.phone === 'string') setPhone(guest.phone);
+    if (PHONE_COUNTRIES.some((country) => country.dialCode === guest.dialCode)) {
+      setDialCode(guest.dialCode);
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -142,11 +136,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
     setIsSubmitting(true);
     setError(null);
 
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ firstName, lastName, email, dialCode, phone }));
-    } catch {
-      // Storage unavailable (private mode, quota); the form still works without it.
-    }
+    writeGuest({ firstName, lastName, email, dialCode, phone });
 
     try {
       const response = await fetch(`/api/guesty/quotes/${quoteId}/inquiry`, {

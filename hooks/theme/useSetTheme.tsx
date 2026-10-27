@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@/store';
 import { setTheme } from '../../store/slices/theme/themeSlice';
+import { readStorage } from '@/lib/storage';
 
 interface ThemeChangeOrigin {
   x: number;
@@ -12,7 +13,7 @@ interface ThemeChangeOrigin {
 export const useSetTheme = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    const storageTheme = localStorage.getItem('ar-rentals-theme') ?? '';
+    const storageTheme = readStorage().theme;
     if (storageTheme) {
       dispatch(setTheme(storageTheme));
     }

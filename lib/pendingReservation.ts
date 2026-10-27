@@ -1,14 +1,12 @@
 import type { ReservationPaymentInfo } from '@/components/listings/ReservationPayment';
+import { onStorageChange, readStorage, updateStorage } from '@/lib/storage';
 
 // Reservations created in Guesty but not paid yet. The site has no database,
 // so they live in the visitor's browser: without them, leaving the payment
 // step would lose the confirmation code, and coming back would try to quote
-// dates that the unpaid reservation itself is now holding.
+// dates that the unpaid reservation itself is now holding. They are the
+// `pendingReservations` section of the site's single storage object (lib/storage).
 
-const STORAGE_KEY = 'vaiven-pending-reservations';
-/** Earlier versions kept a single reservation under this key. */
-const LEGACY_KEY = 'vaiven-pending-reservation';
-const CHANGE_EVENT = 'vaiven:pending-reservations';
 /** After this long a reservation is treated as abandoned. */
 const MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
@@ -64,36 +62,21 @@ function isUsable(pending: PendingReservation): boolean {
 }
 
 function write(list: PendingReservation[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-    window.dispatchEvent(new Event(CHANGE_EVENT));
-  } catch {
-    // Storage unavailable (private mode, quota): the payment still works in this visit.
-  }
+  updateStorage((data) => {
+    data.pendingReservations = list;
+  });
 }
 
-/** Unpaid, unexpired reservations, newest first. */
+/** Unpaid, unexpired reservations, newest first. Expired ones are dropped from storage. */
 export function readPendingReservations(): PendingReservation[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    let list: PendingReservation[] = raw ? JSON.parse(raw) : [];
-    const legacy = localStorage.getItem(LEGACY_KEY);
+  const list = readStorage().pendingReservations;
+  const usable = list.filter(isUsable).sort((a, b) => b.createdAt - a.createdAt);
 
-    if (legacy) {
-      list = [...list, JSON.parse(legacy)];
-      localStorage.removeItem(LEGACY_KEY);
-    }
-
-    const usable = (Array.isArray(list) ? list : []).filter(isUsable).sort((a, b) => b.createdAt - a.createdAt);
-
-    if (raw === null ? usable.length > 0 : usable.length !== list.length) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(usable));
-    }
-
-    return usable;
-  } catch {
-    return [];
+  if (usable.length !== list.length) {
+    write(usable);
   }
+
+  return usable;
 }
 
 export function findPendingReservation(stay: PendingStay): PendingReservation | null {
@@ -109,17 +92,5 @@ export function removePendingReservation(confirmationCode: string): void {
   write(readPendingReservations().filter((item) => item.confirmationCode !== confirmationCode));
 }
 
-/** Calls `listener` whenever the pending reservations change, in this tab or another. */
-export function onPendingReservationsChange(listener: () => void): () => void {
-  const handleStorage = (event: StorageEvent) => {
-    if (event.key === STORAGE_KEY) listener();
-  };
-
-  window.addEventListener(CHANGE_EVENT, listener);
-  window.addEventListener('storage', handleStorage);
-
-  return () => {
-    window.removeEventListener(CHANGE_EVENT, listener);
-    window.removeEventListener('storage', handleStorage);
-  };
-}
+/** Calls `listener` whenever the pending reservations (or anything else in storage) change, in this tab or another. */
+export const onPendingReservationsChange = onStorageChange;
