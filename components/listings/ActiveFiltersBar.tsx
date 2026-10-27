@@ -23,7 +23,7 @@ function plural(value: string | undefined, singular: string, pluralForm: string)
   return count > 0 ? `${count} ${count === 1 ? singular : pluralForm}` : null;
 }
 
-function describeFilters(filters: PropertyFiltersValues): string[] {
+export function describeFilters(filters: PropertyFiltersValues): string[] {
   const dates =
     filters.checkIn && filters.checkOut ? `${formatDay(filters.checkIn)} – ${formatDay(filters.checkOut)}` : null;
 
@@ -129,16 +129,17 @@ const ActiveFiltersBar = ({ filters, total, isVisible, onEdit }: ActiveFiltersBa
               ))}
             </div>
           </div>
+          {/* The bar's one action, so it carries the strongest color in either theme: Sierra on the light
+              bar, Arena on the dark one (the theme's primary there is the pale Salvia). */}
           <Button
             size='sm'
             radius='full'
-            color='primary'
-            className='shrink-0 text-white'
+            className='shrink-0 bg-sierra font-semibold text-white shadow-md dark:bg-arena dark:text-sierra'
             startContent={<IconAdjustmentsHorizontal size={16} />}
             tabIndex={isVisible ? 0 : -1}
             onPress={onEdit}
           >
-            {labels.length === 0 ? 'Filtrar' : 'Editar filtros'}
+            {labels.length === 0 ? 'Filtrar búsqueda' : 'Cambiar filtros'}
           </Button>
         </div>
       </div>

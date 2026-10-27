@@ -21,6 +21,7 @@ import { useCustomToast } from '@/hooks/toast/useCustomToast';
 import type { GuestyListing } from '@/lib/guesty/listings';
 import { buildCitySlug, buildTitleSlug } from '@/lib/guesty/slug';
 import { ConciergeBell } from 'lucide-react';
+import { spaceGrotesk } from '@/lib/fonts';
 
 interface PropertyCardProps {
   listing: GuestyListing;
@@ -51,6 +52,8 @@ function formatPrice(amount: number, currency: string): string {
 
   return formatter.format(amount);
 }
+
+const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 function scrollToFilters() {
   document
@@ -167,11 +170,20 @@ const PropertyCard = ({
         </div>
 
         <CardBody className='gap-1 p-3'>
-          <Tooltip content={listing.title}>
-            <h3 className='font-semibold text-sm line-clamp-1 text-center'>
-              {listing.title}
-            </h3>
-          </Tooltip>
+          {/* Up to two lines in a box always two lines tall (text-lg at leading-snug: 1.125rem × 1.375 × 2), so
+              long and short names keep the cards aligned; a one-line name sits centered in it. */}
+          <div
+            className='flex items-center justify-center'
+            style={{ minHeight: '3.1rem' }}
+          >
+            <Tooltip content={listing.title}>
+              <h3
+                className={`${spaceGrotesk.className} line-clamp-2 text-center text-lg leading-snug font-bold text-balance text-foreground`}
+              >
+                {listing.title}
+              </h3>
+            </Tooltip>
+          </div>
 
           <div className='flex items-center gap-1 text-xs text-default-500 justify-center mb-2'>
             <IconMapPin size={14} />
@@ -181,47 +193,26 @@ const PropertyCard = ({
             </span>
           </div>
 
-          <div className='flex flex-wrap items-center gap-x-4 gap-y-1 py-2 text-xs text-default-500'>
-            <span
-              className='flex items-center gap-1.5'
-              title='Huéspedes'
-            >
-              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
-                <IconUsers
-                  size={16}
+          {/* Three equal columns, each an icon with its figure underneath, so the row stays tidy whatever the numbers. */}
+          <ul className='my-1 grid grid-cols-3 divide-x divide-default-200 rounded-xl bg-content2/60 py-2.5 dark:divide-default-100/20'>
+            {[
+              { icon: IconUsers, label: plural(listing.accommodates, 'huésped', 'huéspedes') },
+              { icon: IconBed, label: plural(listing.bedrooms, 'habitación', 'habitaciones') },
+              { icon: IconBath, label: plural(listing.bathrooms, 'baño', 'baños') },
+            ].map(({ icon: StatIcon, label }) => (
+              <li
+                key={label}
+                className='flex flex-col items-center gap-1 px-1 text-center'
+              >
+                <StatIcon
+                  size={20}
                   strokeWidth={1.5}
-                  className='text-default-500'
+                  className='text-primary'
                 />
-              </span>
-              {listing.accommodates} huéspedes
-            </span>
-            <span
-              className='flex items-center gap-1.5'
-              title='Habitaciones'
-            >
-              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
-                <IconBed
-                  size={16}
-                  strokeWidth={1.5}
-                  className='text-default-500'
-                />
-              </span>
-              {listing.bedrooms} hab.
-            </span>
-            <span
-              className='flex items-center gap-1.5'
-              title='Baños'
-            >
-              <span className='flex items-center justify-center rounded-md p-2 bg-content2'>
-                <IconBath
-                  size={16}
-                  strokeWidth={1.5}
-                  className='text-default-500'
-                />
-              </span>
-              {listing.bathrooms} baños
-            </span>
-          </div>
+                <span className='text-xs leading-tight text-default-600'>{label}</span>
+              </li>
+            ))}
+          </ul>
 
           <div className='flex items-baseline gap-2'>
             {/* {isDeal && (

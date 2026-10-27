@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Tooltip } from '@heroui/react';
+import { Button, NavbarItem, Tooltip } from '@heroui/react';
 import { IconReceipt } from '@tabler/icons-react';
 import { usePendingReservations } from '@/hooks/pendingReservations/usePendingReservations';
 import PendingPaymentsModal from '@/components/listings/PendingPaymentsModal';
@@ -17,7 +17,7 @@ const PendingPaymentsButton = () => {
   }
 
   return (
-    <>
+    <NavbarItem>
       <Tooltip
         content='Pagos pendientes'
         placement='bottom'
@@ -27,7 +27,7 @@ const PendingPaymentsButton = () => {
           color='default'
           variant='light'
           radius='full'
-          className='min-w-0 gap-0 px-2'
+          className='min-w-0 gap-0 px-1 sm:px-2'
           onPress={() => setIsOpen(true)}
         >
           <IconReceipt size={20} />
@@ -42,7 +42,7 @@ const PendingPaymentsButton = () => {
         onOpenChange={setIsOpen}
         reservations={reservations}
       />
-    </>
+    </NavbarItem>
   );
 };
 

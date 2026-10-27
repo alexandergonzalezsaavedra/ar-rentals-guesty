@@ -19,9 +19,7 @@ function firstValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function ReservationPage(
-  props: PageProps<'/alojamiento/[citySlug]/[titleSlug]/reservar'>
-) {
+export default async function ReservationPage(props: PageProps<'/alojamiento/[citySlug]/[titleSlug]/reservar'>) {
   const { citySlug, titleSlug } = await props.params;
   const searchParams = await props.searchParams;
 
@@ -50,7 +48,13 @@ export default async function ReservationPage(
   let quote = null;
 
   try {
-    quote = await getReservationQuote({ listingId: listing._id, checkIn, checkOut, adults, children });
+    quote = await getReservationQuote({
+      listingId: listing._id,
+      checkIn,
+      checkOut,
+      adults,
+      children,
+    });
   } catch (error) {
     if (!(error instanceof GuestyApiError && error.status >= 400 && error.status < 500)) {
       throw error;
@@ -69,7 +73,11 @@ export default async function ReservationPage(
       </header>
       <PageBreadcrumbs
         items={[
-          { label: 'Alojamiento', href: '/alojamiento', icon: <ConciergeBell size={12} /> },
+          {
+            label: 'Alojamiento',
+            href: '/alojamiento',
+            icon: <ConciergeBell size={12} />,
+          },
           {
             label: listing.address.city,
             href: `/alojamiento?city=${encodeURIComponent(listing.address.city)}`,
@@ -79,25 +87,34 @@ export default async function ReservationPage(
           { label: 'Reservar' },
         ]}
       />
-      <main className='w-full grid gap-8 px-4 py-8 lg:grid-cols-3'>
-        <div className='lg:col-span-2'>
-          <ReservationForm
-            quoteId={quote && ratePlan ? quote._id : null}
-            ratePlanId={ratePlan?.ratePlan._id ?? null}
-            propertyHref={propertyHref}
-            stay={{ propertyHref, listingTitle: listing.title, checkIn, checkOut, adults, children }}
-          />
-        </div>
-        <aside>
-          <ReservationSummary
-            listing={listing}
-            checkIn={new Date(`${checkIn}T00:00:00`)}
-            checkOut={new Date(`${checkOut}T00:00:00`)}
-            adults={adults}
-            childrenCount={children}
-            pricing={pricing}
-          />
-        </aside>
+      <main className='w-full px-4 py-8'>
+        {/* The form lays out the summary itself: beside the guest form, but folded into the payment card on
+            the payment step, so on phones what is being paid for shows up with the payment, not below it. */}
+        <ReservationForm
+          quoteId={quote && ratePlan ? quote._id : null}
+          ratePlanId={ratePlan?.ratePlan._id ?? null}
+          propertyHref={propertyHref}
+          stay={{
+            propertyHref,
+            listingTitle: listing.title,
+            listingImage: listing.picture.regular || listing.picture.large,
+            listingAddress: listing.address.full,
+            checkIn,
+            checkOut,
+            adults,
+            children,
+          }}
+          summary={
+            <ReservationSummary
+              listing={listing}
+              checkIn={new Date(`${checkIn}T00:00:00`)}
+              checkOut={new Date(`${checkOut}T00:00:00`)}
+              adults={adults}
+              childrenCount={children}
+              pricing={pricing}
+            />
+          }
+        />
       </main>
     </>
   );

@@ -64,8 +64,11 @@ html {
   }
 }
 
+/* Scaled from the center, the 14% zoom leaves 7% of slack on every side, more
+   than the 2% / 1.5% drift: no edge of the photo ever comes into view. (From a
+   corner, the drift pulled that corner inward and showed a strip of background.) */
 .animate-banner-drift {
-  transform-origin: bottom right;
+  transform-origin: center;
   animation: banner-drift 22s ease-in-out infinite;
 }
 
@@ -100,19 +103,122 @@ html {
   animation: heartbeat 1.8s ease-in-out infinite;
 }
 
-/* One-time curtain reveal for the hero video: starts fully masked down to a
-   sliver at the center, then the mask widens outward to both edges. */
-@keyframes curtain-reveal {
-  0% {
-    clip-path: inset(0 50% 0 50%);
+/* One-time curtain reveal for a hero photo or video: it opens from the center
+   out to both edges.
+   Done with two panels in the page's background color that slide apart over
+   the media, not by clipping the media itself: a clipped image starts with no
+   visible area, so Google doesn't count it as painted until the clip opens (or
+   the video's first frame arrives), which made the page's "largest contentful
+   paint" seconds late. Covered from above, the image counts from its first
+   paint. The element must be positioned, inside a parent with overflow hidden. */
+@keyframes curtain-panel-left {
+  from {
+    transform: translateX(0);
   }
-  100% {
-    clip-path: inset(0 0 0 0);
+  to {
+    transform: translateX(-100%);
   }
 }
 
-.animate-curtain-reveal {
-  animation: curtain-reveal 1.6s var(--ease-brand-soft) both;
+@keyframes curtain-panel-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.animate-curtain-reveal::before,
+.animate-curtain-reveal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  /* A hair over half each, so no seam shows at the center before they part. */
+  width: 50.5%;
+  background: hsl(var(--heroui-background));
+  pointer-events: none;
+  animation: 1.6s var(--ease-brand-soft) both;
+}
+
+.animate-curtain-reveal::before {
+  left: 0;
+  animation-name: curtain-panel-left;
+}
+
+.animate-curtain-reveal::after {
+  right: 0;
+  animation-name: curtain-panel-right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-curtain-reveal::before,
+  .animate-curtain-reveal::after {
+    display: none;
+  }
+}
+
+/* Home hero copy: rises out of a blur while the curtain opens. Plain CSS so it
+   runs from the first paint, without waiting for JavaScript. */
+@keyframes hero-from-above {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+    filter: blur(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-from-below {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.animate-hero-from-above {
+  animation: hero-from-above 2s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
+}
+
+.animate-hero-from-below {
+  animation: hero-from-below 2s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.animate-menu-in {
+  animation: menu-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-from-above,
+  .animate-hero-from-below,
+  .animate-menu-in {
+    animation: none;
+  }
 }
 
 /* Gentle up/down bob for small inline icons (stay date strip, etc.) —

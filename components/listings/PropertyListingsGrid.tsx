@@ -11,6 +11,7 @@ import type { GuestyListing } from '@/lib/guesty/listings';
 import ScrollLine from '@/components/effects/ScrollLine';
 import ActiveFiltersBar from './ActiveFiltersBar';
 import PropertyAdvantages from './PropertyAdvantages';
+import NoResults from './NoResults';
 import PropertyCard from './PropertyCard';
 import PropertyFilters, { type PropertyFiltersValues } from './PropertyFilters';
 
@@ -55,6 +56,11 @@ const PropertyListingsGrid = ({
   const [resetKey, setResetKey] = useState(0);
   const [view, setView] = useState<'list' | 'map'>('list');
   const [activeFilters, setActiveFilters] = useState<PropertyFiltersValues>(
+    initialFilters ?? {},
+  );
+  // What the filter form starts from when it remounts (resetKey): the URL's
+  // filters at first, then whatever a "try with fewer filters" suggestion set.
+  const [formValues, setFormValues] = useState<PropertyFiltersValues>(
     initialFilters ?? {},
   );
 
@@ -134,7 +140,16 @@ const PropertyListingsGrid = ({
     }
   };
 
+  // From the empty state: search again with some filters dropped, and show
+  // the same values in the form so it matches what is on screen.
+  const handleRelax = (values: PropertyFiltersValues) => {
+    setFormValues(values);
+    setResetKey((key) => key + 1);
+    void handleFilter(values);
+  };
+
   const handleClear = () => {
+    setFormValues({});
     setListings(initialListings);
     setPage(1);
     setError(null);
@@ -148,27 +163,23 @@ const PropertyListingsGrid = ({
 
   return (
     <div>
-      <div className='relative z-0 overflow-hidden bg-[#dee5db] py-16 sm:sticky sm:top-0 dark:bg-content1'>
+      <div className='relative z-0 overflow-hidden bg-noche py-16 sm:sticky sm:top-0'>
+        {/* The photo fills the whole banner, under a dark veil that keeps the white headline readable. */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.9, ease: 'easeOut' }}
-          className='absolute inset-y-0 right-0 w-full overflow-hidden sm:w-3/5 lg:w-1/2'
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          className='absolute inset-0 overflow-hidden'
         >
           <Image
-            src='/alojamiento/bg-alojamiento-3.png'
-            alt='ar rentals alojamientos'
+            src='/alojamiento/bg-alojamiento.png'
+            alt=''
             fill
             priority
-            sizes='(min-width: 1024px) 50vw, (min-width: 640px) 60vw, 100vw'
-            className='animate-banner-drift object-cover object-bottom'
+            sizes='100vw'
+            className='animate-banner-drift object-cover object-center'
           />
-          {/* Mobile: the photo is the backdrop for the whole section. The veil is only strong at the top, behind the title; the step cards below are opaque and don't need it. */}
-          <div className='absolute inset-0 bg-linear-to-b from-[#dee5db]/85 via-[#dee5db]/45 to-[#dee5db]/10 sm:hidden dark:from-content1/85 dark:via-content1/45 dark:to-content1/10' />
-          {/* sm+: the image takes the right side of the banner and a diagonal fade blends it into the flat background. The tints match the banner's own background exactly, or the photo's edge shows as a seam. */}
-          <div className='absolute inset-0 hidden bg-linear-to-bl from-transparent via-[#dee5db]/40 to-[#dee5db] sm:block dark:via-content1/40 dark:to-content1' />
-          {/* The diagonal alone leaves the photo's top-left edge half visible; this melts that edge into the background too. */}
-          <div className='absolute inset-y-0 left-0 hidden w-2/5 bg-linear-to-r from-[#dee5db] to-transparent sm:block dark:from-content1' />
+          <div className='absolute inset-0 bg-linear-to-b from-black/70 via-black/50 to-black/65' />
         </motion.div>
         <div className='relative w-full px-4'>
           <PropertyAdvantages />
@@ -176,7 +187,7 @@ const PropertyListingsGrid = ({
       </div>
 
       {/* Opaque and stacked above the sticky banner, so it slides over it on scroll (same effect as the home page). */}
-      <div className='relative z-10 rounded-t-3xl bg-background shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
+      <div className='relative z-10 rounded-t-3xl bg-white dark:bg-black shadow-[0_-24px_48px_-12px_rgba(0,0,0,0.25)]'>
         <ScrollLine mirrored />
         <div className='w-full px-4 pb-12'>
           {/* Comes in last, after the banner title and step cards have settled. */}
@@ -194,7 +205,7 @@ const PropertyListingsGrid = ({
               onSubmit={handleFilter}
               onClear={handleClear}
               isLoading={isLoading}
-              initialValues={initialFilters}
+              initialValues={formValues}
             />
           </motion.div>
           <ActiveFiltersBar
@@ -242,9 +253,12 @@ const PropertyListingsGrid = ({
           </div>
 
           {listings.length === 0 ? (
-            <p className='text-default-500 py-12 text-center'>
-              No hay inmuebles que coincidan con los filtros.
-            </p>
+            <NoResults
+              filters={activeFilters}
+              isLoading={isLoading}
+              onRelax={handleRelax}
+              onClear={handleClear}
+            />
           ) : view === 'map' ? (
             <PropertyMap listings={listings} />
           ) : (

@@ -15,6 +15,9 @@ const MAX_AGE_MS = 24 * 60 * 60 * 1000;
 export interface PendingStay {
   propertyHref: string;
   listingTitle: string;
+  /** Photo and full address of the property, shown in the pending payments list. Missing on reservations saved before they were added. */
+  listingImage?: string;
+  listingAddress?: string;
   checkIn: string;
   checkOut: string;
   adults: number;

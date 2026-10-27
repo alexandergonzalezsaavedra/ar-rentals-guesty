@@ -12,6 +12,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/alojamiento`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${SITE_URL}/lugares-turisticos`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${SITE_URL}/destinos`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${SITE_URL}/nosotros`, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${SITE_URL}/servicios`, changeFrequency: 'monthly', priority: 0.6 },
   ];
 
   try {

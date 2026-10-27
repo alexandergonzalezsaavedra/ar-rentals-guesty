@@ -3,6 +3,9 @@
 // points at the site is built from SITE_URL.
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vaivencol.com').replace(/\/$/, '');
 export const SITE_NAME = 'Vaivén';
+
+/** Contact calls to action (the "¿Eres propietario?" blocks and the footer's Contacto link). Hidden for now; set to true to bring them back. */
+export const SHOW_CONTACT_CTA = false;
 export const SITE_TAGLINE = 'Cortas estadías en Colombia';
 export const DEFAULT_DESCRIPTION =
   'Apartamentos y casas para estadías cortas en Santa Marta y otros destinos de Colombia. Consulte disponibilidad en tiempo real y reserve en línea.';

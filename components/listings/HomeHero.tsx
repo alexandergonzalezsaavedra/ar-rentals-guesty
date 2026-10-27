@@ -1,6 +1,10 @@
 import { listAllListings } from '@/lib/guesty/listings';
 import HomeHeroContent from './HomeHeroContent';
 
+const HERO_VIDEO = '/home/hero-vaiven.mp4';
+/** First frame of the video: shows (and counts as the page's largest paint) before the video has loaded. */
+export const HERO_POSTER = '/home/hero-vaiven-poster.jpg';
+
 async function fetchCities(): Promise<string[]> {
   try {
     const { results } = await listAllListings({});
@@ -21,11 +25,13 @@ export default async function HomeHero() {
       <div className='relative min-h-[85dvh] w-full overflow-hidden rounded-xl bg-background'>
         <div className='animate-curtain-reveal absolute inset-0'>
           <video
-            src='/hero-banner-ar-rentals.mp4'
+            src={HERO_VIDEO}
+            poster={HERO_POSTER}
             autoPlay
             loop
             muted
             playsInline
+            preload='auto'
             className='absolute inset-0 h-full w-full object-cover'
           />
           <div className='absolute inset-0 bg-linear-to-b from-black/60 via-black/25 to-black/70' />

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import Script from 'next/script';
 import { Button, Modal, ModalBody, ModalContent, ModalHeader } from '@heroui/react';
@@ -9,8 +10,13 @@ import {
   IconCircleCheckFilled,
   IconClockHour4,
   IconLock,
+  IconMapPin,
+  IconMoonStars,
+  IconShieldCheck,
+  IconUsers,
 } from '@tabler/icons-react';
 import { formatPrice } from '@/lib/format';
+import type { PendingStay } from '@/lib/pendingReservation';
 
 interface WompiTransaction {
   id: string;
@@ -59,9 +65,14 @@ interface ReservationPaymentProps {
   };
   /** Called once Wompi reports the payment as approved or in process. */
   onSettled?: (status: 'APPROVED' | 'PENDING') => void;
+  /** What is being paid for, shown in the card right above the amount. */
+  stay?: PendingStay;
 }
 
-const ReservationPayment = ({ confirmationCode, payment, customer, onSettled }: ReservationPaymentProps) => {
+const stayDate = (isoDate: string) =>
+  new Date(`${isoDate}T00:00:00`).toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric', month: 'short' });
+
+const ReservationPayment = ({ confirmationCode, payment, customer, onSettled, stay }: ReservationPaymentProps) => {
   const [isWidgetReady, setIsWidgetReady] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -203,6 +214,8 @@ const ReservationPayment = ({ confirmationCode, payment, customer, onSettled }: 
         </p>
       </div>
 
+      {stay && <StaySummary stay={stay} />}
+
       <div className='flex items-center justify-between rounded-lg bg-primary/10 px-4 py-3'>
         <span className='font-semibold text-foreground'>Total a pagar</span>
         <span className='text-lg font-bold text-primary'>{total}</span>
@@ -265,10 +278,77 @@ const ReservationPayment = ({ confirmationCode, payment, customer, onSettled }: 
         </Modal>
       )}
 
-      <p className='flex items-center justify-center gap-1.5 text-xs text-default-500'>
-        <IconLock size={14} />
-        Pago seguro con Wompi: tarjetas, PSE, Nequi y más
-      </p>
+      {/* Trust note right under the pay button, where the guest decides; tinted so it reads as reassurance, not fine print. */}
+      <div className='flex items-start gap-3 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3'>
+        <span className='flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-white'>
+          <IconShieldCheck size={20} />
+        </span>
+        <div className='text-sm'>
+          <p className='flex items-center gap-1.5 font-semibold text-foreground'>
+            Pago 100% seguro
+            <IconLock
+              size={14}
+              className='text-secondary'
+            />
+          </p>
+          <p className='mt-0.5 text-default-600'>
+            Lo procesa Wompi, la pasarela de Bancolombia. Los datos de tu tarjeta o cuenta se ingresan directamente
+            en Wompi y no pasan por nuestro sitio. Aceptamos tarjetas, PSE, Nequi y más.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Photo, name, address, dates and guests of the stay being paid for.
+const StaySummary = ({ stay }: { stay: PendingStay }) => {
+  const nights = Math.round(
+    (new Date(`${stay.checkOut}T00:00:00`).getTime() - new Date(`${stay.checkIn}T00:00:00`).getTime()) / 86400000,
+  );
+  const guests = stay.adults + stay.children;
+
+  return (
+    <div className='flex gap-4 rounded-xl border border-default-200 p-3 dark:border-default-100/20'>
+      {stay.listingImage && (
+        <div className='relative size-20 shrink-0 overflow-hidden rounded-lg sm:size-24'>
+          <Image
+            src={stay.listingImage}
+            alt={stay.listingTitle}
+            fill
+            sizes='96px'
+            className='object-cover'
+          />
+        </div>
+      )}
+      <div className='min-w-0 flex-1'>
+        <p className='leading-snug font-semibold text-foreground'>{stay.listingTitle}</p>
+        {stay.listingAddress && (
+          <p className='mt-1 flex items-start gap-1.5 text-xs text-default-500'>
+            <IconMapPin
+              size={14}
+              className='mt-px shrink-0 text-primary'
+            />
+            <span className='line-clamp-2'>{stay.listingAddress}</span>
+          </p>
+        )}
+        <div className='mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-default-600'>
+          <span className='flex items-center gap-1.5'>
+            <IconMoonStars
+              size={14}
+              className='text-primary'
+            />
+            {stayDate(stay.checkIn)} – {stayDate(stay.checkOut)} · {nights} {nights === 1 ? 'noche' : 'noches'}
+          </span>
+          <span className='flex items-center gap-1.5'>
+            <IconUsers
+              size={14}
+              className='text-primary'
+            />
+            {guests} {guests === 1 ? 'huésped' : 'huéspedes'}
+          </span>
+        </div>
+      </div>
     </div>
   );
 };

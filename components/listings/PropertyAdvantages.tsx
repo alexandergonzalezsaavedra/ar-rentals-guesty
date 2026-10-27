@@ -91,7 +91,7 @@ const TiltCard = ({
         transformPerspective: 900,
         transformStyle: 'preserve-3d',
       }}
-      className='rounded-3xl bg-[#ffffff] p-6 shadow-[10px_10px_24px_#c3ccc0,-10px_-10px_24px_#f7faf5] dark:bg-[#1c2420] dark:shadow-[10px_10px_24px_#131916,-10px_-10px_24px_#252f2a]'
+      className='rounded-3xl bg-[#ffffff] p-6 shadow-2xl shadow-black/30 dark:bg-[#1c2420] dark:shadow-black/50'
     >
       {children}
     </motion.li>
@@ -106,13 +106,13 @@ const PropertyAdvantages = () => {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className='text-sm font-medium tracking-wide text-primary/70 uppercase sm:text-base'
+          className='text-sm font-medium tracking-wide text-arena uppercase sm:text-base'
         >
           Negocios · Descanso · Aventura
         </motion.p>
         {/* The two sentences rise in one after the other, then the step cards follow. */}
         <h2
-          className={`mx-auto mt-2 max-w-4xl text-3xl font-bold text-balance text-foreground sm:text-6xl`}
+          className={`mx-auto mt-2 max-w-4xl text-3xl font-bold text-balance text-white drop-shadow-lg sm:text-6xl`}
         >
           <motion.span
             initial={{ opacity: 0, y: 24 }}
@@ -126,7 +126,7 @@ const PropertyAdvantages = () => {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className='inline-block text-primary'
+            className='inline-block text-arena'
           >
             Nosotros, el lugar perfecto.
           </motion.span>

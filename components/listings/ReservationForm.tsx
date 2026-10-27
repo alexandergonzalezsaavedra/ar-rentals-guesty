@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Checkbox, Input, Select, SelectItem, Textarea } from '@heroui/react';
@@ -20,6 +20,8 @@ interface ReservationFormProps {
   ratePlanId: string | null;
   propertyHref: string;
   stay: PendingStay;
+  /** Stay and price summary, shown beside the guest form. */
+  summary: ReactNode;
 }
 
 interface InquiryResult {
@@ -57,7 +59,7 @@ const ReservationSteps = ({ current }: { current: number }) => (
   </ol>
 );
 
-const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay }: ReservationFormProps) => {
+const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: ReservationFormProps) => {
   const router = useRouter();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -194,13 +196,15 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay }: Reservatio
     return null;
   }
 
+  // Payment: a single centered card that carries the stay itself, instead of the side summary.
   if (result?.payment) {
     return (
-      <>
+      <div className='mx-auto w-full max-w-2xl'>
         <ReservationSteps current={1} />
         <ReservationPayment
           confirmationCode={result.confirmationCode}
           payment={result.payment}
+          stay={stay}
           customer={{
             email,
             fullName: `${firstName} ${lastName}`.trim(),
@@ -209,13 +213,13 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay }: Reservatio
           }}
           onSettled={() => removePendingReservation(result.confirmationCode)}
         />
-      </>
+      </div>
     );
   }
 
   if (result) {
     return (
-      <div className='enter-card enter-stagger flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
+      <div className='enter-card mx-auto max-w-2xl enter-stagger flex flex-col items-center gap-4 rounded-xl border border-slate-100 bg-content1 p-8 text-center shadow-sm dark:border-slate-800'>
         <span className='flex size-16 items-center justify-center rounded-full bg-success/10 text-success'>
           <IconCircleCheckFilled size={36} />
         </span>
@@ -238,128 +242,131 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay }: Reservatio
   }
 
   return (
-    <>
-      <ReservationSteps current={0} />
-      <form
-        onSubmit={handleSubmit}
-        className='enter-card enter-stagger flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'
-      >
-        <div>
-          <h1 className='text-xl font-semibold text-foreground'>Completa tus datos</h1>
-          <p className='mt-1 text-sm text-default-500'>Información del huésped principal</p>
-        </div>
-
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <Input
-            label='Nombre'
-            value={firstName}
-            onValueChange={setFirstName}
-            isRequired
-          />
-          <Input
-            label='Apellido'
-            value={lastName}
-            onValueChange={setLastName}
-            isRequired
-          />
-        </div>
-
-        <Input
-          type='email'
-          label='Correo electrónico'
-          value={email}
-          onValueChange={setEmail}
-          isRequired
-        />
-
-        <div className='flex gap-2'>
-          <Select
-            label='País'
-            className='w-36 shrink-0'
-            selectedKeys={[dialCode]}
-            onSelectionChange={(keys) => {
-              const selected = Array.from(keys)[0];
-              if (typeof selected === 'string') {
-                setDialCode(selected);
-              }
-            }}
-          >
-            {PHONE_COUNTRIES.map((country) => (
-              <SelectItem
-                key={country.dialCode}
-                textValue={`${country.flag} +${country.dialCode}`}
-              >
-                {`${country.flag} +${country.dialCode}`}
-              </SelectItem>
-            ))}
-          </Select>
-          <Input
-            type='tel'
-            label='Número de teléfono'
-            value={phone}
-            onValueChange={setPhone}
-            isRequired
-            className='flex-1'
-          />
-        </div>
-
-        <Textarea
-          label='Solicitud especial (opcional)'
-          value={specialRequests}
-          onValueChange={setSpecialRequests}
-          minRows={3}
-        />
-
-        <div className='flex flex-col gap-2'>
-          <Checkbox
-            isSelected={acceptPrivacy}
-            onValueChange={setAcceptPrivacy}
-            isRequired
-          >
-            <span className='text-sm text-default-600'>
-              He leído y acepto la política de privacidad y los términos y condiciones
-            </span>
-          </Checkbox>
-          <Checkbox
-            isSelected={acceptMarketing}
-            onValueChange={setAcceptMarketing}
-          >
-            <span className='text-sm text-default-600'>
-              Quiero recibir descuentos, promociones y novedades de AR Rentals
-            </span>
-          </Checkbox>
-        </div>
-
-        {error && (
-          <div className='flex items-start gap-2 text-sm text-danger'>
-            <IconAlertCircle
-              size={16}
-              className='mt-0.5 shrink-0'
-            />
-            <p>{error}</p>
+    <div className='grid gap-8 lg:grid-cols-3'>
+      <div className='lg:col-span-2'>
+        <ReservationSteps current={0} />
+        <form
+          onSubmit={handleSubmit}
+          className='enter-card enter-stagger flex flex-col gap-5 rounded-xl border border-slate-100 bg-content1 p-5 shadow-sm sm:p-6 dark:border-slate-800'
+        >
+          <div>
+            <h1 className='text-xl font-semibold text-foreground'>Completa tus datos</h1>
+            <p className='mt-1 text-sm text-default-500'>Información del huésped principal</p>
           </div>
-        )}
 
-        <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
-          <Link
-            href={propertyHref}
-            className='text-sm text-default-500 underline-offset-2 hover:underline'
-          >
-            Volver al alojamiento
-          </Link>
-          <Button
-            type='submit'
-            color='primary'
-            radius='full'
-            className='text-white'
-            isLoading={isSubmitting}
-            isDisabled={!acceptPrivacy}
-          >
-            Continuar al pago
-          </Button>
-        </div>
-      </form>
-    </>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+            <Input
+              label='Nombre'
+              value={firstName}
+              onValueChange={setFirstName}
+              isRequired
+            />
+            <Input
+              label='Apellido'
+              value={lastName}
+              onValueChange={setLastName}
+              isRequired
+            />
+          </div>
+
+          <Input
+            type='email'
+            label='Correo electrónico'
+            value={email}
+            onValueChange={setEmail}
+            isRequired
+          />
+
+          <div className='flex gap-2'>
+            <Select
+              label='País'
+              className='w-36 shrink-0'
+              selectedKeys={[dialCode]}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0];
+                if (typeof selected === 'string') {
+                  setDialCode(selected);
+                }
+              }}
+            >
+              {PHONE_COUNTRIES.map((country) => (
+                <SelectItem
+                  key={country.dialCode}
+                  textValue={`${country.flag} +${country.dialCode}`}
+                >
+                  {`${country.flag} +${country.dialCode}`}
+                </SelectItem>
+              ))}
+            </Select>
+            <Input
+              type='tel'
+              label='Número de teléfono'
+              value={phone}
+              onValueChange={setPhone}
+              isRequired
+              className='flex-1'
+            />
+          </div>
+
+          <Textarea
+            label='Solicitud especial (opcional)'
+            value={specialRequests}
+            onValueChange={setSpecialRequests}
+            minRows={3}
+          />
+
+          <div className='flex flex-col gap-2'>
+            <Checkbox
+              isSelected={acceptPrivacy}
+              onValueChange={setAcceptPrivacy}
+              isRequired
+            >
+              <span className='text-sm text-default-600'>
+                He leído y acepto la política de privacidad y los términos y condiciones
+              </span>
+            </Checkbox>
+            <Checkbox
+              isSelected={acceptMarketing}
+              onValueChange={setAcceptMarketing}
+            >
+              <span className='text-sm text-default-600'>
+                Quiero recibir descuentos, promociones y novedades de AR Rentals
+              </span>
+            </Checkbox>
+          </div>
+
+          {error && (
+            <div className='flex items-start gap-2 text-sm text-danger'>
+              <IconAlertCircle
+                size={16}
+                className='mt-0.5 shrink-0'
+              />
+              <p>{error}</p>
+            </div>
+          )}
+
+          <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+            <Link
+              href={propertyHref}
+              className='text-sm text-default-500 underline-offset-2 hover:underline'
+            >
+              Volver al alojamiento
+            </Link>
+            <Button
+              type='submit'
+              color='primary'
+              radius='full'
+              className='text-white'
+              isLoading={isSubmitting}
+              isDisabled={!acceptPrivacy}
+            >
+              Continuar al pago
+            </Button>
+          </div>
+        </form>
+      </div>
+      <aside>{summary}</aside>
+    </div>
   );
 };
 

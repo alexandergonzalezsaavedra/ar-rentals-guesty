@@ -2,7 +2,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { motion } from 'framer-motion';
 
 import {
   Navbar,
@@ -24,7 +23,6 @@ import {
   IconMap2,
 } from '@tabler/icons-react';
 import { ConciergeBell } from 'lucide-react';
-import { useReveal } from '@/components/home/RevealContext';
 import { useFavorites } from '@/hooks/favorites/useFavorites';
 
 function isActivePath(pathname: string, href: string): boolean {
@@ -33,7 +31,6 @@ function isActivePath(pathname: string, href: string): boolean {
 
 const Menu = () => {
   const pathname = usePathname();
-  const revealed = useReveal();
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
@@ -63,7 +60,7 @@ const Menu = () => {
       maxWidth='2xl'
       position='sticky'
       isBlurred={false}
-      classNames={{ base: 'z-50', menu: 'z-50 bg-background' }}
+      classNames={{ base: 'z-50', wrapper: 'px-3 sm:px-6', menu: 'z-50 bg-background' }}
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent>
@@ -74,25 +71,25 @@ const Menu = () => {
         <NavbarBrand>
           <Link href='/'>
             {/* Dark lettering on the light theme, light lettering on the dark one.
-                width/height are the file's own size (they only set the aspect
-                ratio); CSS sets the displayed size. On phones the brand slot is
+                width/height are the largest size it's shown at (140x48, same
+                aspect ratio as the file), so Next serves a small file; CSS sets
+                the displayed size. On phones the brand slot is
                 narrow, so the logo gets a smaller height instead of being
                 squeezed sideways by max-width, and object-contain guards the
                 proportions if it ever is. */}
             <Image
               src='/logo-positivo-vaiven.png'
               alt='Vaivén - Cortas estadías'
-              width={481}
-              height={165}
+              width={140}
+              height={48}
               loading='eager'
               className='h-9 w-auto object-contain sm:h-12 dark:hidden'
             />
             <Image
               src='/logo-negativo-vaiven.png'
               alt='Vaivén - Cortas estadías'
-              width={481}
-              height={165}
-              loading='eager'
+              width={140}
+              height={48}
               className='hidden h-9 w-auto object-contain sm:h-12 dark:block'
             />
           </Link>
@@ -150,7 +147,7 @@ const Menu = () => {
       </NavbarContent>
       <NavbarContent
         justify='end'
-        className='gap-1'
+        className='gap-0 sm:gap-1'
       >
         {favoritesCount > 0 && (
           <NavbarItem>
@@ -161,7 +158,7 @@ const Menu = () => {
               color='default'
               variant='light'
               radius='full'
-              className='min-w-0 gap-0 px-2'
+              className='min-w-0 gap-0 px-1 sm:px-2'
             >
               <IconHeart
                 className='animate-pulse'
@@ -173,10 +170,8 @@ const Menu = () => {
             </Button>
           </NavbarItem>
         )}
-        <NavbarItem>
-          <PendingPaymentsButton />
-        </NavbarItem>
-        <div className='flex items-center gap-1 rounded-full border border-default-200/60 bg-content2/60 px-1.5 py-1 backdrop-blur-md'>
+        <PendingPaymentsButton />
+        <div className='flex items-center gap-0.5 rounded-full border border-default-200/60 bg-content2/60 px-1 py-1 backdrop-blur-md sm:gap-1 sm:px-1.5'>
           <ButtonChangeTheme />
           <Button
             as='a'
@@ -245,23 +240,14 @@ const Menu = () => {
     </Navbar>
   );
 
-  if (revealed === null) {
+  // Only the home page makes an entrance, with a CSS animation (app/globals.css)
+  // that runs from the first paint of the server HTML rather than after
+  // JavaScript has hydrated, so the menu isn't late to show up.
+  if (pathname !== '/') {
     return navbar;
   }
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -12, filter: 'blur(10px)' }}
-      animate={
-        revealed
-          ? { opacity: 1, y: 0, filter: 'blur(0px)' }
-          : { opacity: 0, y: -12, filter: 'blur(10px)' }
-      }
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {navbar}
-    </motion.div>
-  );
+  return <div className='animate-menu-in'>{navbar}</div>;
 };
 
 export default Menu;

@@ -11,16 +11,16 @@ import {
   IconMapPin,
   IconPhone,
 } from '@tabler/icons-react';
+import { SHOW_CONTACT_CTA } from '@/lib/site';
 
 const companyLinks = [
-  { label: 'Nosotros', href: '#' },
-  { label: 'Servicios', href: '#' },
-  { label: 'Contacto', href: '#' },
+  { label: 'Nosotros', href: '/nosotros' },
+  { label: 'Servicios', href: '/servicios' },
+  ...(SHOW_CONTACT_CTA ? [{ label: 'Contacto', href: '#' }] : []),
 ];
 
 const quickLinks = [
   { label: 'Lugares Turísticos', href: '/lugares-turisticos' },
-  { label: 'Vincule su propiedad', href: '#' },
   { label: 'Reserva', href: '/alojamiento' },
 ];
 
