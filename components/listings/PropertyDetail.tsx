@@ -30,6 +30,7 @@ import SectionsParallaxSlider, { type SectionSlide } from './SectionsParallaxSli
 import PropertyActions from './PropertyActions';
 import HighlightedHeading from '@/components/listings/HighlightedHeading';
 import { EASE_BRAND } from '@/lib/easing';
+import { trackPropertyView } from '@/lib/tracking';
 
 const PropertyLocationMap = dynamic(() => import('./PropertyLocationMap'), {
   ssr: false,
@@ -145,6 +146,11 @@ const PropertyDetail = ({
       label: listing.bathrooms === 1 ? 'baño' : 'baños',
     },
   ];
+
+  // Remembered as a "property viewed" (only with personalization consent; lib/tracking checks).
+  useEffect(() => {
+    trackPropertyView(listing, window.location.pathname);
+  }, [listing]);
 
   // Desktop: the share/favorite buttons sit on the hero (see PropertyHero)
   // until the content sheet has covered half the screen; then a copy rises in

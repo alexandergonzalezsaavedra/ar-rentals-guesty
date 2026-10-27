@@ -12,6 +12,7 @@ import ScrollLine from '@/components/effects/ScrollLine';
 import ActiveFiltersBar from './ActiveFiltersBar';
 import PropertyAdvantages from './PropertyAdvantages';
 import NoResults from './NoResults';
+import { trackSearch } from '@/lib/tracking';
 import PropertyCard from './PropertyCard';
 import PropertyFilters, { type PropertyFiltersValues } from './PropertyFilters';
 
@@ -133,6 +134,7 @@ const PropertyListingsGrid = ({
       setListings(data.results);
       setPage(1);
       setActiveFilters(values);
+      trackSearch({ ...values });
     } catch {
       setError('No pudimos aplicar el filtro. Intente de nuevo.');
     } finally {

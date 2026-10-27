@@ -12,6 +12,7 @@ import {
   savePendingReservation,
   type PendingStay,
 } from '@/lib/pendingReservation';
+import { toStoredDate } from '@/lib/dates';
 import { readStorage, writeGuest } from '@/lib/storage';
 import ReservationPayment, { type ReservationPaymentInfo } from './ReservationPayment';
 
@@ -172,7 +173,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
           confirmationCode: data.reservation.confirmationCode,
           payment: data.payment,
           customer: { firstName, lastName, email, dialCode, phone },
-          createdAt: Date.now(),
+          createdAt: toStoredDate(),
         });
       }
     } catch {
@@ -311,17 +312,31 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
               onValueChange={setAcceptPrivacy}
               isRequired
             >
+              {/* The links open in a new tab, so the half-filled form isn't lost. */}
               <span className='text-sm text-default-600'>
-                He leído y acepto la política de privacidad y los términos y condiciones
+                He leído y acepto la{' '}
+                <Link
+                  href='/terminos-y-condiciones#datos-personales'
+                  target='_blank'
+                  className='text-primary underline underline-offset-2'
+                >
+                  política de tratamiento de datos
+                </Link>{' '}
+                y los{' '}
+                <Link
+                  href='/terminos-y-condiciones'
+                  target='_blank'
+                  className='text-primary underline underline-offset-2'
+                >
+                  términos y condiciones
+                </Link>
               </span>
             </Checkbox>
             <Checkbox
               isSelected={acceptMarketing}
               onValueChange={setAcceptMarketing}
             >
-              <span className='text-sm text-default-600'>
-                Quiero recibir descuentos, promociones y novedades de AR Rentals
-              </span>
+              <span className='text-sm text-default-600'>Quiero recibir descuentos, promociones y novedades de Vaivén</span>
             </Checkbox>
           </div>
 

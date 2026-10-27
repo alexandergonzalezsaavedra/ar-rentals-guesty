@@ -12,22 +12,56 @@ import {
   IconPhone,
 } from '@tabler/icons-react';
 import { SHOW_CONTACT_CTA } from '@/lib/site';
+import { openCookieSettings } from '@/components/consent/cookieSettings';
 
-const companyLinks = [
+/** A footer entry: a page (href) or an action on this page (onClick), such as opening the cookie settings. */
+interface FooterLink {
+  label: string;
+  href?: string;
+  onClick?: () => void;
+}
+
+const companyLinks: FooterLink[] = [
   { label: 'Nosotros', href: '/nosotros' },
   { label: 'Servicios', href: '/servicios' },
   ...(SHOW_CONTACT_CTA ? [{ label: 'Contacto', href: '#' }] : []),
 ];
 
-const quickLinks = [
+const quickLinks: FooterLink[] = [
   { label: 'Lugares Turísticos', href: '/lugares-turisticos' },
   { label: 'Reserva', href: '/alojamiento' },
+];
+
+const legalLinks: FooterLink[] = [
+  { label: 'Términos y condiciones', href: '/terminos-y-condiciones' },
+  { label: 'Tratamiento de datos', href: '/terminos-y-condiciones#datos-personales' },
+  { label: 'Configurar cookies', onClick: openCookieSettings },
+  { label: 'Mis datos', href: '/mis-datos' },
 ];
 
 const linkGroups = [
   { title: 'Empresa', links: companyLinks },
   { title: 'Acceso Rápido', links: quickLinks },
+  { title: 'Legal', links: legalLinks },
 ];
+
+const FooterLinkItem = ({ link, className }: { link: FooterLink; className: string }) =>
+  link.href ? (
+    <Link
+      href={link.href}
+      className={className}
+    >
+      {link.label}
+    </Link>
+  ) : (
+    <button
+      type='button'
+      onClick={link.onClick}
+      className={`text-left ${className}`}
+    >
+      {link.label}
+    </button>
+  );
 
 const PHONE_HREF = 'tel:+573143593612';
 const PHONE_LABEL = '+57 314 359 3612';
@@ -99,14 +133,12 @@ const Footer = () => {
                   className='flex items-center gap-2'
                 >
                   {index > 0 && (
-                    <span className='size-1 rounded-full bg-primary' />
+                    <span className='size-1 rounded-full bg-secondary' />
                   )}
-                  <Link
-                    href={link.href}
-                    className='py-1 text-white/90 active:text-primary'
-                  >
-                    {link.label}
-                  </Link>
+                  <FooterLinkItem
+                    link={link}
+                    className='py-1 text-white/90 active:text-secondary'
+                  />
                 </li>
               ))}
             </ul>
@@ -123,7 +155,7 @@ const Footer = () => {
           >
             <IconPhone
               size={18}
-              className='shrink-0 text-primary'
+              className='shrink-0 text-secondary'
             />
             {PHONE_LABEL}
           </a>
@@ -133,14 +165,14 @@ const Footer = () => {
           >
             <IconMail
               size={18}
-              className='shrink-0 text-primary'
+              className='shrink-0 text-secondary'
             />
             {EMAIL}
           </a>
           <p className='mt-1 flex flex-col items-center gap-1.5 text-sm text-white/60'>
             <IconMapPin
               size={18}
-              className='text-primary'
+              className='text-secondary'
             />
             <span className='text-balance'>{ADDRESS}</span>
           </p>
@@ -152,7 +184,7 @@ const Footer = () => {
       </div>
 
       {/* sm and up: the left-aligned column grid. */}
-      <div className='container mx-auto hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-4'>
+      <div className='container mx-auto hidden grid-cols-2 gap-10 px-4 py-12 sm:grid lg:grid-cols-5'>
         <div>
           <Image
             src='/logo-negativo-vaiven.png'
@@ -169,12 +201,10 @@ const Footer = () => {
             <ul className='flex flex-col gap-2 text-sm text-white/70'>
               {links.map((link) => (
                 <li key={link.label}>
-                  <Link
-                    href={link.href}
+                  <FooterLinkItem
+                    link={link}
                     className='hover:text-white'
-                  >
-                    {link.label}
-                  </Link>
+                  />
                 </li>
               ))}
             </ul>

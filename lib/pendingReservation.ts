@@ -1,4 +1,5 @@
 import type { ReservationPaymentInfo } from '@/components/listings/ReservationPayment';
+import { fromStoredDate, msSince, type StoredDate } from '@/lib/dates';
 import { onStorageChange, readStorage, updateStorage } from '@/lib/storage';
 
 // Reservations created in Guesty but not paid yet. The site has no database,
@@ -32,7 +33,7 @@ export interface PendingReservation extends PendingStay {
     dialCode: string;
     phone: string;
   };
-  createdAt: number;
+  createdAt: StoredDate;
 }
 
 export function isSameStay(a: PendingStay, b: PendingStay): boolean {
@@ -58,7 +59,7 @@ export function paymentHref(stay: PendingStay): string {
 }
 
 function isUsable(pending: PendingReservation): boolean {
-  return Boolean(pending?.confirmationCode && pending.payment?.token) && Date.now() - pending.createdAt <= MAX_AGE_MS;
+  return Boolean(pending?.confirmationCode && pending.payment?.token) && msSince(pending.createdAt) <= MAX_AGE_MS;
 }
 
 function write(list: PendingReservation[]): void {
@@ -70,7 +71,7 @@ function write(list: PendingReservation[]): void {
 /** Unpaid, unexpired reservations, newest first. Expired ones are dropped from storage. */
 export function readPendingReservations(): PendingReservation[] {
   const list = readStorage().pendingReservations;
-  const usable = list.filter(isUsable).sort((a, b) => b.createdAt - a.createdAt);
+  const usable = list.filter(isUsable).sort((a, b) => fromStoredDate(b.createdAt) - fromStoredDate(a.createdAt));
 
   if (usable.length !== list.length) {
     write(usable);
