@@ -13,7 +13,9 @@ import {
   type PendingStay,
 } from '@/lib/pendingReservation';
 import { toStoredDate } from '@/lib/dates';
-import { readStorage, writeGuest } from '@/lib/storage';
+import { readGuest, writeGuest } from '@/lib/storage';
+import { RESERVATION_RECAPTCHA_ACTION } from '@/lib/recaptcha';
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import ReservationPayment, { type ReservationPaymentInfo } from './ReservationPayment';
 
 interface ReservationFormProps {
@@ -76,6 +78,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
   // Until the browser's saved reservation has been checked we can't tell the
   // form from the payment step, so nothing renders for that first moment.
   const [isCheckingPending, setIsCheckingPending] = useState(true);
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   // Coming back to this stay with a reservation already created and unpaid:
   // go straight to the payment step instead of creating a second one.
@@ -105,7 +108,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
   }, []);
 
   useEffect(() => {
-    const guest = readStorage().guest;
+    const guest = readGuest();
 
     if (!guest) {
       return;
@@ -134,12 +137,18 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
       return;
     }
 
+    if (!executeRecaptcha) {
+      setError('No pudimos cargar la verificación de seguridad. Recarga la página e intenta de nuevo.');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     writeGuest({ firstName, lastName, email, dialCode, phone });
 
     try {
+      const recaptchaToken = await executeRecaptcha(RESERVATION_RECAPTCHA_ACTION);
       const response = await fetch(`/api/guesty/quotes/${quoteId}/inquiry`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -152,6 +161,7 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
           specialRequests: specialRequests || undefined,
           acceptPrivacy,
           acceptMarketing,
+          recaptchaToken,
         }),
       });
 
@@ -368,6 +378,29 @@ const ReservationForm = ({ quoteId, ratePlanId, propertyHref, stay, summary }: R
               Continuar al pago
             </Button>
           </div>
+
+          {/* Google's badge is hidden (globals.css); its terms require this notice instead. */}
+          <p className='text-xs text-default-400'>
+            Este sitio está protegido por reCAPTCHA y se aplican la{' '}
+            <a
+              href='https://policies.google.com/privacy'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline underline-offset-2'
+            >
+              Política de privacidad
+            </a>{' '}
+            y las{' '}
+            <a
+              href='https://policies.google.com/terms'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline underline-offset-2'
+            >
+              Condiciones del servicio
+            </a>{' '}
+            de Google.
+          </p>
         </form>
       </div>
       <aside>{summary}</aside>

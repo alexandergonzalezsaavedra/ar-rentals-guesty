@@ -11,7 +11,7 @@ export const useFavorites = () => {
 
   useEffect(() => {
     // Nothing saved yet: leave the empty list, and don't write one back.
-    if (readStorage().favorites.length === 0) {
+    if (readStorage().favoritos.length === 0) {
       return;
     }
 

@@ -6,8 +6,8 @@ const REVERSE_GEOCODE_URL = 'https://api.bigdatacloud.net/data/reverse-geocode-c
 /**
  * Asks the browser for the visitor's position and turns it into a city,
  * region and country (BigDataCloud's free client-side reverse geocoding, no
- * key needed). Only runs with location consent; the result is saved to
- * storage and also returned. Resolves to null if the visitor or the browser
+ * key needed). Only runs with location consent; the result is added to the
+ * location history in storage and also returned. Resolves to null if the visitor or the browser
  * says no, or after 15 seconds.
  */
 export async function requestVisitorLocation(): Promise<VisitorLocation | null> {
@@ -39,13 +39,13 @@ export async function requestVisitorLocation(): Promise<VisitorLocation | null> 
 
   const { latitude, longitude, accuracy } = position.coords;
   const location: VisitorLocation = {
-    latitude,
-    longitude,
-    accuracy: Math.round(accuracy),
-    city: '',
+    latitud: latitude,
+    longitud: longitude,
+    precision: Math.round(accuracy),
+    ciudad: '',
+    pais: '',
     region: '',
-    country: '',
-    obtainedAt: toStoredDate(),
+    fechaObtencion: toStoredDate(),
   };
 
   try {
@@ -57,9 +57,9 @@ export async function requestVisitorLocation(): Promise<VisitorLocation | null> 
     const response = await fetch(`${REVERSE_GEOCODE_URL}?${params.toString()}`);
     const data = (await response.json()) as { city?: string; locality?: string; principalSubdivision?: string; countryName?: string };
 
-    location.city = data.city || data.locality || '';
+    location.ciudad = data.city || data.locality || '';
     location.region = data.principalSubdivision || '';
-    location.country = data.countryName || '';
+    location.pais = data.countryName || '';
   } catch {
     // Coordinates alone are still useful; the place names stay empty.
   }

@@ -7,7 +7,7 @@ import { Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Switc
 import { IconCookie, IconLock, IconMapPin } from '@tabler/icons-react';
 import { EASE_BRAND } from '@/lib/easing';
 import { requestVisitorLocation } from '@/lib/location';
-import { trackPageView, trackVisit } from '@/lib/tracking';
+import { trackVisit } from '@/lib/tracking';
 import {
   acceptAllConsent,
   CONSENT_CATEGORIES,
@@ -39,13 +39,12 @@ const CookieConsent = () => {
   }, []);
 
   // Once the choice is saved: what the page load couldn't record before the
-  // visitor answered (device, the campaign in this URL, this page) is recorded
-  // now, as far as the new consent allows.
+  // visitor answered (device, the campaign in this URL) is recorded now, as
+  // far as the new consent allows.
   const finish = () => {
     setIsNoticeVisible(false);
     setIsSettingsOpen(false);
     trackVisit();
-    trackPageView(window.location.pathname);
   };
 
   const askLocationIfAllowed = async () => {

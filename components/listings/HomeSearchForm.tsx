@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { trackSearch } from '@/lib/tracking';
 import PropertyFilters, { type PropertyFiltersValues } from './PropertyFilters';
 
 interface HomeSearchFormProps {
@@ -14,7 +13,6 @@ const HomeSearchForm = ({ cities }: HomeSearchFormProps) => {
   const [resetKey, setResetKey] = useState(0);
 
   const handleSubmit = (values: PropertyFiltersValues) => {
-    trackSearch({ ...values });
     const params = new URLSearchParams();
 
     for (const [key, value] of Object.entries(values)) {

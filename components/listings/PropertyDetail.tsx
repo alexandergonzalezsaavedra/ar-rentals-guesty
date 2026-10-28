@@ -149,7 +149,7 @@ const PropertyDetail = ({
 
   // Remembered as a "property viewed" (only with personalization consent; lib/tracking checks).
   useEffect(() => {
-    trackPropertyView(listing, window.location.pathname);
+    trackPropertyView(listing);
   }, [listing]);
 
   // Desktop: the share/favorite buttons sit on the hero (see PropertyHero)

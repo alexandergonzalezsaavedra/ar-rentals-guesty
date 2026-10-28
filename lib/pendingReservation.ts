@@ -6,7 +6,7 @@ import { onStorageChange, readStorage, updateStorage } from '@/lib/storage';
 // so they live in the visitor's browser: without them, leaving the payment
 // step would lose the confirmation code, and coming back would try to quote
 // dates that the unpaid reservation itself is now holding. They are the
-// `pendingReservations` section of the site's single storage object (lib/storage).
+// `reservacionesPendientes` section of the site's single storage object (lib/storage).
 
 /** After this long a reservation is treated as abandoned. */
 const MAX_AGE_MS = 24 * 60 * 60 * 1000;
@@ -64,13 +64,13 @@ function isUsable(pending: PendingReservation): boolean {
 
 function write(list: PendingReservation[]): void {
   updateStorage((data) => {
-    data.pendingReservations = list;
+    data.reservacionesPendientes = list;
   });
 }
 
 /** Unpaid, unexpired reservations, newest first. Expired ones are dropped from storage. */
 export function readPendingReservations(): PendingReservation[] {
-  const list = readStorage().pendingReservations;
+  const list = readStorage().reservacionesPendientes;
   const usable = list.filter(isUsable).sort((a, b) => fromStoredDate(b.createdAt) - fromStoredDate(a.createdAt));
 
   if (usable.length !== list.length) {

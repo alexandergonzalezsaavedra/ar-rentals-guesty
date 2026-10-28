@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { trackPageView, trackVisit } from '@/lib/tracking';
 
-// Counts the visit once per page load and records each page the visitor opens.
-// lib/tracking checks consent before saving anything.
+// Counts the visit once per page load and keeps the session alive on each page
+// the visitor opens. lib/tracking checks consent before saving anything.
 const TrackingInitializer = () => {
   const pathname = usePathname();
 
@@ -14,7 +14,7 @@ const TrackingInitializer = () => {
   }, []);
 
   useEffect(() => {
-    trackPageView(pathname);
+    trackPageView();
   }, [pathname]);
 
   return null;

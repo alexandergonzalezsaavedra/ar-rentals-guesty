@@ -3,6 +3,7 @@ import { GuestyApiError } from '@/lib/guesty/client';
 import { submitReservationInquiry } from '@/lib/guesty/inquiry';
 import { getReservationQuoteById } from '@/lib/guesty/quotes';
 import { buildPricingBreakdown } from '@/lib/pricing';
+import { RESERVATION_RECAPTCHA_ACTION, verifyRecaptcha } from '@/lib/recaptcha';
 import { createPaymentToken } from '@/lib/wompi/checkout';
 import { wompiConfig } from '@/lib/wompi/config';
 
@@ -47,6 +48,14 @@ export async function POST(
     return NextResponse.json(
       { error: 'Plan de tarifa, nombre, apellido, correo, teléfono y la aceptación de la política de privacidad son obligatorios' },
       { status: 400 }
+    );
+  }
+
+  // Checked before anything reaches Guesty, so bots can't create reservations.
+  if (!(await verifyRecaptcha(body?.recaptchaToken, RESERVATION_RECAPTCHA_ACTION))) {
+    return NextResponse.json(
+      { error: 'No pudimos verificar que la solicitud es legítima. Recarga la página e intenta de nuevo.' },
+      { status: 403 }
     );
   }
 

@@ -131,7 +131,7 @@ html {
 
 .animate-curtain-reveal::before,
 .animate-curtain-reveal::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   bottom: 0;
@@ -331,6 +331,11 @@ html {
   display: none;
 }
 
+/* reCAPTCHA's floating badge; the forms that use it show Google's notice as text instead. */
+/* .grecaptcha-badge {
+  visibility: hidden;
+} */
+
 /* On pages with the fixed mobile booking nav (property detail), the footer's
    last line would sit hidden behind it; push it clear of the nav. */
 @media (max-width: 1023.98px) {
@@ -353,7 +358,7 @@ html {
   transition: opacity 0.3s var(--ease-brand-soft);
 }
 
-.prop-cursor[data-visible='true'] {
+.prop-cursor[data-visible="true"] {
   opacity: 1;
 }
 
@@ -377,20 +382,20 @@ html {
     border-color 0.35s var(--ease-brand-soft);
 }
 
-.prop-cursor[data-state='link'] .prop-cursor-disc {
+.prop-cursor[data-state="link"] .prop-cursor-disc {
   background: hsl(var(--heroui-secondary) / 0.14);
   transform: scale(0.55);
 }
 
 /* See-through, with no blur, so whatever sits under the pointer stays
    readable; the label carries its own shadow to stand out over photos. */
-.prop-cursor[data-state='label'] .prop-cursor-disc {
+.prop-cursor[data-state="label"] .prop-cursor-disc {
   border-color: hsl(var(--heroui-secondary) / 0.5);
   background: hsl(var(--heroui-secondary) / 0.32);
   transform: scale(0.9);
 }
 
-.prop-cursor[data-pressed='true'] .prop-cursor-disc {
+.prop-cursor[data-pressed="true"] .prop-cursor-disc {
   transition-duration: 0.15s;
   scale: 0.8;
 }
@@ -406,7 +411,7 @@ html {
   transition: opacity 0.25s var(--ease-brand-soft);
 }
 
-.prop-cursor[data-state='label'] .prop-cursor-label {
+.prop-cursor[data-state="label"] .prop-cursor-label {
   opacity: 1;
   transition-delay: 0.12s;
 }
@@ -423,13 +428,13 @@ html {
   transition-delay: calc(var(--reveal-index, 0) * 70ms);
 }
 
-[data-entered='true'] .slide-reveal {
+[data-entered="true"] .slide-reveal {
   opacity: 1;
   transform: none;
 }
 
 /* Leaving resets at once, so the entrance can replay next time. */
-[data-entered='false'] .slide-reveal {
+[data-entered="false"] .slide-reveal {
   transition-duration: 0.01s;
   transition-delay: 0s;
 }
@@ -490,7 +495,7 @@ html {
   animation-delay: 0.33s;
 }
 .enter-stagger > :nth-child(5) {
-  animation-delay: 0.40s;
+  animation-delay: 0.4s;
 }
 .enter-stagger > :nth-child(6) {
   animation-delay: 0.47s;
@@ -525,7 +530,7 @@ html {
   animation-delay: 0.63s;
 }
 .enter-stagger-late > :nth-child(6) {
-  animation-delay: 0.70s;
+  animation-delay: 0.7s;
 }
 .enter-stagger-late > :nth-child(7) {
   animation-delay: 0.77s;

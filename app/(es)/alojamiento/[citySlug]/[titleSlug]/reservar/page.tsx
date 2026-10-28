@@ -5,6 +5,7 @@ import Menu from '@/components/menu/Menu';
 import PageBreadcrumbs from '@/components/breadcrumbs/PageBreadcrumbs';
 import ReservationSummary from '@/components/listings/ReservationSummary';
 import ReservationForm from '@/components/listings/ReservationForm';
+import { RecaptchaProvider } from '@/components/recaptcha/RecaptchaProvider';
 import { GuestyApiError } from '@/lib/guesty/client';
 import { getListingBySlug } from '@/lib/guesty/listings';
 import { getReservationQuote } from '@/lib/guesty/quotes';
@@ -90,31 +91,33 @@ export default async function ReservationPage(props: PageProps<'/alojamiento/[ci
       <main className='w-full px-4 py-8'>
         {/* The form lays out the summary itself: beside the guest form, but folded into the payment card on
             the payment step, so on phones what is being paid for shows up with the payment, not below it. */}
-        <ReservationForm
-          quoteId={quote && ratePlan ? quote._id : null}
-          ratePlanId={ratePlan?.ratePlan._id ?? null}
-          propertyHref={propertyHref}
-          stay={{
-            propertyHref,
-            listingTitle: listing.title,
-            listingImage: listing.picture.regular || listing.picture.large,
-            listingAddress: listing.address.full,
-            checkIn,
-            checkOut,
-            adults,
-            children,
-          }}
-          summary={
-            <ReservationSummary
-              listing={listing}
-              checkIn={new Date(`${checkIn}T00:00:00`)}
-              checkOut={new Date(`${checkOut}T00:00:00`)}
-              adults={adults}
-              childrenCount={children}
-              pricing={pricing}
-            />
-          }
-        />
+        <RecaptchaProvider>
+          <ReservationForm
+            quoteId={quote && ratePlan ? quote._id : null}
+            ratePlanId={ratePlan?.ratePlan._id ?? null}
+            propertyHref={propertyHref}
+            stay={{
+              propertyHref,
+              listingTitle: listing.title,
+              listingImage: listing.picture.regular || listing.picture.large,
+              listingAddress: listing.address.full,
+              checkIn,
+              checkOut,
+              adults,
+              children,
+            }}
+            summary={
+              <ReservationSummary
+                listing={listing}
+                checkIn={new Date(`${checkIn}T00:00:00`)}
+                checkOut={new Date(`${checkOut}T00:00:00`)}
+                adults={adults}
+                childrenCount={children}
+                pricing={pricing}
+              />
+            }
+          />
+        </RecaptchaProvider>
       </main>
     </>
   );

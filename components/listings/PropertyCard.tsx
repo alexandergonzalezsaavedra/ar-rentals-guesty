@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Button, Card, CardBody, Chip, Tooltip } from '@heroui/react';
+import { Button, Card, CardBody, Chip } from '@heroui/react';
 import {
   IconBath,
   IconBed,
@@ -176,13 +176,11 @@ const PropertyCard = ({
             className='flex items-center justify-center'
             style={{ minHeight: '3.1rem' }}
           >
-            <Tooltip content={listing.title}>
-              <h3
-                className={`${spaceGrotesk.className} line-clamp-2 text-center text-lg leading-snug font-bold text-balance text-foreground`}
-              >
-                {listing.title}
-              </h3>
-            </Tooltip>
+            <h3
+              className={`${spaceGrotesk.className} line-clamp-2 text-center text-lg leading-snug font-bold text-balance text-foreground`}
+            >
+              {listing.title}
+            </h3>
           </div>
 
           <div className='flex items-center gap-1 text-xs text-default-500 justify-center mb-2'>

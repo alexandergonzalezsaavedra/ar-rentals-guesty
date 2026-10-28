@@ -27,7 +27,7 @@ export const CONSENT_COPY: Record<ConsentCategory, { title: string; description:
   personalization: {
     title: 'Cookies de personalización',
     description:
-      'Recuerdan tus búsquedas y las propiedades que has visto para mostrarte alojamientos acordes a lo que buscas. Son necesarias y no pueden desactivarse.',
+      'Recuerdan las propiedades que has visto para mostrarte alojamientos acordes a lo que buscas. Son necesarias y no pueden desactivarse.',
   },
   personalData: {
     title: 'Cookies de datos personales',
@@ -47,6 +47,6 @@ export const CONSENT_COPY: Record<ConsentCategory, { title: string; description:
   adTracking: {
     title: 'Cookies de seguimiento publicitario',
     description:
-      'Registran las páginas que visitas, tu tipo de dispositivo y la campaña por la que llegaste, para medir la efectividad de nuestra publicidad.',
+      'Registran tu dispositivo y navegador y la campaña por la que llegaste, para medir la efectividad de nuestra publicidad.',
   },
 };

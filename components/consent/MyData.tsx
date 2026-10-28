@@ -65,7 +65,9 @@ const MyData = () => {
   }
 
   const consent = readConsent();
-  const tracking = data.tracking;
+  const location = data.ubicaciones.at(-1);
+  const device = data.dispositivo.at(-1);
+  const campaign = [data.utmSource, data.utmMedium, data.utmCampaign, data.utmTerm, data.utmContent].filter(Boolean);
 
   const handleRefreshLocation = async () => {
     setIsLocating(true);
@@ -156,16 +158,18 @@ const MyData = () => {
             )
           }
         >
-          {data.location ? (
+          {location ? (
             <>
               <p className='text-base font-medium text-foreground'>
-                {[data.location.city, data.location.region, data.location.country].filter(Boolean).join(', ') ||
-                  'Ciudad no identificada'}
+                {[location.ciudad, location.region, location.pais].filter(Boolean).join(', ') || 'Ciudad no identificada'}
               </p>
               <p className='mt-1 text-default-400'>
-                {data.location.latitude.toFixed(3)}, {data.location.longitude.toFixed(3)} · precisión ±
-                {data.location.accuracy} m · {dateTime(data.location.obtainedAt)}
+                {location.latitud.toFixed(3)}, {location.longitud.toFixed(3)} · precisión ±{location.precision} m ·{' '}
+                {dateTime(location.fechaObtencion)}
               </p>
+              {data.ubicaciones.length > 1 && (
+                <p className='mt-1 text-default-400'>{data.ubicaciones.length} ubicaciones registradas.</p>
+              )}
             </>
           ) : (
             <Empty>
@@ -180,16 +184,16 @@ const MyData = () => {
           icon={IconUserCircle}
           title='Datos de contacto'
         >
-          {data.guest ? (
+          {data.nombres || data.email ? (
             <ul className='flex flex-col gap-1'>
               <li>
-                <span className='text-default-400'>Nombre:</span> {data.guest.firstName} {data.guest.lastName}
+                <span className='text-default-400'>Nombre:</span> {data.nombres} {data.apellidos}
               </li>
               <li>
-                <span className='text-default-400'>Correo:</span> {data.guest.email}
+                <span className='text-default-400'>Correo:</span> {data.email}
               </li>
               <li>
-                <span className='text-default-400'>Teléfono:</span> +{data.guest.dialCode} {data.guest.phone}
+                <span className='text-default-400'>Teléfono:</span> {data.codTelefono} {data.telefono}
               </li>
             </ul>
           ) : (
@@ -205,68 +209,49 @@ const MyData = () => {
           icon={IconActivity}
           title='Actividad'
         >
-          {tracking ? (
+          {data.cantidadVisitas > 0 ? (
             <>
               <ul className='flex flex-col gap-1'>
                 <li>
-                  <span className='text-default-400'>Visitas:</span> {tracking.visits}
+                  <span className='text-default-400'>Visitas:</span> {data.cantidadVisitas}
                 </li>
                 <li>
-                  <span className='text-default-400'>Primera visita:</span> {dateTime(tracking.firstVisitAt)}
+                  <span className='text-default-400'>Primera visita:</span> {dateTime(data.primerIngreso)}
                 </li>
                 <li>
-                  <span className='text-default-400'>Páginas vistas registradas:</span> {tracking.pageViews.length}
+                  <span className='text-default-400'>Última visita:</span> {dateTime(data.ultimoIngreso)}
                 </li>
-                {tracking.device && (
+                {device && (
                   <li>
-                    <span className='text-default-400'>Dispositivo:</span> {tracking.device.type} ·{' '}
-                    {tracking.device.screen} · {tracking.device.language}
+                    <span className='text-default-400'>Dispositivo:</span> {device.browser} · {device.os} ·{' '}
+                    {device.screen.width}x{device.screen.height} · {device.language}
                   </li>
                 )}
-                {tracking.utm && (
+                {campaign.length > 0 && (
                   <li>
-                    <span className='text-default-400'>Campaña de llegada:</span>{' '}
-                    {Object.values(tracking.utm).join(' / ')}
+                    <span className='text-default-400'>Campaña de llegada:</span> {campaign.join(' / ')}
                   </li>
                 )}
               </ul>
 
-              {tracking.propertyViews.length > 0 && (
+              {data.masVistos.length > 0 && (
                 <>
                   <p className='mt-3 font-medium text-foreground'>Propiedades vistas recientemente</p>
                   <ul className='mt-1 flex flex-col gap-0.5'>
-                    {tracking.propertyViews
+                    {data.masVistos
                       .slice(-5)
                       .reverse()
                       .map((view) => (
                         <li key={view.id}>
                           <Link
-                            href={view.path}
+                            href={view.urlPropiedad}
                             className='text-primary hover:underline'
                           >
-                            {view.title}
+                            {view.titulo}
                           </Link>{' '}
                           <span className='text-default-400'>
-                            · {view.city} · {view.views} {view.views === 1 ? 'vez' : 'veces'}
+                            · {view.ciudad} · {view.visitas} {view.visitas === 1 ? 'vez' : 'veces'}
                           </span>
-                        </li>
-                      ))}
-                  </ul>
-                </>
-              )}
-
-              {tracking.searches.length > 0 && (
-                <>
-                  <p className='mt-3 font-medium text-foreground'>Búsquedas recientes</p>
-                  <ul className='mt-1 flex flex-col gap-0.5'>
-                    {tracking.searches
-                      .slice(-5)
-                      .reverse()
-                      .map((search) => (
-                        <li key={search.at}>
-                          {Object.entries(search.filters)
-                            .map(([key, value]) => `${key}: ${value}`)
-                            .join(' · ') || 'Sin filtros'}
                         </li>
                       ))}
                   </ul>
@@ -282,7 +267,7 @@ const MyData = () => {
           icon={IconHeart}
           title='Favoritos'
           action={
-            data.favorites.length > 0 && (
+            data.favoritos.length > 0 && (
               <Link
                 href='/favoritos'
                 className='text-xs font-semibold text-primary hover:underline'
@@ -292,9 +277,9 @@ const MyData = () => {
             )
           }
         >
-          {data.favorites.length > 0 ? (
+          {data.favoritos.length > 0 ? (
             <p>
-              {data.favorites.length} {data.favorites.length === 1 ? 'propiedad guardada' : 'propiedades guardadas'}.
+              {data.favoritos.length} {data.favoritos.length === 1 ? 'propiedad guardada' : 'propiedades guardadas'}.
             </p>
           ) : (
             <Empty>No tienes propiedades favoritas.</Empty>
@@ -305,9 +290,9 @@ const MyData = () => {
           icon={IconReceipt}
           title='Pagos pendientes'
         >
-          {data.pendingReservations.length > 0 ? (
+          {data.reservacionesPendientes.length > 0 ? (
             <ul className='flex flex-col gap-1'>
-              {data.pendingReservations.map((reservation) => (
+              {data.reservacionesPendientes.map((reservation) => (
                 <li key={reservation.confirmationCode}>
                   <span className='font-mono text-xs'>{reservation.confirmationCode}</span> · {reservation.listingTitle}
                 </li>
@@ -320,8 +305,8 @@ const MyData = () => {
       </div>
 
       <p className='mt-6 text-center text-xs text-default-400'>
-        Todo esto se guarda solo en este navegador, en una única entrada llamada «vaiven». Última actualización:{' '}
-        {dateTime(data.updatedAt)}.
+        Todo esto se guarda solo en este navegador, en una única entrada llamada «vaiven». Última actividad:{' '}
+        {dateTime(data.ultimoIngreso)}.
       </p>
 
       <Modal
@@ -336,7 +321,7 @@ const MyData = () => {
               Se borrarán tus preferencias de cookies, favoritos, datos de contacto, ubicación y actividad guardados en
               este navegador. Esta acción no se puede deshacer.
             </p>
-            {data.pendingReservations.length > 0 && (
+            {data.reservacionesPendientes.length > 0 && (
               <Checkbox
                 isSelected={includePending}
                 onValueChange={setIncludePending}
