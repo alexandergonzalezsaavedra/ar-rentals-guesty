@@ -91,6 +91,8 @@ export async function POST(
     return NextResponse.json({ reservation, payment });
   } catch (error) {
     if (error instanceof GuestyApiError) {
+      // Guesty's reason (expired quote, dates taken, invalid field...) is in the body.
+      console.error('Guesty rejected the reservation inquiry', { quoteId, status: error.status, body: error.body });
       return NextResponse.json({ error: error.message, details: error.body }, { status: error.status });
     }
 
